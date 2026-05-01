@@ -11,6 +11,36 @@ description: >-
 
 Generate a tailored CV from a pasted job ad using the bullet bank in this repo.
 
+## Cross-cutting principles (read first)
+
+Read `../../../PRINCIPLES.md` (at repo root) before drafting. Three rules that
+override anything below if they conflict:
+
+1. **Honesty over keywords.** Bullet bank is the source of truth. No
+   fabrication, no scope inflation, no keyword-stuffing the narration with
+   things the underlying achievement doesn't support. If the bank can't
+   honestly cover an ad requirement, surface the gap to the user.
+2. **Optimise for ATS *and* the manual screen.** Big-tech AU recruiters skim
+   in ~8 seconds: name + work rights → most recent role → first 1–2 bullets
+   → profile sentence one → education credential. Lead each role with the
+   strongest matching `impact-metric` bullet. Profile sentence one must
+   mirror the ad's primary technical signal.
+3. **Visa 485.** State Australian work rights explicitly in the contact
+   block. Detect PR-only gates and flag them before drafting. See
+   `PRINCIPLES.md` §3 for phrasing.
+
+### Pivot rule for big-tech tailoring (from Principle 2)
+
+The user is pivoting from SONIQ (digital signage CMS) to big tech. Apply by
+default:
+
+- **Omit `soniq-overview` for big-tech tailoring.** Its "digital signage CMS"
+  framing reads as small-company. Let `*-stack` + impact bullets carry the
+  signal. Re-include only if the target actually works in media/CMS/AdTech.
+- **Lead with engineering substance, not product domain.** Cost optimisation,
+  TypeScript migration, event-driven integration, infrastructure scheduling
+  — these are the foreground bullets. "Digital signage" stays background.
+
 ## Primary objective: one page, high signal
 
 The tailored CV **must compile to exactly one page**. At early-career stage,

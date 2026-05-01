@@ -31,6 +31,10 @@ explain every other design choice in the repo.
    or safely generalised. The bullet bank is already generalised — keep it
    that way. See `BOUNDARIES.md`.
 
+For the cross-cutting application strategy (honesty over keywords, ATS +
+manual-screen optimisation, big-tech pivot from SONIQ, Subclass 485 visa
+handling), see `PRINCIPLES.md`. Every skill inherits these.
+
 ## Layout
 
 ```
@@ -55,8 +59,9 @@ cv-pipeline/
     compile.sh                  # one-shot render + compile via Tectonic
   .cursor/skills/               # tailor-cv, add-bullet, cover-letter (Cursor Agent Skills)
   .vscode/                      # LaTeX Workshop preconfigured for Tectonic
+  PRINCIPLES.md                 # cross-cutting rules every skill inherits
+  BOUNDARIES.md                 # confidentiality guardrails
   requirements.txt
-  BOUNDARIES.md
 ```
 
 ## Setup

@@ -13,6 +13,27 @@ description: >-
 Polish a free-form achievement into a tagged, LaTeX-ready bullet and append it
 to the right bullet-bank file (and optionally mirror it into `cv/main.tex`).
 
+## Cross-cutting principles (read first)
+
+Read `../../../PRINCIPLES.md` (at repo root) before drafting. The honesty
+principle is the load-bearing one for this skill — every bullet added here
+becomes a fact downstream skills will rely on:
+
+1. **Honesty over keywords.** Never write a verb stronger than the user's
+   actual scope ("led" vs "contributed to" vs "supported"). Never invent
+   metrics — if the user's description is vague on numbers, ask, don't
+   guess. Never embed keywords that don't reflect the underlying work just
+   because they'd help a future ad search. The bank is the contract; this
+   skill is what writes the contract.
+2. **Optimise for the manual screen.** Big-tech recruiters favour outcome-
+   first bullets with a quantified result. Frame as
+   *"Verb + system/scope + outcome (with metric where honest)"*. Generic
+   responsibility statements ("worked on X") are downgraded.
+3. **Big-tech vocabulary preferred when honestly applicable.** Use
+   *distributed systems, cloud-native, event-driven, infrastructure-as-code,
+   observability, scalability* over signage-specific nouns. But never
+   substitute a big-tech term for a literal description of what was done.
+
 ## Repo invariants
 
 - Bullets live in `bullet-bank/{soniq,csiro,projects}.yml`.

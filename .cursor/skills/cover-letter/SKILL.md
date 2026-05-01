@@ -14,6 +14,43 @@ Write a tight, one-page cover letter that earns the read in its first 8 words
 and uses real evidence from the bullet bank. The cover letter is rendered from
 the same `job-ads/<company>.yml` that drives the CV — one application, one file.
 
+## Cross-cutting principles (read first)
+
+Read `../../../PRINCIPLES.md` (at repo root) before drafting. Three rules that
+override anything below if they conflict:
+
+1. **Honesty over keywords.** The bullet bank is the source of truth. The
+   cover letter narrates a bullet's underlying story but **cannot exceed
+   what the bank claims**. Don't inflate scope, don't fabricate a metric,
+   don't claim a keyword the underlying work doesn't support. If the ad
+   asks for X and no bullet covers X, flag the gap to the user before
+   drafting — never paper over it with vague language.
+2. **Optimise for ATS *and* the manual screen.** Recruiters at AU big tech
+   skim in ~8 seconds. The cover letter's job is to differentiate in the
+   first sentence (already enforced by the first-line hook rule) and to
+   deliver one quantified outcome in P2. Avoid process-narrative; use
+   outcome-narrative.
+3. **Visa 485.** Don't mention the visa in the body unless the ad
+   explicitly mentions sponsorship as a benefit (then briefly note in P5).
+   The contact-line statement is enough. If the ad gates on PR/citizenship,
+   flag and ask the user before drafting. See `PRINCIPLES.md` §3.
+
+### Pivot rule for big-tech targeting (from Principle 2)
+
+The user is pivoting from SONIQ (digital signage CMS) to big tech. Apply by
+default:
+
+- **Never lead the technical paragraph (P2) with signage-specific nouns**
+  ("displays", "playback", "client deployments", "CMS"). Lead with the
+  architecture or infra noun ("event-driven cost optimisation on AWS Lambda
+  + EventBridge", "TypeScript migration across distributed microservices").
+- Background the product domain. The recruiter doesn't need to know SONIQ
+  sells digital signage to evaluate the engineering work.
+- Prefer transferable big-tech vocabulary when narrating, where honestly
+  applicable: *distributed systems, cloud-native, event-driven,
+  infrastructure-as-code, production, scalability, reliability,
+  observability, blast radius*.
+
 ## Why this skill matters
 
 Most cover letters are skipped because they open with "I am writing to express
