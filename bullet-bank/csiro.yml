@@ -1,0 +1,124 @@
+# CSIRO — Bullet Bank
+# Role: Software Engineering Intern / Casual Software Engineer, Mar 2024 – Jun 2025, Clayton VIC.
+# Format identical to soniq.yml.
+
+bullets:
+  - id: csiro-overview
+    tags: [architecture, fullstack, telemetry, auth, impact, overview]
+    text: >-
+      Architected and delivered a production-grade lab automation system integrating real-time
+      telemetry, firmware control, and secure user authentication, transforming a traditionally
+      manual experimental workflow into a safe, automated and traceable research platform supporting
+      a multi-disciplinary team of research scientists.
+
+  - id: csiro-fullstack-leadership
+    tags: [fullstack, vue, nuxt, node, sql, influxdb, leadership]
+    text: >-
+      Led full-stack development across Vue/Nuxt frontend, Node-based services, firmware interface,
+      and SQL/InfluxDB databases, enabling remote hardware control and live monitoring in a
+      production laboratory environment.
+
+  - id: csiro-firmware-abstraction
+    tags: [firmware, modbus, architecture, backend, hardware]
+    text: >-
+      Designed a scalable firmware abstraction layer bridging UI $\rightarrow$ server $\rightarrow$
+      firmware $\rightarrow$ Modbus hardware, replacing rigid single hardware bindings with
+      configuration-driven patterns to support evolving multi-column setups without major refactors.
+
+  - id: csiro-vue-refactor
+    tags: [vue, frontend, refactoring, architecture, recognition]
+    text: >-
+      Refactored a large Vue.js frontend by enforcing a presentational/container pattern --- isolating
+      API logic to page-level components and keeping UI components as pure, prop-driven skeletons ---
+      significantly improving maintainability and developer experience for the team, commended by a
+      fellow software engineer.
+
+  - id: csiro-db-redesign
+    tags: [database, sql, schema-design, audit]
+    text: >-
+      Redesigned and normalised the relational database schema to accurately model experiment
+      lifecycles, user roles, and audit-ready comment versioning, improving data integrity,
+      traceability, and long-term extensibility.
+
+  - id: csiro-influx-echarts
+    tags: [influxdb, websocket, realtime, frontend, telemetry, visualization]
+    text: >-
+      Integrated real-time InfluxDB telemetry with dynamic ECharts visualisations and WebSocket
+      updates via custom SVG components, enabling efficient time-range filtering and accurate
+      experiment monitoring without page reload.
+
+  - id: csiro-oop-hardware
+    tags: [oop, backend, hardware, architecture]
+    text: >-
+      Applied OOP principles (inheritance and abstraction) to reuse hardware communication logic
+      and extend software classes for different hardware configurations, improving scalability
+      across multiple control systems.
+
+  - id: csiro-locks-deployment
+    tags: [concurrency, threading, firmware, reliability, impact-metric, hardware]
+    text: >-
+      Implemented safe, correct lock mechanisms to prevent multi-threaded access to the hardware
+      and firmware-level caching to minimise hardware interference, contributing to stable
+      three-month continuous production operation in a live laboratory setting.
+
+  - id: csiro-api-logging
+    tags: [api, logging, reliability, maintenance, backend]
+    text: >-
+      Improved long-term system reliability through ongoing maintenance --- refining API design,
+      introducing structured logging, and adding defensive error handling --- sustaining stability
+      across iterative production usage in a live laboratory setting.
+
+  - id: csiro-azure-sso
+    tags: [auth, sso, azure, security, middleware]
+    text: >-
+      Implemented Azure Entra ID SSO and middleware-based role authorisation to enforce secure
+      access control across the application, aligning the platform with institutional security
+      standards.
+
+  - id: csiro-docker-ssh
+    tags: [docker, devops, deployment, linux]
+    text: >-
+      Containerised services using Docker and deployed to CSIRO's internal hosting environment
+      via SSH, ensuring reproducible builds and consistent runtime configuration.
+
+  - id: csiro-refinery-rn
+    tags: [react-native, ui-ux, mobile, leadership, industrial]
+    text: >-
+      Led the UI/UX redesign and domain analysis for a real-time refinery operations platform,
+      translating operator requirements into a mobile-first React Native prototype to optimise
+      industrial workflows and on-site monitoring.
+
+  - id: csiro-cross-platform-eval
+    tags: [research, mobile, architecture, evaluation]
+    text: >-
+      Conducted structured evaluation of cross-platform technologies (Flutter, .NET MAUI, React
+      Native), guiding architectural decisions based on performance, maintainability, and alignment
+      with the existing tech stacks.
+
+  - id: csiro-sdlc
+    tags: [sdlc, documentation, process, jira, git]
+    text: >-
+      Applied end-to-end SDLC practices including requirements analysis, iterative prototyping,
+      Jira-based task tracking, Git version control, formal SRS/SDD documentation, commissioning
+      support, and knowledge transfer to ensure sustainable long-term maintenance.
+
+  - id: csiro-collaboration
+    tags: [collaboration, stakeholders, communication, hardware]
+    text: >-
+      Collaborated closely with researchers, electronics engineers, and external vendors to align
+      software behaviour with hardware capabilities, supporting commissioning activities, safe
+      laboratory handover, and strengthened industry partnerships.
+
+  - id: csiro-demos
+    tags: [communication, leadership, stakeholders]
+    text: >-
+      Led technical demonstrations for internal leadership, visiting industry partners, and
+      national intern cohorts, effectively communicating architectural decisions and the strategic
+      value of applied software engineering within mineral processing research.
+
+  - id: csiro-stack
+    tags: [stack, python, flask, vue, nuxt, react-native, postgresql, influxdb, docker, azure]
+    text: >-
+      \textbf{Stack:} \emph{Python (Flask, threading), JavaScript/TypeScript (Vue, Nuxt, Node),
+      React Native, PostgreSQL, InfluxDB, Modbus, Docker Compose, Git/GitHub, Linux, Azure Entra
+      ID (SSO), ECharts, WebSockets.}

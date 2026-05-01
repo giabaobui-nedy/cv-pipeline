@@ -8,4 +8,7 @@
 *.bbl
 *.blg
 outputs/
+.venv/
+__pycache__/
+*.pyc
 .DS_Store

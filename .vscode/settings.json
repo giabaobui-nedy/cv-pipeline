@@ -1,0 +1,54 @@
+{
+  "//": "LaTeX Workshop config — compiles .tex with Tectonic, behaves like Overleaf",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "tectonic",
+      "command": "tectonic",
+      "args": [
+        "-X",
+        "compile",
+        "--keep-logs",
+        "--synctex",
+        "--outdir",
+        "%OUTDIR%",
+        "%DOC_EXT%"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "Tectonic",
+      "tools": ["tectonic"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "Tectonic",
+  "latex-workshop.latex.outDir": "%DIR%",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.latex.autoClean.run": "onBuilt",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.fdb_latexmk",
+    "*.fls",
+    "*.log",
+    "*.out",
+    "*.synctex.gz",
+    "*.toc"
+  ],
+  "latex-workshop.latex.search.rootFiles.exclude": [
+    "**/cv/tailored.tex.template"
+  ],
+  "[latex]": {
+    "editor.formatOnSave": false,
+    "editor.wordWrap": "on"
+  },
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
+  "files.associations": {
+    "tailored.tex.template": "latex"
+  }
+}

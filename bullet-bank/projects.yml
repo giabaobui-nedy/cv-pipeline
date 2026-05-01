@@ -1,0 +1,144 @@
+# Projects — Bullet Bank
+#
+# Each project has metadata (title/stack/links) plus a list of bullets.
+# Tailored CVs select a subset of projects, then a subset of bullets per project.
+
+projects:
+  - id: logistics-platform
+    title: \textbf{Logistics Company Platform (Cloud-Native Full Stack)}
+    stack: NextJS, GraphQL, Terraform, GitHub Actions
+    links:
+      - {label: GitHub, url: https://github.com/giabaobui-nedy/Dad-Project}
+    tags: [nextjs, graphql, terraform, aws, ci-cd, fullstack, iac]
+    bullets:
+      - id: logistics-iac
+        tags: [terraform, aws, iac, ecs, fargate, cloudwatch]
+        text: >-
+          Designed and implemented a containerised full-stack platform with infrastructure provisioned
+          using Terraform (ECR, ECS Fargate, ALB, IAM, CloudWatch).
+      - id: logistics-cicd
+        tags: [ci-cd, github-actions, docker, oidc, aws]
+        text: >-
+          Built CI/CD pipelines using GitHub Actions to automate linting, type checking, Docker image
+          builds, and conditional production deployments with OIDC-based AWS authentication.
+
+  - id: weekly-planner
+    title: \textbf{Weekly Planner (Clean Architecture System)}
+    stack: Java, JavaFX, SQLite, ORMLite, JUnit
+    links:
+      - {label: GitHub, url: https://github.com/giabaobui-nedy/WeeklyPlanner}
+    tags: [java, clean-architecture, testing, oop]
+    bullets:
+      - id: weekly-planner-clean-architecture
+        tags: [clean-architecture, oop, architecture, testing]
+        text: >-
+          Designed and implemented a layered system using Clean Architecture (Ports \& Adapters),
+          separating domain logic from infrastructure to ensure testability, extensibility, and
+          maintainability.
+      - id: weekly-planner-algorithm
+        tags: [algorithms, scheduling, backend]
+        text: >-
+          Developed a rule-based weekly planning algorithm to schedule tasks based on priority,
+          constraints, and user-defined working hours, supporting deterministic and scalable
+          planning behaviour.
+      - id: weekly-planner-orm-tests
+        tags: [orm, testing, junit, repository]
+        text: >-
+          Implemented repository and DAO layers with ORMLite, and validated the system's core use
+          cases and data mapping through comprehensive JUnit integration and unit testing suites.
+
+  - id: battery-digital-twin
+    title: \textbf{Battery Manufacturing Digital Twin (Capstone)}
+    stack: Python, FastAPI, WebSockets, Docker, PostgreSQL
+    links:
+      - {label: Demo, url: https://youtu.be/Zto54hkfC2M}
+    tags: [python, fastapi, websockets, docker, postgresql, capstone, leadership]
+    bullets:
+      - id: battery-modular-backend
+        tags: [backend, architecture, event-driven, threading]
+        text: >-
+          Designed a modular, multi-threaded, event-driven backend system with clear API boundaries
+          to support extensibility and correctness as system requirements evolved.
+      - id: battery-team-lead
+        tags: [leadership, communication, stakeholders]
+        text: >-
+          Acted as team lead to manage internal team communication styles and external client relations,
+          successfully delivering a modular backend system.
+      - id: battery-api-contracts
+        tags: [api, integration, collaboration]
+        text: >-
+          Collaborated with frontend and data teams to define API contracts and support end-to-end
+          system integration.
+      - id: battery-docker-compose
+        tags: [docker, devops, deployment]
+        text: >-
+          Containerised system components using Docker and orchestrated multi-service deployments
+          with Docker Compose to support repeatable development and testing environments.
+
+  - id: tbrgs
+    title: \textbf{Traffic-based Route Guidance System}
+    stack: Python, Tensorflow
+    links:
+      - {label: GitHub, url: https://github.com/giabaobui-nedy/COS30019-TBRGS}
+      - {label: Demo, url: https://youtu.be/iLoNkyOPR7Y}
+    tags: [python, tensorflow, ml, algorithms]
+    bullets:
+      - id: tbrgs-dl-search
+        tags: [ml, deep-learning, algorithms, gui]
+        text: >-
+          Integrated Deep Learning (DL) models with the graph search algorithms, and both with the GUI,
+          delivering the core intelligent route planning capability, informing users of the optimal
+          path between two intersections and the ETA.
+      - id: tbrgs-networkx
+        tags: [visualization, graph, python]
+        text: >-
+          Visualised map routing data and coordinate traversal algorithms using networkx, simulating
+          real-world network topographies akin to lat/long mapping systems.
+      - id: tbrgs-oop
+        tags: [oop, ml, architecture, refactoring]
+        text: >-
+          Enforced effective OOP to abstract different stages of developing a DL model, creating a
+          reusable, maintainable codebase by defining a BaseModel interface and delegating each model's
+          specific implementation in its subclass.
+
+  - id: planner-diary
+    title: \textbf{Planner \& Diary}
+    stack: Kotlin, Android Jetpack
+    links:
+      - {label: GitHub, url: https://github.com/giabaobui-nedy/COS30017-HD-Mobile-Application/tree/level3-stage2}
+      - {label: Demo, url: https://youtu.be/y-l_yVBvjus}
+    tags: [kotlin, android, mobile, jetpack]
+    bullets:
+      - id: planner-diary-room
+        tags: [android, room, mvvm, repository, mobile]
+        text: >-
+          Built an Android planner with auto-generated diary logs, enabling full CRUD operations on
+          tasks and a clear separation of concerns by applying the Repository pattern with Android
+          Room, ViewModel, and LiveData.
+      - id: planner-diary-perf
+        tags: [android, performance, baseline-profiles, impact-metric, mobile]
+        text: >-
+          Achieved faster app startup and responsiveness, reduced startup timing and frame timing by
+          7.1\% on startup, 4.56\% on scrolling, 3.52\% on navigating by adding Baseline Profiles,
+          verified using Macrobenchmark tests.
+
+  - id: decentralised-trading
+    title: \textbf{Decentralised Trading Platform}
+    stack: Python, React, Ganache, MySQL
+    links:
+      - {label: GitHub, url: https://github.com/giabaobui-nedy/COS30049-Innovation-Project}
+      - {label: Demo, url: https://youtu.be/C8dyaWJs_uQ}
+    tags: [python, react, blockchain, mysql, fastapi]
+    bullets:
+      - id: decentralised-trading-dual-db
+        tags: [blockchain, database, architecture, security]
+        text: >-
+          Designed a system with two databases aiming to improve data security and integrity by
+          classifying which data to be stored on-chain (Ganache) or off-chain (MySQL), and how to
+          link related records across databases.
+      - id: decentralised-trading-fastapi
+        tags: [fastapi, api, integration, backend]
+        text: >-
+          Integrated both databases behind a FastAPI service layer, enabling core bidding UI flows ---
+          list, bid, settle assets --- by exposing validated REST endpoints that coordinate the business
+          logic on on- or off-chain data.

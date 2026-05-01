@@ -1,29 +1,257 @@
-% !TEX program = pdflatex
-% Personal CV - Gia Bao Bui
-% Replace this scaffold with the contents of your current Overleaf main.tex.
-\documentclass[11pt,a4paper]{article}
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
 
-\usepackage[margin=1.8cm]{geometry}
-\usepackage{enumitem}
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
 \usepackage{titlesec}
-\usepackage{hyperref}
-\usepackage{xcolor}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage[none]{hyphenat}
 
-\setlist[itemize]{leftmargin=*, topsep=2pt, itemsep=1pt}
-\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
-\titlespacing*{\section}{0pt}{8pt}{4pt}
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
 
-\pagestyle{empty}
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{2em}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-6pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure generated PDF is machine-readable / ATS-parsable. Only available
+% under pdfTeX (e.g. Overleaf's pdflatex). Skipped silently under XeTeX/LuaTeX
+% so the same source compiles with Tectonic locally.
+\ifdefined\pdfgentounicode
+  \input{glyphtounicode}
+  \pdfgentounicode=1
+\fi
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small #1
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{0pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+\vspace{2pt}\item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \begin{document}
 
+%----------HEADING----------
+% \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+%   \textbf{\href{http://sourabhbajaj.com/}{\Large Sourabh Bajaj}} & Email : \href{mailto:sourabh@sourabhbajaj.com}{sourabh@sourabhbajaj.com}\\
+%   \href{http://sourabhbajaj.com/}{http://www.sourabhbajaj.com} & Mobile : +1-123-456-7890 \\
+% \end{tabular*}
+
 \begin{center}
-  {\LARGE \textbf{Gia Bao Bui}} \\[2pt]
-  Melbourne, Australia \,\textbar\, bbgiabao362003@gmail.com \,\textbar\, github.com/yourhandle
+  \textbf{\Huge \scshape Gia Bao Bui} \\ \vspace{1pt}
+  \small (+61) 402 595 747 $|$ \href{mailto:bbgiabao362003@gmail.com}{\underline{bbgiabao362003@gmail.com}} $|$ 
+  \href{https://www.linkedin.com/in/gia-bao-bui-227476227/}{\underline{LinkedIn}} $|$
+  \href{https://github.com/giabaobui-nedy}{\underline{GitHub}} $|$
+  \href{https://portfolio-website-vert-one-72.vercel.app/}{\underline{Portfolio Website}}
 \end{center}
 
-\input{sections/experience}
-\input{sections/projects}
-\input{sections/skills}
+%-----------Profile-----------
+\section{Profile}
+\small{Software Engineer and Highest Achieving Graduate in Computer Science with 1+ years of professional experience building production-grade, API-driven systems deployed in real operational lab environments. Strong foundation in problem-solving, system design, and debugging, with hands-on experience across frontend and backend services using Python, TypeScript, and modern web technologies. Motivated by designing resilient, observable systems and strengthening engineering practices in cloud-native environments.}\justifying
 
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Swinburne University of Technology}{Hawthorn, VIC}
+      {Bachelor of Computer Science (Professional), Major in Software Development}{GPA: 3.88/4 | Feb 2022 -- Dec 2025}
+        \resumeItemListStart
+            \resumeItem{Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.}
+            \resumeItem{Received lecturer compliment on the best undergraduate paper in INF20010 - Database Systems.}
+            \resumeItem{Achieved Swinburne Excellence International Scholarship (50\%);}
+        \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+      \resumeSubheading
+          {Junior Software Engineer}{Feb 2026 -- Present}
+          {SONIQ Digital}{Richmond, VIC}
+            \resumeItemListStart
+                \resumeItem{Contributing to frontend (React) and backend services (microservices-based and event-driven) within a production digital signage and content management platform (CMS) operating in a cloud-native AWS environment as a SaaS product.}
+                \resumeItem{Diagnosed and resolved production issues across frontend and backend systems, ensuring reliability and minimal disruption to live digital signage deployments.}
+                \resumeItem{Collaborated with product managers and engineers to define system requirements, workflows, and edge cases across multiple features in a distributed microservice environment.}
+                \resumeItem{Designed and implemented a media transcoding pipeline to automatically convert 4K video assets into optimised Full HD outputs for a legacy CMS, improving playback compatibility and reducing asset delivery overhead across client deployments.}
+                \resumeItem{Led responsive redesign across multiple web pages by introducing mobile-first layout adjustments and reusable UI patterns, improving cross-device consistency and reducing duplicated styling logic.}
+                \resumeItem{Analysed and visualised existing AWS infrastructure and service interactions to support a large-scale TypeScript migration (.js → .ts, .jsx → .tsx), improving type safety and long-term maintainability.}
+                \resumeItem{Authored comprehensive technical documentation and system architecture diagrams for a complex microservice ecosystem, formalising design patterns and service flows to streamline engineering onboarding.}
+                \resumeItem{Improved delivery workflow by restructuring Jira epics into smaller, iterative tasks, increasing progress visibility and supporting more continuous delivery practices within the team.} 
+                \resumeItem{Implemented subscription-tier enforcement across distributed microservices by fixing entitlement inconsistencies, ensuring reliable behaviour for free-tier users across interconnected services.}
+                \resumeItem{Investigated and resolved a production scheduling defect where enabling monthly recurrence caused timeline events to disappear, reproducing the issue through exact mapped backend test scenarios and correcting timezone-sensitive scheduling logic.}
+                \resumeItem{Engineered the migration of device communication protocols to a modern cloud-native synchronisation service, improving real-time data reliability and system scalability across distributed signage displays.}
+                \resumeItem{Implemented responsive layout support for portrait (1080×1920) and landscape (1920×1080) digital signage displays, ensuring consistent rendering across different screen orientations used in real-world deployments.}
+                \resumeItem{Participated in debugging and resolving production issues as reported during QA, ensuring system reliability and minimal disruption to live deployments and improving UX.}
+                \resumeItem{Engineered a scalable user inquiry and notification routing service using AWS Lambda, integrating with HubSpot CRM to automate and streamline customer feedback workflows.}
+                \resumeItem{Designed and deployed an event-driven infrastructure scheduling service (AWS Lambda + EventBridge) to automatically shut down non-production environments, reducing development costs by \textbf{10–12\%} and staging costs by \textbf{33\%} through time-based optimisation.}
+                \resumeItem{Analysed an existing data integration architecture and proposed a simplified serverless alternative to achieve eventual consistency while reducing system complexity and infrastructure cost.}
+                \resumeItem{Led a TypeScript migration and architected a scalable frontend system with modular feature design, layered hooks, and strict type-safe boundaries.}
+                \resumeItem{Built automated validation tooling to enforce architectural constraints, reducing coupling and ensuring consistent code quality, particularly for AI-assisted development.}
+                \resumeItem{Implemented an event-driven integration pipeline connecting Shopify webhooks to internal microservices (EventBridge + SQS), enabling automated CMS trial activation flows and reducing customer onboarding friction between hardware purchases and software usage.}
+                \resumeItem{\textbf{Stack:} \emph{TypeScript, React, NestJS, Python (FastAPI), AWS, Docker, Git/GitHub, CI/CD, GitHub Actions.}}
+            \resumeItemListEnd
+        \resumeSubheading
+      {Software Engineering Intern / Casual Software Engineer}{Mar 2024 -- Jun 2025}
+      {CSIRO}{Clayton, VIC}
+        \resumeItemListStart
+            \resumeItem{Architected and delivered a production-grade lab automation system integrating real-time telemetry, firmware control, and secure user authentication, transforming a traditionally manual experimental workflow into a safe, automated and traceable research platform supporting a multi-disciplinary team of research scientists.}
+            \resumeItem{Led full-stack development across Vue/Nuxt frontend, Node-based services, firmware interface, and SQL/InfluxDB databases, enabling remote hardware control and live monitoring in a production laboratory environment.}
+            \resumeItem{Designed a scalable firmware abstraction layer bridging UI → server → firmware → Modbus hardware, replacing rigid single hardware bindings with configuration-driven patterns to support evolving multi-column setups without major refactors.}
+            \resumeItem{Refactored a large Vue.js frontend by enforcing a presentational/container pattern — isolating API logic to page-level components and keeping UI components as pure, prop-driven skeletons — significantly improving maintainability and developer experience for the team, commended by a fellow software engineer.}
+            \resumeItem{Redesigned and normalised the relational database schema to accurately model experiment lifecycles, user roles, and audit-ready comment versioning, improving data integrity, traceability, and long-term extensibility.}
+            \resumeItem{Integrated real-time InfluxDB telemetry with dynamic ECharts visualisations and WebSocket updates via custom SVG components, enabling efficient time-range filtering and accurate experiment monitoring without page reload.}
+            \resumeItem{Applied OOP principles (inheritance and abstraction) to reuse hardware communication logic and extend software classes for different hardware configurations, improving scalability across multiple control systems.}
+            \resumeItem{Implemented safe, correct lock mechanisms to prevent multi-threaded access to the hardware and firmware-level caching to minimise hardware interference, contributing to stable three-month continuous production operation in a live laboratory setting.}
+            \resumeItem{Improved long-term system reliability through ongoing maintenance — refining API design, introducing structured logging, and adding defensive error handling — sustaining stability across iterative production usage in a live laboratory setting.}
+            \resumeItem{Implemented Azure Entra ID SSO and middleware-based role authorisation to enforce secure access control across the application, aligning the platform with institutional security standards.}
+            \resumeItem{Containerised services using Docker and deployed to CSIRO's internal hosting environment via SSH, ensuring reproducible builds and consistent runtime configuration.}
+            \resumeItem{Led the UI/UX redesign and domain analysis for a real-time refinery operations platform, translating operator requirements into a mobile-first React Native prototype to optimise industrial workflows and on-site monitoring.}
+            \resumeItem{Conducted structured evaluation of cross-platform technologies (Flutter, .NET MAUI, React Native), guiding architectural decisions based on performance, maintainability, and alignment with the existing tech stacks.}
+            \resumeItem{Applied end-to-end SDLC practices including requirements analysis, iterative prototyping, Jira-based task tracking, Git version control, formal SRS/SDD documentation, commissioning support, and knowledge transfer to ensure sustainable long-term maintenance.}
+            \resumeItem{Collaborated closely with researchers, electronics engineers, and external vendors to align software behaviour with hardware capabilities, supporting commissioning activities, safe laboratory handover, and strengthened industry partnerships.}
+            \resumeItem{Led technical demonstrations for internal leadership, visiting industry partners, and national intern cohorts, effectively communicating architectural decisions and the strategic value of applied software engineering within mineral processing research.}
+            \resumeItem{\textbf{Stack:} \emph{Python (Flask, threading), JavaScript/TypeScript (Vue, Nuxt, Node), React Native, PostgreSQL, InfluxDB, Modbus, Docker Compose, Git/GitHub, Linux, Azure Entra ID (SSO), ECharts, WebSockets.}}
+        \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \resumeSubHeadingListStart
+        \resumeProjectHeading
+            {\textbf{Logistics Company Platform (Cloud-Native Full Stack)} $|$ \emph{NextJS, GraphQL, Terraform, GitHub Actions}}{\href{https://github.com/giabaobui-nedy/Dad-Project}{GitHub}}
+            \resumeItemListStart
+                \resumeItem{Designed and implemented a containerised full-stack platform with infrastructure provisioned using Terraform (ECR, ECS Fargate, ALB, IAM, CloudWatch).}
+                \resumeItem{Built CI/CD pipelines using GitHub Actions to automate linting, type checking, Docker image builds, and conditional production deployments with OIDC-based AWS authentication.}
+            \resumeItemListEnd
+        \resumeProjectHeading
+            {\textbf{Weekly Planner (Clean Architecture System)} $|$ \emph{Java, JavaFX, SQLite, ORMLite, JUnit}}
+            {\href{https://github.com/giabaobui-nedy/WeeklyPlanner}{GitHub}}
+            \resumeItemListStart
+                \resumeItem{Designed and implemented a layered system using Clean Architecture (Ports \& Adapters), separating domain logic from infrastructure to ensure testability, extensibility, and maintainability.}
+                \resumeItem{Developed a rule-based weekly planning algorithm to schedule tasks based on priority, constraints, and user-defined working hours, supporting deterministic and scalable planning behaviour.}
+                \resumeItem{Implemented repository and DAO layers with ORMLite, and validated the system's core use cases and data mapping through comprehensive JUnit integration and unit testing suites.}
+            \resumeItemListEnd
+        \resumeProjectHeading
+            {\textbf{Battery Manufacturing Digital Twin (Capstone)} $|$ \emph{Python, FastAPI, WebSockets, Docker, PostgreSQL}}{\href{https://youtu.be/Zto54hkfC2M}{Demo}}
+            \resumeItemListStart
+                \resumeItem{Designed a modular, multi-threaded, event-driven backend system with clear API boundaries to support extensibility and correctness as system requirements evolved.}
+                \resumeItem{Acted as team lead to manage internal team communication styles and external client relations, successfully delivering a modular backend system.}
+                \resumeItem{Collaborated with frontend and data teams to define API contracts and support end-to-end system integration.}
+                \resumeItem{Containerised system components using Docker and orchestrated multi-service deployments with Docker Compose to support repeatable development and testing environments.}
+            \resumeItemListEnd
+      \resumeProjectHeading
+          {\textbf{Traffic-based Route Guidance System} $|$ \emph{Python, Tensorflow}}{\href{https://github.com/giabaobui-nedy/COS30019-TBRGS}{GitHub} $|$ \href{https://youtu.be/iLoNkyOPR7Y}{Demo}}
+          \resumeItemListStart
+            \resumeItem{Integrated Deep Learning (DL) models with the graph search algorithms, and both with the GUI, delivering the core intelligent route planning capability, informing users of the optimal path between two intersections and the ETA.}
+            \resumeItem{Visualised map routing data and coordinate traversal algorithms using networkx, simulating real-world network topographies akin to lat/long mapping systems.}
+            \resumeItem{Enforced effective OOP to abstract different stages of developing a DL model, creating a reusable, maintainable codebase by defining a BaseModel interface and delegating each model's specific implementation in its subclass.}
+          \resumeItemListEnd
+        \resumeProjectHeading
+          {\textbf{Planner \& Diary} $|$ \emph{Kotlin, Android Jetpack}}{\href{https://github.com/giabaobui-nedy/COS30017-HD-Mobile-Application/tree/level3-stage2}{GitHub} $|$ \href{https://youtu.be/y-l_yVBvjus}{Demo}}
+          \resumeItemListStart
+            \resumeItem{Built an Android planner with auto-generated diary logs, enabling full CRUD operations on tasks and a clear separation of concerns by applying the Repository pattern with Android Room, ViewModel, and LiveData.}
+            \resumeItem{Achieved faster app startup and responsiveness, reduced startup timing and frame timing by 7.1\% on startup, 4.56\% on scrolling, 3.52\% on navigating by adding Baseline Profiles, verified using Macrobenchmark tests.}
+          \resumeItemListEnd
+        \resumeProjectHeading
+          {\textbf{Decentralised Trading Platform} $|$ \emph{Python, React, Ganache, MySQL}}{\href{https://github.com/giabaobui-nedy/COS30049-Innovation-Project}{GitHub} $|$ \href{https://youtu.be/C8dyaWJs_uQ}{Demo}}
+          \resumeItemListStart
+            \resumeItem{Designed a system with two databases aiming to improve data security and integrity by classifying which data to be stored on-chain (Ganache) or off-chain (MySQL), and how to link related records across databases;}
+            \resumeItem{Integrated both databases behind a FastAPI service layer, enabling core bidding UI flows - list, bid, settle assets, by exposing validated REST endpoints that coordinate the business logic on on- or off-chain data.}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+\small{\item{
+        \textbf{Languages:} TypeScript, JavaScript, Python, Java \\
+        \textbf{Backend}{: Python (Flask/FastAPI), Node.js, system integration, threading and concurrency, cloud computing \& solutions (AWS)} \\
+        \textbf{Frontend}{: Vue.js/Nuxt.js, React, component-based UI frameworks, UI component design/development;} \\
+        \textbf{Databases}{: PostgreSQL, MySQL, InfluxDB, relational schema design;} \\
+        \textbf{DevOps \& Tools}{: IaC (AWS CDK), Docker (Compose), Linux, Git/GitHub/Bitbucket, CI/CD basics, GitHub Actions, Jira/Confluence;} \\
+        \textbf{AI-Assisted Development:} Experience leveraging AI-assisted development tools (LLM-based coding assistants and AI-enabled IDEs) to accelerate debugging with test case simulation, code exploration \& understanding, and documentation.
+}}
+\end{itemize}
+
+%-------------------------------------------
 \end{document}

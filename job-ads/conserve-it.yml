@@ -1,0 +1,128 @@
+company: Conserve It
+role: Graduate Software Developer (Niagara Applications)
+source_url: n/a
+date_saved: 2026-05-02
+
+ad_raw: |
+  Conserve It is looking for a Graduate Software Developer to join our Niagara
+  Applications Development team. The successful applicant will collaborate with
+  other Developers, Data Scientists and Engineers to design and implement
+  innovative solutions for real-time optimisation of live equipment in the built
+  environment.
+
+  Reporting to our Team Lead: Niagara Applications, the successful candidate will
+  be working on the development of our flagship PlantPRO product and related
+  technologies.
+
+  Tasks and responsibilities include:
+  - Design and develop new software modules and applications in line with internal
+    and external stakeholder requirements
+  - Maintain and improve existing software modules and applications to deliver
+    high quality software
+  - Design and implement new software modules using standard software design
+    documentation techniques and known software development tools
+  - Troubleshoot and fix problems and bugs with existing software modules
+  - Update product documentation where required for new features and releases
+  - Implement improvements to existing software modules as identified by internal
+    and external stakeholders
+  - Document and execute test plans and participate in software release testing
+  - Participate in project and development planning meetings
+  - Use and contribute to the use of project planning, issue tracking and software
+    documentation tools
+  - Any other tasks as directed
+
+  Essential skills and experience
+  - Solid grounding in Object Oriented Design and Development
+  - Demonstrable programming experience and/or skills in: Java or C++
+  - Demonstrable programming experience and/or skills in: JavaScript with a strong
+    understanding of React and Typescript
+  - Ability to translate a design or mathematical model into code
+  - Understanding of developing software models to reflect real world entities
+  - Development of multi-threaded systems and general understanding of the use of
+    application frameworks
+  - Working with agile methodologies in building CI/CD pipelines
+  - Bachelor of Computer Science or equivalent
+
+  Desirable skills
+  - Test Driven Development techniques
+  - Exposure to standard tools such as Git, Gradle, Maven and the Atlassian suite
+  - Jenkins CI/CD platforms
+  - Understanding the impact of inefficient code, and when/where to optimise
+  - Embedded Software development
+  - Debugging tools to analyse and diagnose code
+  - Understand the rendering pipeline of React
+  - Understanding of the hardware/software interface
+  - Analysis and troubleshooting of software systems
+  - Understanding of RS485 and RS232 communications protocols
+  - Master of Computer Science or equivalent
+  - Experience using build tools to both compile and deploy products
+
+  Bonus
+  - Experience or exposure to Tridium's Niagara Framework
+  - Knowledge of Building Automation/Management Systems, Chiller Plants and Chillers
+  - Knowledge of control and automation systems
+
+keywords:
+  - oop
+  - java
+  - typescript
+  - react
+  - multi-threaded
+  - concurrency
+  - hardware
+  - modbus
+  - real-time
+  - architecture
+  - debugging
+  - testing
+  - ci-cd
+  - agile
+  - documentation
+
+profile: >-
+  Software Engineer and Highest Achieving Graduate in Computer Science with 1+
+  years' experience building production-grade, multi-threaded systems for
+  real-time control of live equipment. Strong OOP grounding across Java,
+  TypeScript, and React, with hands-on experience translating models of
+  real-world hardware into reliable, testable software.
+
+experience:
+  - bank: soniq
+    title: Junior Software Engineer
+    dates: Feb 2026 -- Present
+    employer: SONIQ Digital
+    location: Richmond, VIC
+    bullets:
+      - soniq-ts-frontend-architecture
+      - soniq-aws-analysis-ts-migration
+      - soniq-scheduling-defect
+      - soniq-architecture-docs
+      - soniq-stack
+
+  - bank: csiro
+    title: Software Engineering Intern / Casual Software Engineer
+    dates: Mar 2024 -- Jun 2025
+    employer: CSIRO
+    location: Clayton, VIC
+    bullets:
+      - csiro-overview
+      - csiro-firmware-abstraction
+      - csiro-locks-deployment
+      - csiro-oop-hardware
+      - csiro-stack
+
+projects:
+  - id: weekly-planner
+    bullets:
+      - weekly-planner-clean-architecture
+      - weekly-planner-orm-tests
+  - id: battery-digital-twin
+    bullets:
+      - battery-modular-backend
+
+skills: |
+  \textbf{Languages:} Java, TypeScript, JavaScript, Python \\
+  \textbf{Object-Oriented Design}{: Clean Architecture, Ports \& Adapters, design patterns, multi-threading \& concurrency, Modbus / hardware-software interfacing} \\
+  \textbf{Frontend}{: React, Vue.js/Nuxt.js, component-based UI frameworks, TypeScript-first design;} \\
+  \textbf{Backend}{: Node.js, Python (Flask/FastAPI), system integration, real-time telemetry (WebSockets, InfluxDB);} \\
+  \textbf{DevOps \& Tools}{: Docker, Git/GitHub/Bitbucket, CI/CD (GitHub Actions), Jira/Confluence (Atlassian suite), Linux.}

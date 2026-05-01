@@ -1,0 +1,141 @@
+# SONIQ Digital — Bullet Bank
+# Role: Junior Software Engineer, Feb 2026 – Present, Richmond VIC.
+#
+# Each entry has:
+#   id    — stable identifier referenced from job-ad specs
+#   tags  — free-form theme tags, used to grep relevant bullets per ad
+#   text  — LaTeX-ready content (goes inside \resumeItem{...})
+
+bullets:
+  - id: soniq-overview
+    tags: [react, aws, microservices, event-driven, saas, overview]
+    text: >-
+      Contributing to frontend (React) and backend services (microservices-based and event-driven)
+      within a production digital signage and content management platform (CMS) operating in a
+      cloud-native AWS environment as a SaaS product.
+
+  - id: soniq-fullstack-debugging
+    tags: [debugging, production, fullstack, reliability, meta]
+    text: >-
+      Diagnosed and resolved production issues across frontend and backend systems, ensuring
+      reliability and minimal disruption to live digital signage deployments.
+
+  - id: soniq-collaboration
+    tags: [collaboration, communication, requirements, stakeholders, microservices, meta]
+    text: >-
+      Collaborated with product managers and engineers to define system requirements, workflows,
+      and edge cases across multiple features in a distributed microservice environment.
+
+  - id: soniq-media-transcoding
+    tags: [backend, media, pipeline, optimization, legacy]
+    text: >-
+      Designed and implemented a media transcoding pipeline to automatically convert 4K video
+      assets into optimised Full HD outputs for a legacy CMS, improving playback compatibility
+      and reducing asset delivery overhead across client deployments.
+
+  - id: soniq-responsive-redesign
+    tags: [frontend, responsive, css, ui, refactoring]
+    text: >-
+      Led responsive redesign across multiple web pages by introducing mobile-first layout
+      adjustments and reusable UI patterns, improving cross-device consistency and reducing
+      duplicated styling logic.
+
+  - id: soniq-aws-analysis-ts-migration
+    tags: [aws, typescript, migration, architecture, analysis]
+    text: >-
+      Analysed and visualised existing AWS infrastructure and service interactions to support
+      a large-scale TypeScript migration (.js $\rightarrow$ .ts, .jsx $\rightarrow$ .tsx),
+      improving type safety and long-term maintainability.
+
+  - id: soniq-architecture-docs
+    tags: [documentation, architecture, microservices, onboarding]
+    text: >-
+      Authored comprehensive technical documentation and system architecture diagrams for a
+      complex microservice ecosystem, formalising design patterns and service flows to streamline
+      engineering onboarding.
+
+  - id: soniq-jira-workflow
+    tags: [agile, delivery, team, jira]
+    text: >-
+      Improved delivery workflow by restructuring Jira epics into smaller, iterative tasks,
+      increasing progress visibility and supporting more continuous delivery practices within
+      the team.
+
+  - id: soniq-subscription-tier
+    tags: [microservices, backend, saas, entitlement]
+    text: >-
+      Implemented subscription-tier enforcement across distributed microservices by fixing
+      entitlement inconsistencies, ensuring reliable behaviour for free-tier users across
+      interconnected services.
+
+  - id: soniq-scheduling-defect
+    tags: [debugging, backend, production, testing, timezone]
+    text: >-
+      Investigated and resolved a production scheduling defect where enabling monthly recurrence
+      caused timeline events to disappear, reproducing the issue through exact mapped backend
+      test scenarios and correcting timezone-sensitive scheduling logic.
+
+  - id: soniq-device-protocol-migration
+    tags: [iot, cloud, migration, realtime, backend]
+    text: >-
+      Engineered the migration of device communication protocols to a modern cloud-native
+      synchronisation service, improving real-time data reliability and system scalability
+      across distributed signage displays.
+
+  - id: soniq-portrait-landscape
+    tags: [frontend, responsive, css, iot]
+    text: >-
+      Implemented responsive layout support for portrait (1080$\times$1920) and landscape
+      (1920$\times$1080) digital signage displays, ensuring consistent rendering across
+      different screen orientations used in real-world deployments.
+
+  - id: soniq-qa-debugging
+    tags: [debugging, qa, production, reliability, ux]
+    text: >-
+      Participated in debugging and resolving production issues as reported during QA, ensuring
+      system reliability and minimal disruption to live deployments and improving UX.
+
+  - id: soniq-hubspot-lambda
+    tags: [aws, lambda, serverless, integration, crm]
+    text: >-
+      Engineered a scalable user inquiry and notification routing service using AWS Lambda,
+      integrating with HubSpot CRM to automate and streamline customer feedback workflows.
+
+  - id: soniq-cost-optimisation
+    tags: [aws, lambda, eventbridge, serverless, cost, impact-metric]
+    text: >-
+      Designed and deployed an event-driven infrastructure scheduling service (AWS Lambda + EventBridge)
+      to automatically shut down non-production environments, reducing development costs by
+      \textbf{10--12\%} and staging costs by \textbf{33\%} through time-based optimisation.
+
+  - id: soniq-data-integration-redesign
+    tags: [architecture, serverless, analysis, cost]
+    text: >-
+      Analysed an existing data integration architecture and proposed a simplified serverless
+      alternative to achieve eventual consistency while reducing system complexity and
+      infrastructure cost.
+
+  - id: soniq-ts-frontend-architecture
+    tags: [typescript, frontend, react, architecture, refactoring, leadership]
+    text: >-
+      Led a TypeScript migration and architected a scalable frontend system with modular feature
+      design, layered hooks, and strict type-safe boundaries.
+
+  - id: soniq-architectural-validation
+    tags: [tooling, architecture, quality, ai-assisted]
+    text: >-
+      Built automated validation tooling to enforce architectural constraints, reducing coupling
+      and ensuring consistent code quality, particularly for AI-assisted development.
+
+  - id: soniq-shopify-eventbridge
+    tags: [aws, eventbridge, sqs, event-driven, integration, saas, onboarding]
+    text: >-
+      Implemented an event-driven integration pipeline connecting Shopify webhooks to internal
+      microservices (EventBridge + SQS), enabling automated CMS trial activation flows and reducing
+      customer onboarding friction between hardware purchases and software usage.
+
+  - id: soniq-stack
+    tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd]
+    text: >-
+      \textbf{Stack:} \emph{TypeScript, React, NestJS, Python (FastAPI), AWS, Docker, Git/GitHub,
+      CI/CD, GitHub Actions.}

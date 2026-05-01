@@ -1,0 +1,75 @@
+# Example job-ad spec. Copy this file to <company>.yml and edit.
+#
+# How tailoring works:
+# 1. Paste the raw ad into `ad_raw` (kept for grep, not rendered).
+# 2. List target keywords/themes you want the CV to mirror.
+# 3. Pick which bullets from each role and project to include, by `id`.
+# 4. Run: python tools/render_tailored.py job-ads/<company>.yml
+#    -> writes outputs/<company>.tex
+# 5. Compile with: latexmk -pdf outputs/<company>.tex -outdir=outputs
+
+company: Example Co
+role: Software Engineer
+source_url: https://example.com/jobs/123
+date_saved: 2026-05-02
+
+ad_raw: |
+  Paste the original ad here. Free-form. Not rendered into the CV.
+
+keywords:
+  - aws
+  - typescript
+  - microservices
+
+# Profile paragraph for the tailored CV (replaces the master profile).
+# Keep it ~3 sentences and mirror the ad's language.
+profile: >-
+  Software Engineer and Highest Achieving Graduate in Computer Science with 1+ years of
+  professional experience building production-grade, API-driven systems on AWS. Strong
+  foundation in TypeScript, distributed services, and event-driven architectures, with
+  hands-on experience shipping features into live SaaS environments.
+
+# Roles to include, in display order. `bank` selects which bullet bank to draw from.
+# `bullets` is an ordered list of bullet IDs; aim for ~5-7 per role.
+experience:
+  - bank: soniq
+    title: Junior Software Engineer
+    dates: Feb 2026 -- Present
+    employer: SONIQ Digital
+    location: Richmond, VIC
+    bullets:
+      - soniq-cost-optimisation
+      - soniq-shopify-eventbridge
+      - soniq-ts-frontend-architecture
+      - soniq-architectural-validation
+      - soniq-stack
+
+  - bank: csiro
+    title: Software Engineering Intern / Casual Software Engineer
+    dates: Mar 2024 -- Jun 2025
+    employer: CSIRO
+    location: Clayton, VIC
+    bullets:
+      - csiro-fullstack-leadership
+      - csiro-locks-deployment
+      - csiro-azure-sso
+      - csiro-stack
+
+# Projects to include, in display order. Each entry: project id + which of its bullets.
+projects:
+  - id: logistics-platform
+    bullets:
+      - logistics-iac
+      - logistics-cicd
+  - id: battery-digital-twin
+    bullets:
+      - battery-modular-backend
+
+# Free-form skills block (LaTeX). Reorder/drop categories per job.
+skills: |
+  \textbf{Languages:} TypeScript, JavaScript, Python, Java \\
+  \textbf{Backend}{: Python (Flask/FastAPI), Node.js, system integration, threading and concurrency, cloud computing \& solutions (AWS)} \\
+  \textbf{Frontend}{: Vue.js/Nuxt.js, React, component-based UI frameworks, UI component design/development;} \\
+  \textbf{Databases}{: PostgreSQL, MySQL, InfluxDB, relational schema design;} \\
+  \textbf{DevOps \& Tools}{: IaC (AWS CDK), Docker (Compose), Linux, Git/GitHub/Bitbucket, CI/CD basics, GitHub Actions, Jira/Confluence;} \\
+  \textbf{AI-Assisted Development:} Experience leveraging AI-assisted development tools (LLM-based coding assistants and AI-enabled IDEs) to accelerate debugging with test case simulation, code exploration \& understanding, and documentation.
