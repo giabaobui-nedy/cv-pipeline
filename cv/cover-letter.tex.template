@@ -1,7 +1,7 @@
 % !TEX program = pdflatex
 % Cover letter template — based on Lorenzo Saino's letter.cls scaffold (MIT,
 % https://github.com/lorenzosaino), parameterised by tools/render_cover_letter.py.
-% DO NOT edit the .tex output by hand; edit the spec in job-ads/<company>.yml
+% DO NOT edit the .tex output by hand; edit the spec in job-ads/<slug>/spec.yml
 % or the bullet bank instead.
 
 \documentclass[a4paper, 11pt]{letter}

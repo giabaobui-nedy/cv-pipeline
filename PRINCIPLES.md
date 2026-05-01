@@ -130,6 +130,75 @@ Update all three together if the visa is renewed or the expiry shifts.
 When the date is within ~6 months of expiry, switch to the short form
 (`AU work rights (Subclass 485)`) until renewal lands.
 
+## 4. CV is the contract; cover letter is the narrative
+
+Industry assumption: **most companies skip the cover letter**. Estimates vary, but a useful working number is *~70% never read it*. The CV must therefore be **self-sufficient** — every essential signal (work rights, top impact bullets, stack anchors, education credential, contact details) lives in the CV regardless of whether the cover letter is opened.
+
+This creates an apparent tension with the standard "don't repeat yourself between CV and cover letter" advice. Resolve it like this:
+
+### The rule, restated
+
+- **Don't repeat language.** Never copy a CV bullet sentence verbatim into the cover letter.
+- **Do reuse facts.** It is correct — and often necessary — for the cover letter's load-bearing paragraph (P2 technical) to draw on the same achievement that the CV's load-bearing bullet describes.
+- **Different layer of zoom.** The CV bullet states *what was built and the outcome*. The cover letter narrates *the why, the mechanism, and the lesson learned* — the depth the bullet's word budget cannot afford.
+
+### Practical implications
+
+| Question | Answer |
+|---|---|
+| Where do new facts go? | Bullet bank (then optionally CV). Never cover-letter-only. If the cover letter would need to introduce a new claim to be effective, force-promote it into a bullet via `add-bullet`, then narrate it in the cover letter. |
+| Can two paragraphs (P2 technical, P3 values) reference bullets that are already on the CV? | Yes — preferred, in fact. The cover letter's job is to *deepen* the most relevant achievements, not to find different ones. |
+| What belongs ONLY in the cover letter? | Specificity (P1 hook tied to *this* company), the *story / lesson* layer of an achievement (P2), values fit narration (P3 — often net-new tone, but the underlying behaviour must be backed by a bullet), forward-looking intent (P4 — net-new). |
+| What belongs ONLY in the CV? | Hard credentials (work rights, GPA, degree, dates), the comprehensive list of impact bullets, the keyword-dense skills block, project links/demos. |
+| What goes in both? | The 1–2 load-bearing achievements that anchor the application — at different zoom levels. |
+
+### Failure modes to avoid
+
+- **Cover letter restates the CV bullet text.** Solution: narrate the *story* (mechanism, why, lesson), don't paraphrase the outcome.
+- **Cover letter introduces a fact the CV doesn't support.** Solution: stop, run `add-bullet`, then continue.
+- **CV depends on the cover letter to land a critical signal** (e.g. work rights only mentioned in the cover letter). Solution: every must-land signal goes in the CV.
+
+## 5. Workflow when a job ad arrives
+
+A consistent pipeline so context compounds across artefacts:
+
+```
+job ad lands
+  ↓
+1. research-company   →  job-ads/<slug>/research.md
+  ↓
+2. tailor-cv          →  job-ads/<slug>/spec.yml  +  outputs/<slug>/cv.pdf
+  ↓
+3. cover-letter       →  cover_letter: block in spec.yml  +  outputs/<slug>/cover.pdf
+```
+
+### Why this order
+
+1. **Research first** so bullet selection (step 2) and paragraph anchors (step 3) draw from the same factual ground rather than diverging. Research surfaces the *project shape* (digital twin? embedded? real-time ML?), which is the largest single influence on which bullets win.
+2. **CV next** because bullet selection forces explicit decisions about which 12–15 lines best match the role. Those decisions become the cover letter's evidence pool — Principle 4 says the CL narrates the same achievements at deeper zoom, so the CL can't be drafted well until the CV's selections are locked.
+3. **Cover letter last** because it's the most editable and least load-bearing artefact (Principle 4 again — many recruiters skip it). It can also be skipped entirely if the application form doesn't accept one.
+
+### When to deviate
+
+- **Tight deadline (< 2 hours)**: do a *light* research pass (product page + one news item), draft CV, optionally skip the cover letter. Mark the cover letter as `ad-only-light-research` if produced.
+- **Senior referral / warm intro**: the referrer's context partially substitutes for company research. Still write a brief `research.md` capturing what the referrer told you — future-you will want it.
+- **Application without ad text** (e.g. through a recruiter): research-company shifts to "research the team and the most likely product" and produces an `open-questions` section to ask the recruiter before final submission.
+
+### Per-application file layout
+
+```
+job-ads/<slug>/
+  spec.yml        # CV + cover letter spec (single source per application)
+  research.md     # output of research-company (Layers 1–5 + Synthesis)
+  ad.txt          # optional — original ad text saved verbatim, for grep
+
+outputs/<slug>/
+  cv.tex / cv.pdf
+  cover.tex / cover.pdf
+```
+
+`<slug>` is kebab-case ASCII (e.g. `Conserve It` → `conserve-it`). One folder per application; the folder name *is* the slug.
+
 ---
 
 ## How skills inherit these principles

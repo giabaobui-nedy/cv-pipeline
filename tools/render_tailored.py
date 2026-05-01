@@ -2,9 +2,9 @@
 """Render a tailored CV from a job-ad spec + the bullet bank.
 
 Usage:
-    python tools/render_tailored.py job-ads/<company>.yml [-o outputs/<company>.tex]
+    python tools/render_tailored.py job-ads/<slug>/spec.yml [-o outputs/<slug>/cv.tex]
 
-The spec is a small YAML file (see job-ads/_example.yml) that lists which
+The spec is a small YAML file (see job-ads/_example/spec.yml) that lists which
 bullet IDs to include per role and which projects to include. The renderer
 fills `cv/tailored.tex.template` and writes a ready-to-compile .tex file.
 """
@@ -170,7 +170,8 @@ def main() -> None:
         "{{SECTIONS}}", "\n\n".join(sections[s] for s in order)
     )
 
-    out_path = args.output or (REPO / "outputs" / f"{args.spec.stem}.tex")
+    slug = args.spec.parent.name
+    out_path = args.output or (REPO / "outputs" / slug / "cv.tex")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(out)
     print(f"wrote {out_path}")

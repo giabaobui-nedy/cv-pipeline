@@ -4,9 +4,9 @@
 # 1. Paste the raw ad into `ad_raw` (kept for grep, not rendered).
 # 2. List target keywords/themes you want the CV to mirror.
 # 3. Pick which bullets from each role and project to include, by `id`.
-# 4. Run: python tools/render_tailored.py job-ads/<company>.yml
-#    -> writes outputs/<company>.tex
-# 5. Compile with: latexmk -pdf outputs/<company>.tex -outdir=outputs
+# 4. Run: python tools/render_tailored.py job-ads/<slug>/spec.yml
+#    -> writes outputs/<slug>/cv.tex
+# 5. Compile with: tools/compile.sh <slug>
 
 company: Example Co
 role: Software Engineer

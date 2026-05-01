@@ -85,7 +85,7 @@ If none of those apply, keep the default order even when the title contains the 
 - **Master CV** lives at `cv/main.tex`. Never modify it from this skill.
 - **Bullet bank**: `bullet-bank/{soniq,csiro,projects}.yml`. Source of truth for selectable bullets. Never invent bullets that aren't in the bank — if a relevant bullet is missing, tell the user and offer to invoke the `add-bullet` skill instead.
 - **Confidentiality**: obey `BOUNDARIES.md`. No SONIQ source, no internal URLs, no confidential client names, no private metrics unless already in the bank.
-- **Generated files** (`outputs/*.tex`, `outputs/*.pdf`) are throwaway. Spec YAMLs in `job-ads/` are the editable artefact.
+- **Generated files** (`outputs/<slug>/*.tex`, `outputs/<slug>/*.pdf`) are throwaway. Spec YAMLs in `job-ads/<slug>/spec.yml` are the editable artefact.
 
 ## Workflow
 
@@ -95,7 +95,7 @@ Track progress with this checklist:
 - [ ] 1. Load bullet bank + BOUNDARIES.md
 - [ ] 2. Parse the job ad
 - [ ] 3. Propose a shortlist (await user approval)
-- [ ] 4. Write job-ads/<slug>.yml
+- [ ] 4. Write job-ads/<slug>/spec.yml
 - [ ] 5. Run the renderer
 - [ ] 6. Compile to PDF if possible
 - [ ] 7. Offer iteration
@@ -109,7 +109,7 @@ Read these files (in this order):
 2. `bullet-bank/soniq.yml`
 3. `bullet-bank/csiro.yml`
 4. `bullet-bank/projects.yml`
-5. `job-ads/_example.yml` (only if you've never seen the spec format before)
+5. `job-ads/_example/spec.yml` (only if you've never seen the spec format before)
 
 ### 2. Parse the ad
 
@@ -163,7 +163,7 @@ Also propose:
 
 Slugify the company: lowercase, dashes, ASCII only (e.g. `Conserve It` → `conserve-it`).
 
-Write to `job-ads/<slug>.yml` using the schema from `job-ads/_example.yml`. Required keys:
+Write to `job-ads/<slug>/spec.yml` using the schema from `job-ads/_example/spec.yml`. Required keys:
 
 ```yaml
 company: ...
@@ -204,28 +204,28 @@ skills: |
   <LaTeX skills block, reordered>
 ```
 
-If `job-ads/<slug>.yml` already exists, **do not overwrite without confirmation** — show a diff summary first.
+If `job-ads/<slug>/spec.yml` already exists, **do not overwrite without confirmation** — show a diff summary first.
 
 ### 5. Render + compile
 
 Prefer the one-shot script:
 
 ```bash
-tools/compile.sh job-ads/<slug>.yml
+tools/compile.sh job-ads/<slug>/spec.yml
 ```
 
-This renders `job-ads/<slug>.yml` → `outputs/<slug>.tex`, compiles to
-`outputs/<slug>.pdf` via Tectonic, and prints a page-count warning if
+This renders `job-ads/<slug>/spec.yml` → `outputs/<slug>/cv.tex`, compiles to
+`outputs/<slug>/cv.pdf` via Tectonic, and prints a page-count warning if
 > 1 page. Surface any `warn:` lines from stderr to the user (typically: a
 referenced bullet ID is missing).
 
 If `tools/compile.sh` isn't available or fails, fall back to:
 
 ```bash
-.venv/bin/python tools/render_tailored.py job-ads/<slug>.yml
-tectonic outputs/<slug>.tex --outdir outputs
+.venv/bin/python tools/render_tailored.py job-ads/<slug>/spec.yml
+tectonic outputs/<slug>/cv.tex --outdir outputs
 # or, if Tectonic isn't installed:
-latexmk -pdf -outdir=outputs outputs/<slug>.tex
+latexmk -pdf -outdir=outputs outputs/<slug>/cv.tex
 ```
 
 If no LaTeX toolchain is on PATH, tell the user to `brew install tectonic` but do not fail the flow — the .tex output is still useful.
@@ -261,7 +261,7 @@ Ask the user for one of:
 - "Change the skills order."
 - "Looks good — commit it."
 
-Each tweak should be a small edit to `job-ads/<slug>.yml` followed by a re-render. Never edit `outputs/<slug>.tex` directly.
+Each tweak should be a small edit to `job-ads/<slug>/spec.yml` followed by a re-render. Never edit `outputs/<slug>/cv.tex` directly.
 
 ## Constraints
 

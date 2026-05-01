@@ -2,7 +2,7 @@
 """Render a cover letter from a job-ad spec.
 
 Usage:
-    python tools/render_cover_letter.py job-ads/<company>.yml [-o outputs/<company>.cover.tex]
+    python tools/render_cover_letter.py job-ads/<slug>/spec.yml [-o outputs/<slug>/cover.tex]
 
 Reads the `cover_letter` block of the spec and fills `cv/cover-letter.tex.template`.
 If the spec has no `cover_letter` block, exits with code 2 (skipped, not an error).
@@ -86,7 +86,8 @@ def main() -> None:
         .replace("{{PARAGRAPH_CLOSE}}", _normalise(paragraphs["close"]))
     )
 
-    out_path = args.output or (REPO / "outputs" / f"{args.spec.stem}.cover.tex")
+    slug = args.spec.parent.name
+    out_path = args.output or (REPO / "outputs" / slug / "cover.tex")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(out)
     print(f"wrote {out_path}")

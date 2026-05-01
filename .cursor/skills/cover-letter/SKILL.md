@@ -12,7 +12,7 @@ description: >-
 
 Write a tight, one-page cover letter that earns the read in its first 8 words
 and uses real evidence from the bullet bank. The cover letter is rendered from
-the same `job-ads/<company>.yml` that drives the CV — one application, one file.
+the same `job-ads/<slug>/spec.yml` that drives the CV — one application, one file.
 
 ## Cross-cutting principles (read first)
 
@@ -61,10 +61,10 @@ candidate could have written it.
 ## Pipeline integration
 
 - The cover letter lives under `cover_letter:` inside the job-ad spec — same
-  file as the tailored CV (`job-ads/<company>.yml`).
+  file as the tailored CV (`job-ads/<slug>/spec.yml`).
 - Evidence references the same bullet bank (`bullet-bank/*.yml`) by `id`.
-- Render + compile via `tools/compile.sh job-ads/<company>.yml --cover`.
-- Output: `outputs/<company>.cover.pdf`.
+- Render + compile via `tools/compile.sh job-ads/<slug>/spec.yml --cover`.
+- Output: `outputs/<slug>/cover.pdf`.
 
 ## Workflow
 
@@ -74,7 +74,7 @@ candidate could have written it.
 - [ ] 3. Detect tone from company size + ad voice
 - [ ] 4. Propose evidence bullet IDs for paragraphs 2 and 3
 - [ ] 5. Draft all 5 paragraphs (await user approval)
-- [ ] 6. Write the cover_letter block into job-ads/<slug>.yml
+- [ ] 6. Write the cover_letter block into job-ads/<slug>/spec.yml
 - [ ] 7. Render + compile via tools/compile.sh
 - [ ] 8. Enforce one page; iterate
 ```
@@ -84,22 +84,20 @@ candidate could have written it.
 - `BOUNDARIES.md`
 - `bullet-bank/{soniq,csiro,projects}.yml`
 - `cv/main.tex` (for the master profile paragraph as voice reference)
-- Existing `job-ads/<slug>.yml` if present (so the cover letter mirrors any
+- Existing `job-ads/<slug>/spec.yml` if present (so the cover letter mirrors any
   emphasis already chosen for the CV).
 
 ### 2. Research the company (REQUIRED — do this *before* drafting)
 
-Cover letters live or die on specificity. The ad alone is rarely enough — it omits the company's actual product shape, architecture, mission, and the language they use to describe themselves. Run a web search and capture:
+Cover letters live or die on specificity. The ad alone is rarely enough.
 
-- **Flagship product / service**: what it actually does, in their own words. Note any distinctive technical concepts (e.g. "digital twin", "edge deployment", "vendor-agnostic", "real-time ML"). These become P1/P4 anchors.
-- **Tech stack hints from the public site**: framework partnerships, hardware they ship, integrations. (e.g. *"Conserve It is a Niagara Product Partner running PlantPRO at the edge on Niagara 4 controllers"* — that single sentence reshapes the cover letter.)
-- **Mission / customer language**: what problem they say they solve, and the phrasing they use. The cover letter should mirror that vocabulary at least once.
-- **Recent news / blog posts**: a release note, conference talk, or partnership announcement gives a non-generic reference for P1's hook.
-- **Founder / team voice**: GM/founder talks (YouTube intros, conference decks) reveal whether the culture is research-y, sales-y, or pragmatic-engineering.
+**Preferred path: defer to the `research-company` skill.** If `job-ads/<slug>.research.md` already exists, read it and skip to step 3 — its "Synthesis — angles" table directly feeds paragraph design, and the "Tech stack" + "Project" layers anchor P1/P2/P4. Trust only findings marked *(confirmed)* or *(likely)*.
 
-**Surface a reading list to the user** before drafting, ordered shortest-first (product page → partnership page → 1 deep PDF/talk → optional intro video). Cite sources inline (markdown links) so the user can verify and learn the domain in parallel. This is non-negotiable for any company you don't already know cold.
+If the file is missing, **invoke `research-company` first** rather than doing ad-hoc research inside this skill. The layered output is reusable across CV, cover letter, and interview prep — duplicating it inside cover-letter alone wastes context.
 
-If the search turns up nothing concrete (genuinely obscure company), say so explicitly and lean on the ad text alone — but flag the resulting cover letter as "ad-only, no external context".
+If the user explicitly says "skip the research, draft now" (e.g. tight deadline, well-known company), do a minimum-viable scan: official site one-liner + flagship product page + one recent news item. Surface a 3-link reading list, then proceed. Flag the resulting cover letter as `ad-only-light-research` so the user knows it's working from less context than usual.
+
+**In all cases**: surface a reading list to the user (ordered shortest → deepest, with cited markdown links) before drafting, so they can verify and learn the domain in parallel.
 
 ### 3. Detect tone
 
@@ -180,7 +178,7 @@ Thanks for considering, signal availability for a conversation, sign off. ≤ 50
 
 ### 6. Write the spec
 
-Append (or replace) the `cover_letter:` block in `job-ads/<slug>.yml`:
+Append (or replace) the `cover_letter:` block in `job-ads/<slug>/spec.yml`:
 
 ```yaml
 cover_letter:
@@ -213,10 +211,10 @@ If the file already has a `cover_letter:` block, **show a diff** before overwrit
 ### 7. Render + compile
 
 ```bash
-tools/compile.sh job-ads/<slug>.yml --cover
+tools/compile.sh job-ads/<slug>/spec.yml --cover
 ```
 
-Output: `outputs/<slug>.cover.pdf`. The renderer warns if word count > 350. The compile script warns if pages > 1.
+Output: `outputs/<slug>/cover.pdf`. The renderer warns if word count > 350. The compile script warns if pages > 1.
 
 ### 8. Enforce one page; iterate
 
