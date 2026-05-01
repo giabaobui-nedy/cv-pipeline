@@ -23,7 +23,7 @@ explain every other design choice in the repo.
    only happens when you genuinely improved a bullet — and then it lives in
    the bank for every future application.
 4. **Specs, not edited PDFs.** A tailored CV is fully described by a small
-   YAML spec in `job-ads/<company>.yml` (chosen bullet IDs + tailored profile
+   YAML spec in `job-ads/<slug>/spec.yml` (chosen bullet IDs + tailored profile
    + reordered skills). The `.tex` and `.pdf` are throwaway build artefacts.
    Iterate on the spec, never on the rendered output.
 5. **Boundaries are non-negotiable.** No SONIQ source, no internal URLs, no
@@ -48,87 +48,163 @@ cv-pipeline/
     csiro.yml                   # all CSIRO bullets
     projects.yml                # projects + their bullets
   job-ads/
-    _example.yml                # template for a job-ad spec
-    <company>.yml               # one per role you apply to
-  tools/
-    render_tailored.py          # spec + bullet bank -> outputs/<company>.tex
+    _example/
+      spec.yml                  # template for a job-ad spec
+    <slug>/
+      spec.yml                  # the CV + cover-letter spec for this role
+      research.md               # output of the research-company skill (Layers 1-5)
+      ad.txt                    # optional: original ad text saved verbatim, for grep
   outputs/                      # generated .tex and compiled .pdf (gitignored)
+    <slug>/
+      cv.tex / cv.pdf
+      cover.tex / cover.pdf
   tools/
-    render_tailored.py          # spec + bullet bank -> outputs/<company>.tex
-    render_cover_letter.py      # spec -> outputs/<company>.cover.tex
+    render_tailored.py          # spec + bullet bank -> outputs/<slug>/cv.tex
+    render_cover_letter.py      # spec -> outputs/<slug>/cover.tex
     compile.sh                  # one-shot render + compile via Tectonic
-  .cursor/skills/               # tailor-cv, add-bullet, cover-letter (Cursor Agent Skills)
+  .cursor/skills/               # research-company, tailor-cv, cover-letter, add-bullet
   .vscode/                      # LaTeX Workshop preconfigured for Tectonic
   PRINCIPLES.md                 # cross-cutting rules every skill inherits
   BOUNDARIES.md                 # confidentiality guardrails
   requirements.txt
 ```
 
-## Setup
+## Setup from scratch
 
-A virtualenv is already created at `.venv/` with PyYAML installed.
+Tested on macOS (Apple Silicon) with [Homebrew](https://brew.sh). On Linux,
+swap `brew` for your package manager. Total time: ~5 minutes (most of which
+is Tectonic's first-run package fetch).
+
+### 1. Prerequisites
+
+- Python 3.11+ (`python3 --version`). Install with `brew install python` if
+  missing.
+- [Tectonic](https://tectonic-typesetting.github.io/) — the LaTeX compiler.
+  Single binary, fetches packages on demand, behaves like Overleaf without
+  the upload step.
+  ```bash
+  brew install tectonic
+  ```
+- (Optional) [Cursor](https://cursor.com) or VS Code if you want the agent
+  skills + live PDF preview.
+
+### 2. Clone and create the virtualenv
 
 ```bash
-source .venv/bin/activate
-# or, without activating:
-.venv/bin/python tools/render_tailored.py job-ads/<company>.yml
-```
-
-To recreate from scratch:
-
-```bash
+git clone <your-fork-url> cv-pipeline
+cd cv-pipeline
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-### LaTeX compiler
+`requirements.txt` pins two small dependencies: `PyYAML` (parses specs and
+the bullet bank) and `pypdf` (used by `tools/compile.sh` to read accurate
+page counts from compiled PDFs). The venv is gitignored — every clone
+creates its own.
 
-[Tectonic](https://tectonic-typesetting.github.io/) is the recommended
-compiler. It's a single Rust binary that fetches packages on demand on first
-use, so it behaves like Overleaf without the upload step.
+### 3. Verify it works
 
 ```bash
-brew install tectonic
+tools/compile.sh master                          # compiles cv/main.tex
+tools/compile.sh _example                        # renders + compiles example CV + cover letter
 ```
 
-Alternatives: MacTeX (`brew install --cask mactex-no-gui`, ~6 GB) or BasicTeX
-(`brew install --cask basictex` + `tlmgr install` extras). The `.tex` source
-in this repo is engine-agnostic — it compiles under both pdflatex (Overleaf
-default) and xelatex (Tectonic default). The pdfTeX-only ATS hint
-(`\pdfgentounicode`) is wrapped in `\ifdefined` so it's used when present and
-silently skipped otherwise.
+You should see:
 
-### In-Cursor preview (LaTeX Workshop)
+- `outputs/_master/cv.pdf` — the master CV (kitchen sink, 3–4 pages).
+- `outputs/_example/cv.pdf` — a tailored CV from the example spec.
+- `outputs/_example/cover.pdf` — a cover letter from the example spec.
+
+If Tectonic's first run takes a couple of minutes downloading TeX packages,
+that's expected — subsequent runs are fast (seconds).
+
+### 4. (Optional) In-Cursor live PDF preview
 
 `.vscode/settings.json` is preconfigured to use Tectonic via the
 [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
-extension. When you open any `.tex` file in this repo, Cursor will prompt to
-install LaTeX Workshop (it's listed in `.vscode/extensions.json`). After
-installing:
+extension. When you open any `.tex` file Cursor will prompt to install it
+(it's also listed in `.vscode/extensions.json`). After installing:
 
-- Save a `.tex` file → it auto-compiles.
-- `Ctrl+Alt+V` (or the eye icon) → open the PDF in a side tab.
-- The PDF live-reloads on every save.
+- Save a `.tex` → it auto-compiles.
+- `Ctrl+Alt+V` (or the eye icon) → opens the PDF in a side tab, live-reloads on save.
 
-### One-shot compile
-
-`tools/compile.sh` renders + compiles in a single command:
+### 5. (Optional) Recreate `.venv` if it gets broken
 
 ```bash
-tools/compile.sh job-ads/<company>.yml          # CV (+ cover letter if spec has one)
-tools/compile.sh job-ads/<company>.yml --cv     # CV only
-tools/compile.sh job-ads/<company>.yml --cover  # cover letter only
-tools/compile.sh outputs/<company>.tex          # compile an existing .tex
-tools/compile.sh master                         # compile cv/main.tex (full master)
+rm -rf .venv && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ```
 
-It warns if a tailored CV or cover letter exceeds one page.
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `tectonic: command not found` when running `tools/compile.sh` | `brew install tectonic`, restart shell so PATH refreshes. |
+| `PyYAML not installed` from a renderer | Re-run `.venv/bin/pip install -r requirements.txt`. |
+| Tectonic errors with `Undefined control sequence \pdfgentounicode` | You're on a very old Tectonic. `brew upgrade tectonic`. The source is engine-agnostic; current Tectonic skips that line correctly. |
+| Wrong Python picked up | Use `.venv/bin/python` explicitly (all scripts and skills already do). |
+| LaTeX Workshop builds with `latexmk` instead of Tectonic | Ensure `.vscode/settings.json` is loaded — open the `cv-pipeline/` folder as the workspace root, not its parent. |
+
+## Compile commands
+
+`tools/compile.sh` renders + compiles in one shot:
+
+```bash
+tools/compile.sh <slug>                          # shorthand: job-ads/<slug>/spec.yml
+tools/compile.sh job-ads/<slug>/spec.yml         # CV (+ cover letter if spec has one)
+tools/compile.sh job-ads/<slug>/spec.yml --cv    # CV only
+tools/compile.sh job-ads/<slug>/spec.yml --cover # cover letter only
+tools/compile.sh outputs/<slug>/cv.tex           # compile an existing .tex
+tools/compile.sh master                          # compile cv/main.tex (full master)
+```
+
+Outputs always land in `outputs/<slug>/{cv,cover}.{tex,pdf}`.
+
+It warns when a tailored CV or cover letter exceeds one page.
+
+### Alternative LaTeX toolchains
+
+Tectonic is the recommended default (matches Overleaf behaviour, single
+binary, no per-package install needed). If you can't use Tectonic, the
+sources also compile under:
+
+- **MacTeX** — `brew install --cask mactex-no-gui` (~6 GB).
+- **BasicTeX** — `brew install --cask basictex`, then `tlmgr install` whatever's missing on first compile.
+
+The `.tex` sources are engine-agnostic — pdfTeX-only directives like
+`\pdfgentounicode` are wrapped in `\ifdefined` so they activate under
+Overleaf's pdflatex and silently skip under Tectonic's xelatex.
 
 ## Primary workflow: use the agent
 
-The fastest way to use this repo is through the two Cursor Agent Skills.
+The fastest way to use this repo is through the four Cursor Agent Skills.
 Open Cursor in this folder and just talk to it — the skills auto-trigger
 from natural phrasing.
+
+### When a job ad arrives
+
+The canonical sequence (see `PRINCIPLES.md` §5 for the why):
+
+```
+1. research-company   →  job-ads/<slug>/research.md
+2. tailor-cv          →  job-ads/<slug>/spec.yml + outputs/<slug>/cv.pdf
+3. cover-letter       →  cover_letter: block in spec.yml + outputs/<slug>/cover.pdf
+```
+
+Each step writes its output where the next step expects to read from. You can
+skip any step (e.g. drop the cover letter if the application form doesn't
+accept one) but don't reorder them — the cover letter quality depends on the
+research having happened first.
+
+### Skill 0: `research-company`
+
+Layered research on a target employer — Company → Division → Team → Project →
+Tech stack — with cited sources, confidence tags, and 3–5 cover-letter angles.
+
+Output: `job-ads/<slug>/research.md`. Read by `cover-letter` (and optionally
+`tailor-cv`) so you don't pay the research cost twice.
+
+**Trigger phrases**: *"Research Conserve It before I apply"*, *"Tell me about
+\<Company\> in layers"*, *"What does \<Company\> actually do?"*
 
 ### Skill 1: `tailor-cv`
 
@@ -160,7 +236,7 @@ The agent will then:
 3. Show a shortlist table (`Bullet ID | Why | Keyword(s) hit`) and a draft
    `profile` paragraph and `skills` block.
 4. **Wait for your approval** before writing files.
-5. Write `job-ads/<slug>.yml`, run the renderer, compile to PDF.
+5. Write `job-ads/<slug>/spec.yml`, run the renderer, compile to PDF.
 6. Enforce one page (auto-prune if it overflows; recommend additions if
    under-full).
 7. Offer iteration: "swap X for Y", "shorten profile", etc.
@@ -169,7 +245,8 @@ The agent will then:
 
 Paste a job ad and get a one-page, 5-paragraph cover letter that mirrors the
 company's tone and uses real evidence from the bullet bank. Output:
-`outputs/<company>.cover.pdf`.
+`outputs/<slug>/cover.pdf`. Reads `job-ads/<slug>/research.md` if present and
+falls back to invoking `research-company` if not.
 
 The 5-paragraph contract:
 
@@ -200,9 +277,9 @@ Notes (optional):
 - Tone override: <none | force <mode>>
 ```
 
-If a `job-ads/<company>.yml` already exists for this role (because you tailored
-the CV first), the cover letter will mirror its emphasis and reuse its
-keywords. If not, the agent will create the spec.
+If a `job-ads/<slug>/spec.yml` already exists (because you tailored the CV
+first), the cover letter is added as a `cover_letter:` block inside the same
+file rather than a new file. One application = one folder = one spec.
 
 ### Skill 3: `add-bullet`
 
@@ -233,25 +310,26 @@ inventing one — it never fabricates numbers.
 
 If you'd rather drive it by hand:
 
-1. **Save the ad.** Copy `job-ads/_example.yml` to `job-ads/<company>.yml`
-   and paste the raw description into `ad_raw`. Fill in `keywords`.
+1. **Save the ad.** Create `job-ads/<slug>/` and copy `job-ads/_example/spec.yml`
+   into it. Paste the raw description into `ad_raw`. Fill in `keywords`.
 2. **Pick bullets.** For each role, list bullet `id`s from the bank.
-   Budget for one page: 4–5 SONIQ + `soniq-stack`, 3–4 CSIRO +
-   `csiro-stack`, 2 projects with 1–2 bullets each. Total `\resumeItem`
-   lines ≤ 16.
+   Budget for one page: 4 SONIQ + `soniq-stack`, 3 CSIRO + `csiro-stack`,
+   2 projects with 1–2 bullets each. Total `\resumeItem` lines ≤ 13 (see
+   `tailor-cv` skill for the empirically-validated budget).
 3. **Render + compile.**
    ```bash
-   tools/compile.sh job-ads/<company>.yml
-   open outputs/<company>.pdf
+   tools/compile.sh <slug>
+   open outputs/<slug>/cv.pdf
    ```
    Or in two steps:
    ```bash
-   .venv/bin/python tools/render_tailored.py job-ads/<company>.yml
-   tectonic outputs/<company>.tex --outdir outputs
+   .venv/bin/python tools/render_tailored.py job-ads/<slug>/spec.yml
+   tectonic outputs/<slug>/cv.tex --outdir outputs/<slug>
    ```
-5. **Iterate.** If > 1 page, drop overview bullets first, then the lowest-
-   keyword-overlap bullets, then weak projects. Re-render. Never edit
-   `outputs/*.tex` by hand.
+4. **Iterate.** If > 1 page, drop overview bullets first, then the database
+   education line if "database" isn't an ad keyword, then weak project bullets,
+   then the lowest-signal experience bullet. Re-render. Never edit
+   `outputs/<slug>/*.tex` by hand.
 
 ## Adding a new bullet (manual)
 
