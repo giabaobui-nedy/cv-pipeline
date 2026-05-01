@@ -65,6 +65,42 @@ projects:
     bullets:
       - battery-modular-backend
 
+# Cover letter (optional). Omit this entire block to skip cover-letter rendering.
+# Generated and refined by the `cover-letter` skill. ≤ 350 words across paragraphs.
+cover_letter:
+  company: Example Co            # defaults to top-level `company` if omitted
+  recipient_name: Hiring Team
+  salutation: "Dear Hiring Team"
+  # date: 2 May 2026             # optional; defaults to today
+  # recipient_address: |         # optional; omit for modern AU practice
+  #   Street line 1
+  #   City, State Postcode
+  tone: hybrid_warm_professional   # detected by the cover-letter skill
+  evidence:
+    technical: soniq-cost-optimisation   # bullet id used as evidence in P2
+    values: csiro-collaboration          # bullet id used as evidence in P3
+  paragraphs:
+    hook: >-
+      Reading Example Co's ad, the line about <specific detail> caught me
+      because <specific reason tied to your work>. I'm applying for the
+      <Role Title> role.
+    technical_match: >-
+      The most important technical aspect of this role is <your read of the
+      ad>. At <employer> I <narrative version of the technical evidence
+      bullet — outcome, not task>, which taught me <connection back to
+      their need>.
+    values_fit: >-
+      Your ad emphasises <value/culture signal>. At <employer> I
+      <behavioural story drawing on the values evidence bullet>, and that
+      same instinct is what I'd bring on day one.
+    forward: >-
+      In my first 90 days I'd want to <specific concrete contribution
+      anchored in the ad>, and longer-term I'm interested in <specific
+      angle of their domain>.
+    close: >-
+      Thanks for reading. I'd welcome a conversation about how I could
+      contribute to the team.
+
 # Free-form skills block (LaTeX). Reorder/drop categories per job.
 skills: |
   \textbf{Languages:} TypeScript, JavaScript, Python, Java \\

@@ -1,0 +1,81 @@
+% !TEX program = pdflatex
+% Cover letter template — based on Lorenzo Saino's letter.cls scaffold (MIT,
+% https://github.com/lorenzosaino), parameterised by tools/render_cover_letter.py.
+% DO NOT edit the .tex output by hand; edit the spec in job-ads/<company>.yml
+% or the bullet bank instead.
+
+\documentclass[a4paper, 11pt]{letter}
+
+\newcommand{\covertitle}{Gia Bao~Bui}
+\newcommand{\pdftitle}{Cover~letter~--~{{COMPANY}}}
+\newcommand{\pdfauthor}{\covertitle}
+
+\newcommand{\authoraddress}{Box Hill South, VIC 3128}
+\newcommand{\authoremail}{bbgiabao362003@gmail.com}
+\newcommand{\authortel}{0402 595 747}
+\newcommand{\authorlinkedin}{https://www.linkedin.com/in/gia-bao-bui-227476227/}
+\newcommand{\authorgithub}{https://github.com/giabaobui-nedy}
+\newcommand{\authorportfolio}{https://portfolio-website-vert-one-72.vercel.app/}
+
+\newcommand{\linkcolor}{blue}
+\newcommand{\marginleft}{2.5cm}
+\newcommand{\marginright}{2.5cm}
+\newcommand{\margintop}{2.0cm}
+\newcommand{\marginbottom}{2.0cm}
+
+\date{{{LETTER_DATE}}}
+
+\usepackage[a4paper, bindingoffset=0cm, left=\marginleft, right=\marginright, top=\margintop, bottom=\marginbottom, footskip=.25in]{geometry}
+\usepackage[bottom]{footmisc}
+\usepackage{url}
+\usepackage[bookmarks, colorlinks, breaklinks, pdftitle=\pdftitle, pdfauthor=\pdfauthor]{hyperref}
+\hypersetup{linkcolor=\linkcolor, citecolor=\linkcolor, filecolor=black, urlcolor=\linkcolor}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\signature{Gia Bao Bui}
+\longindentation=0pt
+\let\raggedleft\raggedright
+\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\makecovertitle}{%
+    \begin{center}
+    {\Large\bf \covertitle}
+    \end{center}
+    \smallskip\hrule height 1pt
+}
+
+\newcommand{\contact}{%
+    \begin{center}
+    \small
+    \authoraddress \\
+    Email: \href{mailto:\authoremail}{\texttt{\authoremail}} $|$ Tel: \authortel \\
+    \href{\authorlinkedin}{LinkedIn} $|$ \href{\authorgithub}{GitHub} $|$ \href{\authorportfolio}{Portfolio Website}
+    \end{center}
+}
+
+\begin{letter}{%
+{{RECIPIENT_BLOCK}}
+}
+
+\makecovertitle
+\contact
+
+\opening{{{SALUTATION}},}
+
+{{PARAGRAPH_HOOK}}
+
+{{PARAGRAPH_TECHNICAL}}
+
+{{PARAGRAPH_VALUES}}
+
+{{PARAGRAPH_FORWARD}}
+
+{{PARAGRAPH_CLOSE}}
+
+\closing{Kind regards,}
+
+\end{letter}
+
+\end{document}

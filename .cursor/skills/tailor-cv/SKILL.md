@@ -32,7 +32,23 @@ Signal-density rules:
 
 Default for tailored CVs: **Profile → Experience → Projects → Skills → Education**. With 1+ year of paid SWE work already on the CV, Experience-first is the conventional order; Education is verification, not differentiation, and lives at the bottom (the section header still carries "Highest Achieving Graduate" and GPA so the credibility signal isn't lost).
 
-Override per spec via the optional `section_order:` key — a list naming any subset/reordering of `[profile, experience, projects, skills, education]`. Use this when the ad explicitly screens on academics (graduate programs, research roles) — e.g. `section_order: [profile, education, experience, projects, skills]`. Omitting a section drops it entirely, so be deliberate.
+Override per spec via the optional `section_order:` key — a list naming any subset/reordering of `[profile, experience, projects, skills, education]`. Use this when the ad explicitly screens on academics — e.g. `section_order: [profile, education, experience, projects, skills]`. Omitting a section drops it entirely, so be deliberate.
+
+### "Graduate role" vs "Graduate program" — don't confuse them
+
+The word "graduate" in a job title is **not** a signal to put Education first. Distinguish:
+
+- **Graduate role** (default — keep Experience-first): a regular hire onto a real product team where the title just means "open to recent grads". Conserve It's "Graduate Software Developer" is exactly this — they want demonstrable code, not GPA. Phrases like *"show code you have worked on will put you at the top of the list"* or a long list of technical essentials with the degree buried near the bottom confirm this. Treat these the same as any junior SWE role.
+- **Graduate program** (flip Education up): a structured, often rotational scheme (Atlassian Grad, Canva Grad, NAB Grad, ATO Grad, government grad schemes, Big-4 grad consulting). These typically screen on academics first.
+
+Signals that warrant flipping `section_order` to surface Education early:
+
+1. The role is named "Graduate Program", "Graduate Scheme", or "Cadetship" (capitalised, structured).
+2. Explicit GPA / WAM / degree-class cutoffs in the ad ("minimum WAM 75", "Distinction average").
+3. Research roles (CSIRO, DSTG, universities, national labs) where thesis/publications matter.
+4. The ad lists "academic excellence" / "recent graduate" as a *hiring criterion* in its own right, not just "Bachelor of X required" as a baseline.
+
+If none of those apply, keep the default order even when the title contains the word "graduate". The Profile paragraph (which always carries "Highest Achieving Graduate in Computer Science") already gives recruiters the academic credential within the first 8-second skim — Education at the bottom becomes verification, not discovery.
 
 ## Repo invariants
 

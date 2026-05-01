@@ -37,7 +37,8 @@ explain every other design choice in the repo.
 cv-pipeline/
   cv/
     main.tex                    # master CV (kitchen-sink, never trimmed)
-    tailored.tex.template       # template used by the renderer
+    tailored.tex.template       # template used by the CV renderer
+    cover-letter.tex.template   # template used by the cover-letter renderer
   bullet-bank/
     soniq.yml                   # all SONIQ bullets, each with id + tags
     csiro.yml                   # all CSIRO bullets
@@ -50,8 +51,9 @@ cv-pipeline/
   outputs/                      # generated .tex and compiled .pdf (gitignored)
   tools/
     render_tailored.py          # spec + bullet bank -> outputs/<company>.tex
+    render_cover_letter.py      # spec -> outputs/<company>.cover.tex
     compile.sh                  # one-shot render + compile via Tectonic
-  .cursor/skills/               # tailor-cv, add-bullet (Cursor Agent Skills)
+  .cursor/skills/               # tailor-cv, add-bullet, cover-letter (Cursor Agent Skills)
   .vscode/                      # LaTeX Workshop preconfigured for Tectonic
   requirements.txt
   BOUNDARIES.md
@@ -108,12 +110,14 @@ installing:
 `tools/compile.sh` renders + compiles in a single command:
 
 ```bash
-tools/compile.sh job-ads/<company>.yml   # render YAML spec then compile
-tools/compile.sh outputs/<company>.tex   # compile an existing .tex
-tools/compile.sh master                  # compile cv/main.tex (full master)
+tools/compile.sh job-ads/<company>.yml          # CV (+ cover letter if spec has one)
+tools/compile.sh job-ads/<company>.yml --cv     # CV only
+tools/compile.sh job-ads/<company>.yml --cover  # cover letter only
+tools/compile.sh outputs/<company>.tex          # compile an existing .tex
+tools/compile.sh master                         # compile cv/main.tex (full master)
 ```
 
-It warns if a tailored CV exceeds one page.
+It warns if a tailored CV or cover letter exceeds one page.
 
 ## Primary workflow: use the agent
 
@@ -156,7 +160,46 @@ The agent will then:
    under-full).
 7. Offer iteration: "swap X for Y", "shorten profile", etc.
 
-### Skill 2: `add-bullet`
+### Skill 2: `cover-letter`
+
+Paste a job ad and get a one-page, 5-paragraph cover letter that mirrors the
+company's tone and uses real evidence from the bullet bank. Output:
+`outputs/<company>.cover.pdf`.
+
+The 5-paragraph contract:
+
+1. **Hook** — first 8 words must be unique to this company/role. Specific signal from the ad, not boilerplate.
+2. **Technical match** — your read of the role's #1 must-have, narrated through one bullet's underlying story.
+3. **Values fit** — concrete behavioural example (different theme from P2) drawn from a `meta`/collaboration/leadership-tagged bullet.
+4. **Forward-looking** — a specific 90-day intent OR a polite, well-formed opinion about their domain. The paragraph most candidates waste; we use it for differentiation.
+5. **Close** — ≤ 50 words, no filler.
+
+Tone is auto-detected from company size + ad voice across five modes:
+`startup_scrappy`, `corporate_formal`, `research_scientific`,
+`consultancy_clientfacing`, `mission_driven` (or a hybrid default).
+
+**Template prompt:**
+
+```
+Write a cover letter for this role.
+
+Company: <Company>
+Role: <Role title>
+
+--- AD START ---
+<paste the ad>
+--- AD END ---
+
+Notes (optional):
+- Specific things I want to mention: <e.g. "their open-source work on X">
+- Tone override: <none | force <mode>>
+```
+
+If a `job-ads/<company>.yml` already exists for this role (because you tailored
+the CV first), the cover letter will mirror its emphasis and reuse its
+keywords. If not, the agent will create the spec.
+
+### Skill 3: `add-bullet`
 
 You did something at work or on a project — log it before you forget.
 
