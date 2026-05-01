@@ -79,6 +79,9 @@ keywords:
   - agile
   - documentation
 
+education_bullets:
+  - Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.
+
 profile: >-
   Software Engineer and Highest Achieving Graduate in Computer Science with 1+
   years' experience building production-grade, multi-threaded systems for
@@ -94,9 +97,8 @@ experience:
     location: Richmond, VIC
     bullets:
       - soniq-ts-frontend-architecture
-      - soniq-aws-analysis-ts-migration
       - soniq-scheduling-defect
-      - soniq-architecture-docs
+      - soniq-cost-optimisation
       - soniq-stack
 
   - bank: csiro
@@ -105,7 +107,6 @@ experience:
     employer: CSIRO
     location: Clayton, VIC
     bullets:
-      - csiro-overview
       - csiro-firmware-abstraction
       - csiro-locks-deployment
       - csiro-oop-hardware

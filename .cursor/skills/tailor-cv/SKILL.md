@@ -28,6 +28,12 @@ Signal-density rules:
   strong projects beat three weak ones.
 - The `*-stack` bullets are mandatory — they're the keyword anchor for ATS.
 
+## Section order
+
+Default for tailored CVs: **Profile → Experience → Projects → Skills → Education**. With 1+ year of paid SWE work already on the CV, Experience-first is the conventional order; Education is verification, not differentiation, and lives at the bottom (the section header still carries "Highest Achieving Graduate" and GPA so the credibility signal isn't lost).
+
+Override per spec via the optional `section_order:` key — a list naming any subset/reordering of `[profile, experience, projects, skills, education]`. Use this when the ad explicitly screens on academics (graduate programs, research roles) — e.g. `section_order: [profile, education, experience, projects, skills]`. Omitting a section drops it entirely, so be deliberate.
+
 ## Repo invariants
 
 - **Master CV** lives at `cv/main.tex`. Never modify it from this skill.
@@ -76,12 +82,22 @@ Pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`impac
 
 **Budget for one page** (start here, prune harder if compilation overflows):
 
-- SONIQ: **4–5 bullets** + `soniq-stack` (mandatory).
+- SONIQ: **4 bullets** + `soniq-stack` (mandatory). 5 is borderline.
 - CSIRO: **3–4 bullets** + `csiro-stack` (mandatory).
 - Projects: **2 projects**, **1–2 bullets each**. Pick projects whose `tags` mirror the ad's stack.
+- Education bullets: **default to 1** (Highest Achieving Graduate only). Education is the lowest-priority section — every line stolen from it goes to experience instead. Add the database-paper bullet **only** when `database`, `schema`, `sql`, or similar appears in the ad's keywords. Always drop the scholarship line for engineering roles. Override via the `education_bullets` spec key.
 - `*-overview` bullets: **default to omitting them**. Include only if the ad emphasises breadth the overview captures and there is page room left.
 
-Total bullet count target: **≤ 16** (including stack lines, education, and project bullets). Above this, the page almost always overflows.
+Total `\resumeItem` count target: **≤ 13** (including stack lines, education, and project bullets). **Empirically, 14+ overflows to a second page** — and `\resumeItem` count alone is a misleading proxy: a single long bullet (~50 words like `csiro-overview` or `csiro-fullstack-leadership`) wraps to 3–4 visual lines and eats the budget of three short bullets. Track **visual lines**, not just bullet count.
+
+**Heavy bullets to handle with care** (each consumes 3–4 visual lines):
+
+- `csiro-overview` (the lab-automation overview)
+- `csiro-fullstack-leadership`
+- `soniq-shopify-eventbridge`
+- `tbrgs-dl-search`
+
+If you include one of these, drop one short bullet elsewhere to compensate. The `*-stack` bullets are also typically 2 visual lines — count them as such.
 
 Present the shortlist as a markdown table, then **wait for user approval or edits** before writing any files:
 
@@ -111,6 +127,15 @@ date_saved: YYYY-MM-DD
 ad_raw: |
   <verbatim paste of the ad>
 keywords: [...]
+section_order:         # optional; defaults to [profile, experience, projects, skills, education].
+  - profile
+  - experience
+  - projects
+  - skills
+  - education
+education_bullets:     # optional; defaults to all 3 from main.tex if omitted.
+  - Recognised as \textbf{Highest Achieving Graduate} ...
+  - Received lecturer compliment ...
 profile: >-
   <3-sentence tailored profile>
 experience:
@@ -161,7 +186,7 @@ If no LaTeX toolchain is on PATH, tell the user to `brew install tectonic` but d
 
 When you cannot compile, apply a **conservative heuristic** to estimate one-page fit before handing off:
 
-- Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 16**.
+- Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 13** (14+ has been observed to overflow). Beware: long bullets count as multiple visual lines — see the "Heavy bullets" list above.
 - Sum of words across all `text` fields in the spec should be **≤ ~280**.
 - `profile` paragraph should be **≤ 50 words**.
 - `skills` block should have **≤ 5 category lines**.
@@ -171,11 +196,12 @@ If any threshold is exceeded, prune (using the priority order in the next step) 
 If compiled, report the PDF page count and **enforce one page**:
 
 - **= 1 page**: report success, show the chosen shortlist, hand off to step 7.
-- **> 1 page**: enter a prune loop. Drop bullets in this priority order until the PDF fits:
+- **> 1 page**: enter a prune loop. Drop bullets in this priority order until the PDF fits. **Project bullets are less important than experience bullets** — projects exist to colour gaps experience doesn't fill, so cut them first.
   1. Any `*-overview` bullet still in the spec.
-  2. The lowest-signal bullet (fewest keyword hits, no `impact-metric` tag).
+  2. The database-paper education bullet, if `database`/`schema`/`sql` aren't ad keywords.
   3. The weakest project's bullets, then the project itself.
-  4. The longest single bullet in the lowest-priority role.
+  4. The lowest-signal experience bullet (fewest keyword hits, no `impact-metric` tag).
+  5. The longest single bullet in the lowest-priority role.
   Re-render and re-compile after each prune. After 3 unsuccessful prune passes, stop and tell the user which bullets you'd cut and ask them to choose. Never strip the `*-stack` bullets, the role overview structure, or the contact header.
 - **< 1 page** (rare): suggest 1–2 strong bullets to add back, drawn from the bank's unused IDs that match remaining keywords. Don't pad with low-signal content just to fill space — a slightly short, dense page beats a full-but-watery one.
 

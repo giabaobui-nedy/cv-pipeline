@@ -78,36 +78,6 @@
     \href{https://portfolio-website-vert-one-72.vercel.app/}{\underline{Portfolio Website}}
 \end{center}
 
-\section{Profile}
-\small{ {{PROFILE}} }\justifying
-
-\section{Education}
-  \resumeSubHeadingListStart
-    \resumeSubheading
-      {Swinburne University of Technology}{Hawthorn, VIC}
-      {Bachelor of Computer Science (Professional), Major in Software Development}{GPA: 3.88/4 | Feb 2022 -- Dec 2025}
-        \resumeItemListStart
-            \resumeItem{Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.}
-            \resumeItem{Received lecturer compliment on the best undergraduate paper in INF20010 - Database Systems.}
-            \resumeItem{Achieved Swinburne Excellence International Scholarship (50\%);}
-        \resumeItemListEnd
-  \resumeSubHeadingListEnd
-
-\section{Experience}
-  \resumeSubHeadingListStart
-{{EXPERIENCE_BLOCKS}}
-  \resumeSubHeadingListEnd
-
-\section{Projects}
-    \resumeSubHeadingListStart
-{{PROJECT_BLOCKS}}
-    \resumeSubHeadingListEnd
-
-\section{Technical Skills}
-\begin{itemize}[leftmargin=0.15in, label={}]
-\small{\item{
-{{SKILLS}}
-}}
-\end{itemize}
+{{SECTIONS}}
 
 \end{document}

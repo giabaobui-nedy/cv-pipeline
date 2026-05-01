@@ -50,7 +50,10 @@ pdf="${tex%.tex}.pdf"
 log="${tex%.tex}.log"
 
 if [[ -f "$pdf" ]]; then
-  pages=$(grep -oE 'Output written on [^ ]+ \([0-9]+ pages' "$log" 2>/dev/null | grep -oE '[0-9]+ pages' | grep -oE '[0-9]+' || echo "?")
+  pages="?"
+  if [[ -x .venv/bin/python ]]; then
+    pages=$(.venv/bin/python -c "from pypdf import PdfReader; print(len(PdfReader('$pdf').pages))" 2>/dev/null || echo "?")
+  fi
   size=$(du -h "$pdf" | cut -f1)
   echo "wrote $pdf (${pages} pages, ${size})"
   if [[ "$pages" != "?" && "$pages" -gt 1 && "$target" != *main* && "$target" != "master" ]]; then

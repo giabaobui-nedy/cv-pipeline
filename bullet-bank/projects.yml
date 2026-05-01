@@ -24,7 +24,7 @@ projects:
 
   - id: weekly-planner
     title: \textbf{Weekly Planner (Clean Architecture System)}
-    stack: Java, JavaFX, SQLite, ORMLite, JUnit
+    stack: Java, JavaFX, Maven, ORMLite, SQLite, JUnit
     links:
       - {label: GitHub, url: https://github.com/giabaobui-nedy/WeeklyPlanner}
     tags: [java, clean-architecture, testing, oop]
@@ -42,10 +42,11 @@ projects:
           constraints, and user-defined working hours, supporting deterministic and scalable
           planning behaviour.
       - id: weekly-planner-orm-tests
-        tags: [orm, testing, junit, repository]
+        tags: [orm, testing, junit, repository, tdd, ai-assisted]
         text: >-
-          Implemented repository and DAO layers with ORMLite, and validated the system's core use
-          cases and data mapping through comprehensive JUnit integration and unit testing suites.
+          Practised test-driven development by writing JUnit integration and unit tests first, then
+          validating AI-generated repository and DAO implementations (ORMLite) against those tests
+          to enforce correctness.
 
   - id: battery-digital-twin
     title: \textbf{Battery Manufacturing Digital Twin (Capstone)}

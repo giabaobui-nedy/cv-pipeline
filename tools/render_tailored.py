@@ -99,6 +99,16 @@ def main() -> None:
     role_banks, projects = load_banks()
     template = TEMPLATE.read_text()
 
+    default_education_bullets = [
+        r"Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.",
+        r"Received lecturer compliment on the best undergraduate paper in INF20010 - Database Systems.",
+        r"Achieved Swinburne Excellence International Scholarship (50\%);",
+    ]
+    education_bullets = spec.get("education_bullets", default_education_bullets)
+    education_items = "\n".join(
+        f"            \\resumeItem{{{_normalise(b)}}}" for b in education_bullets
+    )
+
     experience_blocks = []
     for role in spec.get("experience", []):
         bank = role_banks.get(role["bank"])
@@ -112,12 +122,52 @@ def main() -> None:
         if block:
             project_blocks.append(block)
 
-    out = (
-        template
-        .replace("{{PROFILE}}", spec.get("profile", "").strip())
-        .replace("{{EXPERIENCE_BLOCKS}}", "\n".join(experience_blocks))
-        .replace("{{PROJECT_BLOCKS}}", "\n".join(project_blocks))
-        .replace("{{SKILLS}}", spec.get("skills", "").strip())
+    sections = {
+        "profile": (
+            "\\section{Profile}\n"
+            f"\\small{{ {spec.get('profile', '').strip()} }}\\justifying"
+        ),
+        "experience": (
+            "\\section{Experience}\n"
+            "  \\resumeSubHeadingListStart\n"
+            f"{chr(10).join(experience_blocks)}\n"
+            "  \\resumeSubHeadingListEnd"
+        ),
+        "projects": (
+            "\\section{Projects}\n"
+            "    \\resumeSubHeadingListStart\n"
+            f"{chr(10).join(project_blocks)}\n"
+            "    \\resumeSubHeadingListEnd"
+        ),
+        "skills": (
+            "\\section{Technical Skills}\n"
+            "\\begin{itemize}[leftmargin=0.15in, label={}]\n"
+            "\\small{\\item{\n"
+            f"{spec.get('skills', '').strip()}\n"
+            "}}\n"
+            "\\end{itemize}"
+        ),
+        "education": (
+            "\\section{Education}\n"
+            "  \\resumeSubHeadingListStart\n"
+            "    \\resumeSubheading\n"
+            "      {Swinburne University of Technology}{Hawthorn, VIC}\n"
+            "      {Bachelor of Computer Science (Professional), Major in Software Development}{GPA: 3.88/4 | Feb 2022 -- Dec 2025}\n"
+            "        \\resumeItemListStart\n"
+            f"{education_items}\n"
+            "        \\resumeItemListEnd\n"
+            "  \\resumeSubHeadingListEnd"
+        ),
+    }
+
+    default_order = ["profile", "experience", "projects", "skills", "education"]
+    order = spec.get("section_order", default_order)
+    unknown = [s for s in order if s not in sections]
+    if unknown:
+        sys.exit(f"unknown section(s) in section_order: {unknown} (known: {list(sections)})")
+
+    out = template.replace(
+        "{{SECTIONS}}", "\n\n".join(sections[s] for s in order)
     )
 
     out_path = args.output or (REPO / "outputs" / f"{args.spec.stem}.tex")
