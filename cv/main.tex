@@ -1,0 +1,29 @@
+% !TEX program = pdflatex
+% Personal CV - Gia Bao Bui
+% Replace this scaffold with the contents of your current Overleaf main.tex.
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\setlist[itemize]{leftmargin=*, topsep=2pt, itemsep=1pt}
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{Gia Bao Bui}} \\[2pt]
+  Melbourne, Australia \,\textbar\, bbgiabao362003@gmail.com \,\textbar\, github.com/yourhandle
+\end{center}
+
+\input{sections/experience}
+\input{sections/projects}
+\input{sections/skills}
+
+\end{document}
