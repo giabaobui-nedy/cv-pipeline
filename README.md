@@ -62,6 +62,7 @@ cv-pipeline/
     render_tailored.py          # spec + bullet bank -> outputs/<slug>/cv.tex
     render_cover_letter.py      # spec -> outputs/<slug>/cover.tex
     compile.sh                  # one-shot render + compile via Tectonic
+    track.py                    # spec -> Notion-paste-ready row (manual paste)
   .cursor/skills/               # research-company, tailor-cv, cover-letter, add-bullet
   .vscode/                      # LaTeX Workshop preconfigured for Tectonic
   PRINCIPLES.md                 # cross-cutting rules every skill inherits
@@ -143,6 +144,30 @@ rm -rf .venv && python3 -m venv .venv && .venv/bin/pip install -r requirements.t
 | Tectonic errors with `Undefined control sequence \pdfgentounicode` | You're on a very old Tectonic. `brew upgrade tectonic`. The source is engine-agnostic; current Tectonic skips that line correctly. |
 | Wrong Python picked up | Use `.venv/bin/python` explicitly (all scripts and skills already do). |
 | LaTeX Workshop builds with `latexmk` instead of Tectonic | Ensure `.vscode/settings.json` is loaded — open the `cv-pipeline/` folder as the workspace root, not its parent. |
+
+## Tracking applications in Notion
+
+`tools/track.py` prints a Notion-paste-ready row for a tailored application —
+no MCP needed. Run it after compile:
+
+```bash
+.venv/bin/python tools/track.py <slug>
+```
+
+Outputs a fields view (one label/value per line — handy for copying single
+fields into Notion's "Edit property" panel) and a TSV row (paste into a
+Notion database directly to create a new entry; Notion matches by column
+position).
+
+Default columns: `Company | Position | Status | Application Date | Source URL
+| Slug | CV pages | Cover pages | CV bullets`. Arrange your Notion DB columns
+in this order and paste-as-row will work in one shot. The `CV bullets` column
+records exactly which bullet IDs were chosen for the application — once you
+have ~10 applications with status data, this becomes the substrate for
+"which bullets correlate with advancement?" analysis.
+
+When manual paste gets tedious, this script's schema is the same one a future
+Notion MCP write-back will use, so the upgrade path is clean.
 
 ## Compile commands
 
