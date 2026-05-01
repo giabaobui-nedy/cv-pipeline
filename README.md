@@ -159,6 +159,24 @@ tools/compile.sh master                          # compile cv/main.tex (full mas
 
 Outputs always land in `outputs/<slug>/{cv,cover}.{tex,pdf}`.
 
+### Export for submission
+
+When the iteration is done, `tools/export.sh` copies both PDFs to `~/Desktop` with submission-ready filenames:
+
+```bash
+tools/export.sh <slug>                       # writes both to ~/Desktop with today's date
+tools/export.sh <slug> --date 2026-05-02     # override the date stamp
+tools/export.sh <slug> --dest ~/Applications # override the destination folder
+tools/export.sh <slug> --cv-only             # skip the cover letter
+```
+
+Filename format (reads `company` and `role` from `job-ads/<slug>/spec.yml`):
+
+```
+(YYYY.MM.DD) Gia Bao Bui - <role> - <company>.pdf
+(YYYY.MM.DD) Gia Bao Bui - Cover letter - <company>.pdf
+```
+
 It warns when a tailored CV or cover letter exceeds one page.
 
 ### Alternative LaTeX toolchains
