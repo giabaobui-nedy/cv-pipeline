@@ -95,40 +95,20 @@ hidden.
 
 ### Rules
 
-1. **State work rights explicitly and early.** Recommended placement:
-   contact line of every CV and cover letter. Don't bury it; don't omit it.
-   Long form: `Australian work rights — Subclass 485 (valid to <YYYY-MM>)`.
-   Short form when tight: `AU work rights (Subclass 485)`.
-2. **Frame positively, never apologetically.** "Australian work rights"
-   first, "(Subclass 485…)" as supporting detail. Never write "looking for
-   sponsorship" (untrue for 485) or "happy to discuss visa" (invites
-   uncertainty).
-3. **Detect ad gates before drafting.** If the ad says "Australian/NZ
-   citizens or PR only" (common in defence, government, banking, some
-   financial services), **flag this and ask the user whether to proceed**
-   before writing anything. Do not silently submit.
-4. **Cover letter body handling.** If the ad does not gate on PR, do *not*
-   raise the visa in the body — the contact-line statement is enough. If the
-   ad explicitly mentions sponsorship as a benefit or names visa support,
-   briefly note in P5: "I have full Australian work rights via the Subclass
-   485 visa, so no sponsorship is required." This turns a perceived blocker
-   into an asset.
-5. **Wire it to the spec.** Set `work_rights:` once at the top of the
-   job-ad spec (or default it from the example). The renderer should pick
-   it up so it never gets forgotten on any output.
+1. **CV does not carry the work-rights line.** Earlier policy was to put it on the contact line of the CV, but in practice it cost a wrap-line that pushed tailored CVs to two pages without buying meaningful signal — most AU recruiters assume work rights and ask in the application form anyway. Keep the CV's contact block tight: phone, email, LinkedIn, GitHub, Portfolio. Nothing else.
+2. **Cover letter contact block carries the canonical line.** That's where the visa statement lives by default:
+   ```
+   Australian work rights --- Subclass 485 (valid to January 2028)
+   ```
+   Long form preferred. Short form (`AU work rights (Subclass 485)`) only inside ~6 months of expiry until renewal lands.
+3. **Frame positively, never apologetically.** "Australian work rights" first, "(Subclass 485…)" as supporting detail. Never write "looking for sponsorship" (untrue for 485) or "happy to discuss visa" (invites uncertainty).
+4. **Detect ad gates before drafting.** If the ad says "Australian/NZ citizens or PR only" (common in defence, government, banking, some financial services), **flag this and ask the user whether to proceed** before writing anything. Do not silently submit.
+5. **Cover letter body handling.** If the ad does not gate on PR, do *not* raise the visa in the body — the contact-line statement is enough. If the ad explicitly mentions sponsorship as a benefit or names visa support, briefly note in P5: "I have full Australian work rights via the Subclass 485 visa, so no sponsorship is required." This turns a perceived blocker into an asset.
+6. **Application-form fields trump the CV.** Most AU job portals have a dedicated "do you have full work rights?" question. Answer it there. The cover letter's contact line is the backup signal for the manual screen.
 
-### Canonical phrasing (currently in templates)
+### When to renew the canonical phrasing
 
-The contact block of `cv/main.tex`, `cv/tailored.tex.template`, and
-`cv/cover-letter.tex.template` already carries:
-
-```
-Australian work rights --- Subclass 485 (valid to January 2028)
-```
-
-Update all three together if the visa is renewed or the expiry shifts.
-When the date is within ~6 months of expiry, switch to the short form
-(`AU work rights (Subclass 485)`) until renewal lands.
+Update `cv/cover-letter.tex.template` (and check `cv/main.tex` / `cv/tailored.tex.template` haven't drifted back to including it) if the visa is renewed or the expiry shifts. The CV templates should remain free of the work-rights line.
 
 ## 4. CV is the contract; cover letter is the narrative
 
