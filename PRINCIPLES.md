@@ -117,22 +117,18 @@ hidden.
    job-ad spec (or default it from the example). The renderer should pick
    it up so it never gets forgotten on any output.
 
-### What to do today (one-time)
+### Canonical phrasing (currently in templates)
 
-Until the renderers wire `work_rights:` automatically, add a line by hand to:
+The contact block of `cv/main.tex`, `cv/tailored.tex.template`, and
+`cv/cover-letter.tex.template` already carries:
 
-- `cv/main.tex` — under the Portfolio link in the contact block.
-- `cv/tailored.tex.template` — same.
-- `cv/cover-letter.tex.template` — inside the `\contact` block.
-
-Suggested LaTeX (centred, small):
-
-```latex
-\\ \small Australian work rights --- Subclass 485 (valid to YYYY-MM)
+```
+Australian work rights --- Subclass 485 (valid to January 2028)
 ```
 
-Confirm visa expiry month/year with the user before committing — values
-must be accurate.
+Update all three together if the visa is renewed or the expiry shifts.
+When the date is within ~6 months of expiry, switch to the short form
+(`AU work rights (Subclass 485)`) until renewal lands.
 
 ---
 

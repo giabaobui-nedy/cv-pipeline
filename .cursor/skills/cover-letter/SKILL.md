@@ -69,16 +69,17 @@ candidate could have written it.
 ## Workflow
 
 ```
-- [ ] 1. Read the ad, bullet bank, BOUNDARIES, and (if present) the existing job-ad spec
-- [ ] 2. Detect tone from company size + ad voice
-- [ ] 3. Propose evidence bullet IDs for paragraphs 2 and 3
-- [ ] 4. Draft all 5 paragraphs (await user approval)
-- [ ] 5. Write the cover_letter block into job-ads/<slug>.yml
-- [ ] 6. Render + compile via tools/compile.sh
-- [ ] 7. Enforce one page; iterate
+- [ ] 1. Load repo context (bank, BOUNDARIES, existing spec)
+- [ ] 2. Research the company online and surface a reading list
+- [ ] 3. Detect tone from company size + ad voice
+- [ ] 4. Propose evidence bullet IDs for paragraphs 2 and 3
+- [ ] 5. Draft all 5 paragraphs (await user approval)
+- [ ] 6. Write the cover_letter block into job-ads/<slug>.yml
+- [ ] 7. Render + compile via tools/compile.sh
+- [ ] 8. Enforce one page; iterate
 ```
 
-### 1. Load context
+### 1. Load repo context
 
 - `BOUNDARIES.md`
 - `bullet-bank/{soniq,csiro,projects}.yml`
@@ -86,7 +87,21 @@ candidate could have written it.
 - Existing `job-ads/<slug>.yml` if present (so the cover letter mirrors any
   emphasis already chosen for the CV).
 
-### 2. Detect tone
+### 2. Research the company (REQUIRED — do this *before* drafting)
+
+Cover letters live or die on specificity. The ad alone is rarely enough — it omits the company's actual product shape, architecture, mission, and the language they use to describe themselves. Run a web search and capture:
+
+- **Flagship product / service**: what it actually does, in their own words. Note any distinctive technical concepts (e.g. "digital twin", "edge deployment", "vendor-agnostic", "real-time ML"). These become P1/P4 anchors.
+- **Tech stack hints from the public site**: framework partnerships, hardware they ship, integrations. (e.g. *"Conserve It is a Niagara Product Partner running PlantPRO at the edge on Niagara 4 controllers"* — that single sentence reshapes the cover letter.)
+- **Mission / customer language**: what problem they say they solve, and the phrasing they use. The cover letter should mirror that vocabulary at least once.
+- **Recent news / blog posts**: a release note, conference talk, or partnership announcement gives a non-generic reference for P1's hook.
+- **Founder / team voice**: GM/founder talks (YouTube intros, conference decks) reveal whether the culture is research-y, sales-y, or pragmatic-engineering.
+
+**Surface a reading list to the user** before drafting, ordered shortest-first (product page → partnership page → 1 deep PDF/talk → optional intro video). Cite sources inline (markdown links) so the user can verify and learn the domain in parallel. This is non-negotiable for any company you don't already know cold.
+
+If the search turns up nothing concrete (genuinely obscure company), say so explicitly and lean on the ad text alone — but flag the resulting cover letter as "ad-only, no external context".
+
+### 3. Detect tone
 
 Read the ad and company name. Classify into **one** mode and report which
 signals drove the choice:
@@ -101,7 +116,7 @@ signals drove the choice:
 
 If signals are mixed or the ad is too short to classify, default to **`hybrid_warm_professional`** — a polite-but-not-stiff register, no contractions, light sentence variation. Always state the chosen mode to the user before drafting so they can override.
 
-### 3. Pick evidence bullets
+### 4. Pick evidence bullets
 
 For paragraphs 2 (technical) and 3 (values), pick **one bullet ID each** from `bullet-bank/`:
 
@@ -117,7 +132,7 @@ Show the user a small table:
 
 Wait for approval before drafting.
 
-### 4. Draft all 5 paragraphs
+### 5. Draft all 5 paragraphs
 
 **Word budget**: ≤ 350 words total. Per paragraph: 50–80 (P5: 30–50).
 
@@ -163,7 +178,7 @@ Avoid: "I'm passionate about", "I would love to grow", "I see myself contributin
 
 Thanks for considering, signal availability for a conversation, sign off. ≤ 50 words. No new content. No "looking forward to hearing from you" filler if you can avoid it.
 
-### 5. Write the spec
+### 6. Write the spec
 
 Append (or replace) the `cover_letter:` block in `job-ads/<slug>.yml`:
 
@@ -195,7 +210,7 @@ cover_letter:
 
 If the file already has a `cover_letter:` block, **show a diff** before overwriting and ask for confirmation.
 
-### 6. Render + compile
+### 7. Render + compile
 
 ```bash
 tools/compile.sh job-ads/<slug>.yml --cover
@@ -203,7 +218,7 @@ tools/compile.sh job-ads/<slug>.yml --cover
 
 Output: `outputs/<slug>.cover.pdf`. The renderer warns if word count > 350. The compile script warns if pages > 1.
 
-### 7. Enforce one page; iterate
+### 8. Enforce one page; iterate
 
 If > 1 page or > 350 words: **trim**, prioritising in this order:
 

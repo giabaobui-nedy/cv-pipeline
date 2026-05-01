@@ -127,3 +127,41 @@ skills: |
   \textbf{Frontend}{: React, Vue.js/Nuxt.js, component-based UI frameworks, TypeScript-first design;} \\
   \textbf{Backend}{: Node.js, Python (Flask/FastAPI), system integration, real-time telemetry (WebSockets, InfluxDB);} \\
   \textbf{DevOps \& Tools}{: Docker, Git/GitHub/Bitbucket, CI/CD (GitHub Actions), Jira/Confluence (Atlassian suite), Linux.}
+
+cover_letter:
+  recipient_name: Hiring Team
+  salutation: Dear Hiring Team
+  tone: hybrid_warm_professional
+  evidence:
+    technical: csiro-locks-deployment
+    values: csiro-collaboration
+  paragraphs:
+    hook: >-
+      Reading the PlantPRO description, two details landed at once: the chiller plant
+      rendered as a digital twin, and real-time decisions running at the edge rather than
+      in a cloud round-trip. My capstone last year was a digital twin of a battery
+      manufacturing line --- different domain, same shape --- so PlantPRO and the Niagara
+      Applications team caught my attention immediately.
+    technical_match: >-
+      Real-time control of live equipment is rarely bottlenecked by algorithms; it is
+      bottlenecked by who gets to talk to the hardware. At CSIRO our Modbus control box
+      only tolerated one polling process, so I built an interface-level cache: a single
+      poller refreshed the latest hardware values, and every API read served from that
+      cache behind a lock hierarchy. The platform ran continuously in production for
+      three months without intervention, and the hardware stayed healthy.
+    values_fit: >-
+      The ad emphasises working alongside data scientists and engineers, not only other
+      developers --- that ratio is one I have worked in. The CSIRO platform was built in
+      close conversation with research scientists, electronics engineers, and external
+      hardware vendors, and the software's correctness was inseparable from getting their
+      constraints into the design early. Day-to-day, that means I default to talking to
+      the domain owner before writing the abstraction, not after.
+    forward: >-
+      Niagara is the honest gap. The shapes around it --- digital-twin modelling, edge
+      execution against physical equipment, vendor-agnostic hardware abstraction --- are
+      not. In the first ninety days I would aim to ship one PlantPRO module end-to-end on
+      a Niagara controller, however small, to internalise the framework's idioms before
+      forming opinions on what to optimise.
+    close: >-
+      Thank you for considering my application. I would welcome a conversation about the
+      role and the team, and I am available for an interview at your convenience.
