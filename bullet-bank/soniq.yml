@@ -69,11 +69,12 @@ bullets:
       interconnected services.
 
   - id: soniq-scheduling-defect
-    tags: [debugging, backend, production, testing, timezone]
+    tags: [debugging, backend, production, testing, timezone, ci-cd]
     text: >-
       Investigated and resolved a production scheduling defect where enabling monthly recurrence
-      caused timeline events to disappear, reproducing the issue through exact mapped backend
-      test scenarios and correcting timezone-sensitive scheduling logic.
+      caused timeline events to disappear, reproducing the issue through targeted test scenarios,
+      which were later integrated into the CI/CD pipeline, and correcting timezone-sensitive
+      scheduling logic.
 
   - id: soniq-device-protocol-migration
     tags: [iot, cloud, migration, realtime, backend]
