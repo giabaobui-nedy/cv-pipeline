@@ -157,7 +157,7 @@ Present the shortlist as a markdown table, then **wait for user approval or edit
 Also propose:
 
 - A **2–3 sentence `profile` paragraph** (≤ ~50 words) that mirrors the ad's vocabulary and culture signals. Adapt the master profile in `cv/main.tex` — do not rewrite from scratch. Cut filler ("Motivated by…") if it doesn't directly mirror the ad.
-- A **reordered, pruned `skills` block** (LaTeX): keep the master's structure, move ad-relevant categories to the top, and **drop categories that would be noise** for this role. Better to have 3 dense lines than 6 thin ones.
+- A **reordered, pruned `skills` block** (structured YAML): keep the master's structure, move ad-relevant categories to the top, and **drop categories that would be noise** for this role. Better to have 3 dense lines than 6 thin ones.
 
 ### 4. Write the spec
 
@@ -200,8 +200,9 @@ experience:
 projects:
   - id: <project-id>
     bullets: [...]
-skills: |
-  <LaTeX skills block, reordered>
+skills:
+  - category: <Category>
+    items: [<item1>, <item2>]
 ```
 
 If `job-ads/<slug>/spec.yml` already exists, **do not overwrite without confirmation** — show a diff summary first.

@@ -101,11 +101,17 @@ cover_letter:
       Thanks for reading. I'd welcome a conversation about how I could
       contribute to the team.
 
-# Free-form skills block (LaTeX). Reorder/drop categories per job.
-skills: |
-  \textbf{Languages:} TypeScript, JavaScript, Python, Java \\
-  \textbf{Backend}{: Python (Flask/FastAPI), Node.js, system integration, threading and concurrency, cloud computing \& solutions (AWS)} \\
-  \textbf{Frontend}{: Vue.js/Nuxt.js, React, component-based UI frameworks, UI component design/development;} \\
-  \textbf{Databases}{: PostgreSQL, MySQL, InfluxDB, relational schema design;} \\
-  \textbf{DevOps \& Tools}{: IaC (AWS CDK), Docker (Compose), Linux, Git/GitHub/Bitbucket, CI/CD basics, GitHub Actions, Jira/Confluence;} \\
-  \textbf{AI-Assisted Development:} Experience leveraging AI-assisted development tools (LLM-based coding assistants and AI-enabled IDEs) to accelerate debugging with test case simulation, code exploration \& understanding, and documentation.
+# Structured skills block. Reorder/drop categories per job.
+skills:
+  - category: Languages
+    items: [TypeScript, JavaScript, Python, Java]
+  - category: Backend
+    items: [Python (Flask/FastAPI), Node.js, system integration, threading and concurrency, cloud computing & solutions (AWS)]
+  - category: Frontend
+    items: [Vue.js/Nuxt.js, React, component-based UI frameworks, UI component design/development]
+  - category: Databases
+    items: [PostgreSQL, MySQL, InfluxDB, relational schema design]
+  - category: DevOps & Tools
+    items: [IaC (AWS CDK), Docker (Compose), Linux, Git/GitHub/Bitbucket, CI/CD basics, GitHub Actions, Jira/Confluence]
+  - category: AI-Assisted Development
+    items: [Experience leveraging AI-assisted development tools (LLM-based coding assistants and AI-enabled IDEs) to accelerate debugging, code exploration, and documentation]

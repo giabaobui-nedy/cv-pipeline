@@ -13,3 +13,6 @@ __pycache__/
 *.pyc
 .DS_Store
 job-ads/*
+!job-ads/_example/
+!job-ads/_example/spec.yml
+!job-ads/_example/spec.schema.json

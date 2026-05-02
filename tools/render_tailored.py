@@ -47,6 +47,53 @@ def _normalise(text: str) -> str:
     return " ".join(text.split())
 
 
+def _latex_escape(text: object) -> str:
+    """Escape plain-text spec values for LaTeX.
+
+    Bullet-bank entries are already LaTeX-ready and should not pass through this
+    helper. It is for structured spec fields such as skills categories/items.
+    """
+    replacements = {
+        "\\": r"\textbackslash{}",
+        "&": r"\&",
+        "%": r"\%",
+        "$": r"\$",
+        "#": r"\#",
+        "_": r"\_",
+        "{": r"\{",
+        "}": r"\}",
+        "~": r"\textasciitilde{}",
+        "^": r"\textasciicircum{}",
+    }
+    return "".join(replacements.get(ch, ch) for ch in str(text))
+
+
+def render_skills(skills: object) -> str:
+    if isinstance(skills, str):
+        return skills.strip()
+
+    if not skills:
+        return ""
+
+    if not isinstance(skills, list):
+        sys.exit("skills must be either a LaTeX string or a list of category/items mappings")
+
+    lines = []
+    for entry in skills:
+        if not isinstance(entry, dict):
+            sys.exit("each structured skills entry must be a mapping")
+
+        category = entry.get("category")
+        items = entry.get("items")
+        if not category or not isinstance(items, list):
+            sys.exit("each structured skills entry needs 'category' and list-valued 'items'")
+
+        rendered_items = ", ".join(_latex_escape(item) for item in items)
+        lines.append(f"\\textbf{{{_latex_escape(category)}}}{{: {rendered_items};}}")
+
+    return " \\\\\n".join(lines)
+
+
 def render_role(role_meta: dict, bullet_ids: list[str], bank: dict[str, dict]) -> str:
     items = []
     for bid in bullet_ids:
@@ -151,7 +198,7 @@ def main() -> None:
             "\\section{Technical Skills}\n"
             "\\begin{itemize}[leftmargin=0.15in, label={}]\n"
             "\\small{\\item{\n"
-            f"{spec.get('skills', '').strip()}\n"
+            f"{render_skills(spec.get('skills', ''))}\n"
             "}}\n"
             "\\end{itemize}"
         ),

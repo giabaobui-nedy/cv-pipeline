@@ -48,6 +48,11 @@
   "[yaml]": {
     "editor.tabSize": 2
   },
+  "yaml.schemas": {
+    "job-ads/_example/spec.schema.json": [
+      "job-ads/**/spec.yml"
+    ]
+  },
   "files.associations": {
     "tailored.tex.template": "latex"
   }
