@@ -35,6 +35,232 @@ For the cross-cutting application strategy (honesty over keywords, ATS +
 manual-screen optimisation, big-tech pivot from SONIQ, Subclass 485 visa
 handling), see `PRINCIPLES.md`. Every skill inherits these.
 
+## Standardising AI model outputs
+
+This repo is designed to make different AI models produce the same kind of
+application package. The goal is not to make the model "write a better CV" from
+scratch. The goal is to constrain the model so it behaves like a careful editor:
+it reads the job, understands the hiring intent, selects truthful evidence, and
+renders the same structured artefacts every time.
+
+The pipeline standardises model output through four layers:
+
+1. **Canonical evidence.** `cv/main.tex` and `bullet-bank/*.yml` define what is
+   true. A model may select, rank, and discuss these bullets, but it must not
+   invent stronger claims. Experience bullets are treated as evidence records,
+   not disposable prose.
+2. **Role interpretation.** Each `job-ads/<slug>/spec.yml` should capture the
+   model's read of the role before selecting bullets. This makes the model
+   explain what kind of engineer the ad is really seeking, not just mirror
+   keywords.
+3. **Narrative strategy.** The spec should name the application's narrative
+   mode, which controls bullet ordering, profile emphasis, skills ordering, and
+   cover-letter tone. This keeps outputs consistent across models because the
+   reasoning target is explicit.
+4. **Deterministic rendering.** The Python renderers only consume the spec and
+   bullet bank. The generated `.tex` and `.pdf` are build artefacts, so model
+   variation is contained inside `spec.yml` where it can be reviewed.
+
+Recommended metadata block for new specs:
+
+```yaml
+role_intent:
+  primary: secure research software engineering
+  secondary:
+    - data visualisation
+    - multidisciplinary collaboration
+    - cloud deployment
+  tone: precise, collaborative, evidence-led
+  risk_profile: privacy-conscious public-health environment
+
+narrative_mode: research_platform_engineer
+
+gap_framing:
+  acknowledge: true
+  transfer_skills:
+    - production React/TypeScript
+    - SQL-backed data modelling
+    - secure SSO and role authorisation
+  learning_plan: learn domain-specific genomics workflows without pretending prior genomics experience
+
+signal_density:
+  max_bullets_per_recent_role: 4
+  max_projects: 2
+  must_cover:
+    - React/TypeScript
+    - API/data layers
+    - visualisation/reporting
+    - security/privacy
+    - Git/Linux/DevOps
+```
+
+These fields are currently advisory metadata: the renderer ignores them, but
+humans and AI agents should use them when editing `profile`, `experience`,
+`projects`, `skills`, and `cover_letter`. Keeping the fields in the spec gives
+future automation a stable place to plug in without changing the CV format.
+
+### Narrative modes
+
+Use a small, repeated set of modes instead of letting every model invent its own
+strategy:
+
+| Mode | Use when the ad wants | Typical emphasis |
+|---|---|---|
+| `systems_engineer` | infrastructure, reliability, debugging, ownership | root cause analysis, production incidents, observability, distributed systems |
+| `enterprise_engineer` | process, SDLC, governance, stability | documentation, CI/CD, security, stakeholder confidence |
+| `research_platform_engineer` | scientific users, complex data, public/research impact | data visualisation, usability, domain collaboration, secure access |
+| `product_delivery_engineer` | full-stack product shipping in a smaller team | React/TypeScript, APIs, iteration speed, customer workflows |
+| `cloud_devops_engineer` | cloud operations, deployment, automation | AWS/Azure, IaC, containers, CI/CD, cost/reliability |
+
+The mode does not license new claims. It decides which truthful evidence gets
+the best real estate.
+
+### Bullet handling policy
+
+Default rule: **select and order bullets; do not rewrite them**.
+
+This is intentional. Free-form bullet rewriting creates overclaim risk: a model
+can turn "resolved a scheduling defect" into "performed systems-level root cause
+analysis" or "owned a critical reliability incident" even when the original
+work does not support that stronger framing. The bullet bank's verbs are the
+ceiling.
+
+Permitted transformations:
+
+- Drop a bullet that does not match the role intent.
+- Move the strongest matching bullet to the top of a role.
+- Add or remove whole bullets by ID.
+- Improve a canonical bullet in `bullet-bank/*.yml` only when the improved
+  wording is still true for every future application.
+- Create a reviewed variant only if it is explicitly stored in the bank with a
+  stable ID and the claim delta is known.
+
+Avoid one-off rewritten bullets inside rendered `.tex` or a job spec. If a
+model proposes a stronger sentence, promote it through the bullet bank review
+path or reject it.
+
+### Where tailoring is allowed
+
+Tailoring should happen mostly in the parts that are meant to be contextual:
+
+- `profile`: role-shaped positioning, but still backed by the bank.
+- `skills`: reorder and drop categories to match the ad.
+- `experience`: select and order canonical bullet IDs.
+- `projects`: choose the smallest project set that fills real gaps.
+- `cover_letter`: narrate the same evidence at a deeper zoom, including a
+  concrete first-90-days angle where useful.
+
+This separation is the main consistency mechanism: the model can reason about
+the role, but the evidence layer stays stable.
+
+## Versioning logic
+
+Build the pipeline from scratch with versioning in mind. The problem this solves
+is reproducibility: six months later, you should be able to understand which
+evidence bank, prompt logic, renderer behaviour, and role interpretation created
+a submitted CV.
+
+Versioning is split into three levels:
+
+1. **Pipeline version.** The behaviour of the repo: renderers, templates,
+   README rules, skills, and cross-cutting principles.
+2. **Evidence version.** The canonical facts: `cv/main.tex`,
+   `bullet-bank/*.yml`, project bullets, and confidentiality boundaries.
+3. **Application version.** The per-role decision record:
+   `job-ads/<slug>/spec.yml`, `research.md`, `ad.txt`, and exported PDFs.
+
+Recommended top-level metadata for every new `spec.yml`:
+
+```yaml
+schema_version: 1
+pipeline_version: 0.1.0
+evidence_snapshot: 2026-05-02
+created_by_model: gpt-5
+reviewed_by: Gia Bao Bui
+review_status: draft
+date_saved: 2026-05-02
+```
+
+Field meanings:
+
+| Field | Purpose |
+|---|---|
+| `schema_version` | Version of the `spec.yml` shape. Increment only when field meaning or structure changes. |
+| `pipeline_version` | Human-readable version of this CV pipeline's rules and render behaviour. |
+| `evidence_snapshot` | Date or git commit representing the bullet bank / master CV state used for tailoring. |
+| `created_by_model` | Model or tool that drafted the spec. Useful when comparing output quality across models. |
+| `reviewed_by` | Human reviewer who accepted the claims and final framing. |
+| `review_status` | `draft`, `reviewed`, `submitted`, or `archived`. |
+| `date_saved` | Date the job ad/spec was created. This is not always the same as submission date. |
+
+### Version bump rules
+
+Use lightweight semantic versioning for the pipeline:
+
+| Change | Bump | Examples |
+|---|---|---|
+| Patch | `0.1.1` | typo fixes, README clarification, formatting-only template tweaks |
+| Minor | `0.2.0` | new advisory spec fields, new narrative mode, new export helper |
+| Major | `1.0.0` | renderer output changes, incompatible spec schema, changed bullet selection contract |
+
+During the early stage, `0.x.y` is fine. Do not pretend the system is stable
+until several real applications have been generated, reviewed, submitted, and
+compared.
+
+### Context snapshot rules
+
+Every submitted application should preserve enough context to explain itself:
+
+- Keep `ad_raw` or `ad.txt` with the original job ad.
+- Keep `research.md` if company/product research influenced the application.
+- Keep `role_intent`, `narrative_mode`, `gap_framing`, and `signal_density` in
+  the spec, even though renderers currently ignore them.
+- Keep selected bullet IDs in `experience` and `projects`; never paste
+  one-off rewritten bullet prose into generated `.tex`.
+- Export final PDFs with `tools/export.sh` and do not manually rename them in a
+  way that loses date, role, or company.
+
+The generated files in `outputs/` remain disposable, but the final submitted
+PDFs and the spec that created them are part of the application record.
+
+### What to commit
+
+Commit source-of-truth changes:
+
+- `README.md`, `PRINCIPLES.md`, `BOUNDARIES.md`
+- `cv/*.tex` templates
+- `tools/*.py` and `tools/*.sh`
+- `bullet-bank/*.yml`
+- reviewed examples under `job-ads/_example/`
+
+Do not commit private application folders by default because `.gitignore`
+excludes `job-ads/*` and `outputs/`. If you want a reproducible private archive,
+use a separate private branch or encrypted backup rather than weakening the
+default privacy boundary.
+
+### Migration policy
+
+When the spec schema evolves, do not silently rewrite old applications. Add a
+short migration note to this README or a future `CHANGELOG.md`, then update old
+specs only when you actually reopen that application.
+
+Safe migrations:
+
+- Adding optional advisory fields such as `role_intent` or `signal_density`.
+- Renaming a narrative mode while preserving its meaning.
+- Adding new bullet tags without changing bullet text.
+
+Risky migrations:
+
+- Rewording canonical bullets after they have been submitted.
+- Changing a bullet ID used by old specs.
+- Changing renderer behaviour in a way that alters compiled content from the
+  same spec.
+
+If a canonical bullet needs improvement, prefer adding a new bullet ID and
+retiring the old one in future specs. Keep old IDs available so submitted
+applications remain explainable.
+
 ## Layout
 
 ```
