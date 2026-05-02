@@ -105,9 +105,17 @@ def main() -> None:
         r"Achieved Swinburne Excellence International Scholarship (50\%);",
     ]
     education_bullets = spec.get("education_bullets", default_education_bullets)
-    education_items = "\n".join(
-        f"            \\resumeItem{{{_normalise(b)}}}" for b in education_bullets
-    )
+    if education_bullets:
+        education_items = "\n".join(
+            f"            \\resumeItem{{{_normalise(b)}}}" for b in education_bullets
+        )
+        education_list_block = (
+            "        \\resumeItemListStart\n"
+            f"{education_items}\n"
+            "        \\resumeItemListEnd\n"
+        )
+    else:
+        education_list_block = ""
 
     experience_blocks = []
     for role in spec.get("experience", []):
@@ -153,9 +161,7 @@ def main() -> None:
             "    \\resumeSubheading\n"
             "      {Swinburne University of Technology}{Hawthorn, VIC}\n"
             "      {Bachelor of Computer Science (Professional), Major in Software Development}{GPA: 3.88/4 | Feb 2022 -- Dec 2025}\n"
-            "        \\resumeItemListStart\n"
-            f"{education_items}\n"
-            "        \\resumeItemListEnd\n"
+            f"{education_list_block}"
             "  \\resumeSubHeadingListEnd"
         ),
     }
