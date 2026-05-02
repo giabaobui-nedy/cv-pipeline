@@ -59,6 +59,7 @@ cv-pipeline/
       cv.tex / cv.pdf
       cover.tex / cover.pdf
   tools/
+    create_spec.py              # job ad text -> draft spec without an AI agent
     render_tailored.py          # spec + bullet bank -> outputs/<slug>/cv.tex
     render_cover_letter.py      # spec -> outputs/<slug>/cover.tex
     compile.sh                  # one-shot render + compile via Tectonic
@@ -184,6 +185,54 @@ tools/compile.sh master                          # compile cv/main.tex (full mas
 
 Outputs always land in `outputs/<slug>/{cv,cover}.{tex,pdf}`.
 
+## Non-agent workflow
+
+You do **not** need Cursor or an AI agent to use the pipeline. The agent
+skills are the fastest drafting path, but the core pipeline is just YAML +
+Python + Tectonic.
+
+### 1. Save the job ad
+
+```bash
+mkdir -p job-ads/<slug>
+pbpaste > job-ads/<slug>/ad.txt                  # macOS convenience
+```
+
+Or create `job-ads/<slug>/ad.txt` manually and paste the ad text.
+
+### 2. Generate a draft spec
+
+`tools/create_spec.py` reads the ad, matches its words against bullet-bank
+tags, and creates a compile-ready `spec.yml`. It never invents new bullets;
+it only chooses existing bullet IDs.
+
+```bash
+.venv/bin/python tools/create_spec.py \
+  --slug <slug> \
+  --company "Company Name" \
+  --role "Software Engineer" \
+  --source-url "https://example.com/job" \
+  --ad job-ads/<slug>/ad.txt \
+  --write
+```
+
+Without `--write`, the generated YAML is printed to stdout for review. If a
+spec already exists, the tool refuses to overwrite it unless you pass
+`--force`.
+
+### 3. Review and compile
+
+Open `job-ads/<slug>/spec.yml` and edit the generated `profile`, `skills`,
+and bullet selections. Then run:
+
+```bash
+tools/compile.sh <slug>
+```
+
+This produces `outputs/<slug>/cv.pdf`. Add a `cover_letter:` block manually
+if you want a cover letter too, or omit it and the compiler will skip the
+cover-letter render.
+
 ### Export for submission
 
 When the iteration is done, `tools/export.sh` copies both PDFs to `~/Desktop` with submission-ready filenames:
@@ -222,6 +271,44 @@ Overleaf's pdflatex and silently skip under Tectonic's xelatex.
 The fastest way to use this repo is through the four Cursor Agent Skills.
 Open Cursor in this folder and just talk to it — the skills auto-trigger
 from natural phrasing.
+
+### Best prompt for a new application
+
+Use this when you want the full workflow: company research, tailored CV,
+optional cover letter, compile, and a final application checklist.
+
+```text
+I want to apply for this role. Please run the CV pipeline end to end.
+
+Goals:
+- Research the company first, using cited public sources.
+- Tailor my CV from the bullet bank only; do not invent experience or metrics.
+- Target exactly 1 page for the CV.
+- Show me the proposed bullet shortlist, profile paragraph, skills block, and
+  any obvious gaps before writing files.
+- After I approve, write job-ads/<slug>/spec.yml, render, compile, and report
+  the output paths and page counts.
+- If a cover letter is useful for this application, draft it after the CV using
+  the same spec file; otherwise skip it.
+- Keep confidential details out, following BOUNDARIES.md.
+
+Company: <company name>
+Role: <role title>
+Source URL: <job ad URL, or n/a>
+Cover letter: <yes | no | decide based on the ad>
+
+Notes:
+- Emphasise: <e.g. AWS, TypeScript, backend systems, full-stack delivery>
+- Downplay/avoid: <e.g. mobile projects, signage domain, blockchain>
+- Constraints: <e.g. must stay one page, no PR/citizenship-only roles>
+
+--- JOB AD START ---
+<paste the full job ad verbatim>
+--- JOB AD END ---
+```
+
+For a faster CV-only run, use the same prompt but set `Cover letter: no` and
+remove the research goal if the company is already familiar.
 
 ### When a job ad arrives
 
