@@ -42,7 +42,7 @@ compile_tex() {
   if [[ -f "$pdf" ]]; then
     local pages="?"
     if [[ -x .venv/bin/python ]]; then
-      pages=$(.venv/bin/python -c "from pypdf import PdfReader; print(len(PdfReader('$pdf').pages))" 2>/dev/null || echo "?")
+      pages=$(.venv/bin/python -c "import sys; from pypdf import PdfReader; print(len(PdfReader(sys.argv[1]).pages))" "$pdf" 2>/dev/null || echo "?")
     fi
     local size
     size=$(du -h "$pdf" | cut -f1)

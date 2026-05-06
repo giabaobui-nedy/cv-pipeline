@@ -70,16 +70,20 @@ def _bullets_used(spec: dict) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("target", help="slug or path to spec.yml")
+    ap.add_argument("--status", default=None,
+                    help="override Status (default: review_status from spec, or 'draft')")
     args = ap.parse_args()
 
     spec_path = _resolve_spec(args.target)
     spec = yaml.safe_load(spec_path.read_text()) or {}
     slug = spec_path.parent.name
 
+    status = args.status or str(spec.get("review_status", "draft")).title()
+
     fields: list[tuple[str, str]] = [
         ("Company",          str(spec.get("company", "—"))),
         ("Position",         str(spec.get("role", "—"))),
-        ("Status",           "Applied"),
+        ("Status",           status),
         ("Application Date", str(spec.get("date_saved") or dt.date.today().isoformat())),
         ("Source URL",       str(spec.get("source_url", "—"))),
         ("Slug",             slug),

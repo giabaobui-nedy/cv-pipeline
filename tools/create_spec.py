@@ -196,6 +196,12 @@ def build_spec(args: argparse.Namespace) -> dict[str, Any]:
     ad_token_set = tokens(ad_text)
 
     return {
+        "schema_version": 1,
+        "pipeline_version": "0.1.0",
+        "evidence_snapshot": args.date,
+        "created_by_model": "create_spec.py",
+        "reviewed_by": "",
+        "review_status": "draft",
         "company": args.company,
         "role": args.role,
         "source_url": args.source_url or "n/a",
