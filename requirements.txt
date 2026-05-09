@@ -1,2 +1,11 @@
 PyYAML>=6.0
 pypdf>=4.0
+
+# job_fetcher dependencies
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+playwright>=1.44.0
+fake-useragent>=1.5.0
+# urllib3 v2 dropped LibreSSL support (macOS system Python uses LibreSSL).
+# Pin to v1.x until the venv uses an OpenSSL-backed Python.
+urllib3<2
