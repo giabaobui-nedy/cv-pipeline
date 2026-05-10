@@ -33,6 +33,7 @@ Filter flags (work with --list and --search)
     --visa-only
     --show-excluded
     --deep                fetch each listing's full description to resolve ? visa signals
+                          AND re-classify seniority (e.g. "3+ years" → mid)
     --json
 """
 from __future__ import annotations
@@ -410,8 +411,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--deep",
         action="store_true",
         help=(
-            "Fetch each matched listing's full description to resolve ? visa signals. "
-            "Slower but accurate — runs one extra request per unknown listing."
+            "Fetch each matched listing's full description to resolve ? visa signals "
+            "AND re-classify seniority level (e.g. '3+ years required' → mid). "
+            "Also improves stack and arrangement matching. "
+            "Slower — one extra request per unknown-visa listing."
         ),
     )
 
@@ -445,46 +448,67 @@ def _csv_set(raw: str) -> set[str]:
 
 
 def resolve_visa_signals(stubs: list[JobStub], router: "JobFetcherRouter") -> list[JobStub]:
-    """Fetch the full listing for every stub whose visa_eligible is None,
-    re-run visa detection on the complete description, and return updated stubs.
+    """Fetch the full listing for every stub whose visa_eligible is None.
 
-    Stubs that are already True or False are passed through untouched.
-    Stubs that fail to fetch are left as None with a warning.
+    For each fetched listing we update the stub with:
+    - Resolved visa_eligible / sponsorship_available from the full description.
+    - The complete description text stored in description_preview so that the
+      subsequent re-filter pass can use it for:
+        • classify_level   — picks up "3+ years required" → mid, etc.
+        • stub_matches_stack — broader keyword matching against full text.
+        • detect_arrangement — finds hybrid/remote signals in the body.
+
+    Stubs that are already True/False for visa are passed through untouched.
+    Stubs that fail to fetch are left unchanged with a warning.
     """
+    import dataclasses
     from job_fetcher.visa_filter import detect_visa_signals
+    from job_fetcher.filters import classify_level
 
     unknown = [s for s in stubs if s.visa_eligible is None]
     if not unknown:
         return stubs
 
     print(
-        DIM(f"  --deep: resolving {len(unknown)} unknown visa signals …"),
+        DIM(f"  --deep: fetching {len(unknown)} full listings "
+            f"(visa + seniority + stack) …"),
         file=sys.stderr,
     )
 
-    # Build a lookup so we can update in-place by URL.
     stub_map = {s.url: s for s in stubs}
 
     for i, stub in enumerate(unknown, 1):
         print(
-            DIM(f"  [{i}/{len(unknown)}] {_truncate(stub.title, 45)} @ {_truncate(stub.company, 25)} …"),
+            DIM(f"  [{i}/{len(unknown)}] {_truncate(stub.title, 45)}"
+                f" @ {_truncate(stub.company, 25)} …"),
             end="", flush=True, file=sys.stderr,
         )
         try:
             listing = router.fetch(stub.url)
             visa, sponsor = detect_visa_signals(listing.description)
-            # Patch the stub in-place via a new dataclass instance.
-            import dataclasses
-            stub_map[stub.url] = dataclasses.replace(
+
+            # Store the full description so re-filter sees complete text.
+            updated = dataclasses.replace(
                 stub,
                 visa_eligible=visa,
                 sponsorship_available=sponsor,
-                description_preview=listing.description[:300],
+                description_preview=listing.description,  # full text, not 300-char slice
             )
-            badge = (GREEN("✓ open") if visa is True
-                     else RED("✗ restricted") if visa is False
-                     else YELLOW("? still unknown"))
-            print(f" {badge}", file=sys.stderr)
+            stub_map[stub.url] = updated
+
+            # Report visa badge + any seniority change detected in full text.
+            visa_badge = (
+                GREEN("✓ open") if visa is True
+                else RED("✗ restricted") if visa is False
+                else YELLOW("?")
+            )
+            old_level = classify_level(stub)
+            new_level = classify_level(updated)
+            level_note = (
+                f"  {DIM(f'level {old_level!r}→{new_level!r}')}"
+                if new_level != old_level else ""
+            )
+            print(f" {visa_badge}{level_note}", file=sys.stderr)
         except JobFetchError as e:
             print(DIM(f" skipped ({e})"), file=sys.stderr)
 
