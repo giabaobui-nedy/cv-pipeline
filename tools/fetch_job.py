@@ -469,17 +469,34 @@ def resolve_visa_signals(stubs: list[JobStub], router: "JobFetcherRouter") -> li
     if not unknown:
         return stubs
 
+    # Indeed individual listing pages are blocked by Cloudflare even with
+    # Playwright — skip them upfront with a single note rather than showing
+    # N individual "skipped" lines.
+    indeed_skipped = [s for s in unknown if s.source == "indeed"]
+    fetchable     = [s for s in unknown if s.source != "indeed"]
+
+    if indeed_skipped:
+        print(
+            YELLOW(f"  --deep: skipping {len(indeed_skipped)} Indeed listing(s) "
+                   f"— Cloudflare blocks individual viewjob pages even with Playwright."),
+            file=sys.stderr,
+        )
+
+    if not fetchable:
+        print(file=sys.stderr)
+        return stubs
+
     print(
-        DIM(f"  --deep: fetching {len(unknown)} full listings "
+        DIM(f"  --deep: fetching {len(fetchable)} full listings "
             f"(visa + seniority + stack) …"),
         file=sys.stderr,
     )
 
     stub_map = {s.url: s for s in stubs}
 
-    for i, stub in enumerate(unknown, 1):
+    for i, stub in enumerate(fetchable, 1):
         print(
-            DIM(f"  [{i}/{len(unknown)}] {_truncate(stub.title, 45)}"
+            DIM(f"  [{i}/{len(fetchable)}] {_truncate(stub.title, 45)}"
                 f" @ {_truncate(stub.company, 25)} …"),
             end="", flush=True, file=sys.stderr,
         )
