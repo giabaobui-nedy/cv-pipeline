@@ -1,19 +1,14 @@
 """
 fetchers/indeed_search.py — scraper for Indeed (au.indeed.com) search result pages.
 
-Indeed protects its search pages with Cloudflare and bot-detection, so a plain
-``requests`` call usually returns 403.  We use a two-stage strategy:
+Indeed blocks plain HTTP requests with Cloudflare bot-detection (403), so we
+use Playwright (headless Chromium) exclusively for search pages.
 
-  Stage 1 — requests (fast, no overhead)
-      Tried first.  If the response is 200 and not a CAPTCHA page we parse the
-      ``window.mosaic.providerData`` JSON blob embedded in the HTML, falling
-      back to CSS-selector DOM parsing.
-
-  Stage 2 — Playwright (headless Chromium)
-      Triggered automatically on a 403 / CAPTCHA response.  We navigate with a
-      real browser, pull ``window.mosaic.providerData`` directly from the live
-      JavaScript state via ``page.evaluate()``, and fall back to DOM parsing of
-      the rendered HTML if the JS object is unavailable.
+The browser navigates to the search URL, waits for hydration, then pulls
+``window.mosaic.providerData["mosaic-provider-jobcards"]`` directly from the
+live JavaScript state via ``page.evaluate()``.  If the JS object is absent
+(structure change) we fall back to CSS-selector DOM parsing of the rendered
+HTML.
 
 Each job is identified by an ``&jk=`` key, from which we construct the
 canonical ``https://au.indeed.com/viewjob?jk=...`` URL.
@@ -31,9 +26,8 @@ from __future__ import annotations
 
 import json
 import re
-from urllib.parse import urlparse, urlencode, parse_qs, urlunparse
+from urllib.parse import urlparse, urlencode, parse_qs, urlunparse, quote_plus
 
-import requests
 from bs4 import BeautifulSoup
 
 from ..base import _polite_delay, _random_headers
@@ -42,7 +36,6 @@ from ..visa_filter import detect_visa_signals
 
 _INDEED_BASE = "https://au.indeed.com"
 
-# Indeed uses longer, more realistic delays to avoid triggering rate limits.
 _MIN_DELAY = 2.0
 _MAX_DELAY = 5.0
 
@@ -53,13 +46,9 @@ try:
 except ImportError:
     _PLAYWRIGHT_AVAILABLE = False
 
-# Regex to find common Indeed data blobs embedded in <script> tags.
+# Regex to extract the Mosaic JSON blob from rendered HTML (DOM fallback path).
 _MOSAIC_RE = re.compile(
     r'window\.mosaic\.providerData\["mosaic-provider-jobcards"\]\s*=\s*(\{.+?\});',
-    re.DOTALL,
-)
-_INITIAL_DATA_RE = re.compile(
-    r'window\._initialData\s*=\s*(\{.+?\});',
     re.DOTALL,
 )
 
@@ -86,69 +75,22 @@ class IndeedSearchScraper:
     def fetch_page(self, url: str, page: int = 1) -> list[JobStub]:
         """Return all job stubs from one Indeed search results page.
 
+        Uses Playwright (headless Chromium) — Indeed blocks plain HTTP
+        requests with Cloudflare bot-detection.
+
         Parameters
         ----------
         url  : An Indeed jobs search URL (with ``q`` and ``l`` params).
         page : 1-indexed page number (Indeed uses ``&start=N*10``).
         """
-        paged_url = _inject_page(url, page)
-        _polite_delay(_MIN_DELAY, _MAX_DELAY)
-
-        # ── Stage 1: plain requests (fast) ───────────────────────────────
-        html: str | None = None
-        try:
-            resp = requests.get(
-                paged_url,
-                headers=_indeed_headers(),
-                timeout=20,
-                allow_redirects=True,
-                verify=True,
-            )
-            if resp.status_code not in (403, 429) and not _is_blocked(resp.text):
-                resp.raise_for_status()
-                html = resp.text
-        except requests.exceptions.SSLError:
-            import urllib3, warnings
-            warnings.warn(
-                "SSL error on Indeed search — retrying without verification.",
-                stacklevel=2,
-            )
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-            try:
-                resp = requests.get(
-                    paged_url,
-                    headers=_indeed_headers(),
-                    timeout=20,
-                    allow_redirects=True,
-                    verify=False,
-                )
-                if resp.status_code not in (403, 429) and not _is_blocked(resp.text):
-                    html = resp.text
-            except requests.RequestException:
-                pass  # Will fall through to Playwright below.
-        except requests.RequestException:
-            pass  # Will fall through to Playwright below.
-
-        if html:
-            stubs = self._parse_mosaic_json(html, paged_url)
-            if stubs:
-                return stubs
-            soup = BeautifulSoup(html, "html.parser")
-            stubs = self._parse_dom(soup, paged_url)
-            if stubs:
-                return stubs
-            # Got a page but parsed nothing — may be an empty results page.
-            # Don't try Playwright if the page loaded fine; just return [].
-            if not _is_blocked(html):
-                return []
-
-        # ── Stage 2: Playwright (handles Cloudflare / bot-detection) ────
         if not _PLAYWRIGHT_AVAILABLE:
             raise JobFetchError(
-                "Indeed search returned 403/CAPTCHA and Playwright is not installed. "
+                "Playwright is required for Indeed search but is not installed. "
                 "Run: playwright install chromium",
-                url=paged_url,
+                url=url,
             )
+        paged_url = _inject_page(url, page)
+        _polite_delay(_MIN_DELAY, _MAX_DELAY)
         return self._fetch_with_playwright(paged_url)
 
     def fetch_all_pages(self, url: str, max_pages: int = 3) -> list[JobStub]:
@@ -173,12 +115,6 @@ class IndeedSearchScraper:
         directly from the live JavaScript state, falling back to DOM parsing
         of the fully-rendered HTML if the JS object is unavailable.
         """
-        import sys
-        print(
-            "  [Indeed] 403 detected — retrying with Playwright …",
-            end="", flush=True, file=sys.stderr,
-        )
-
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
             context = browser.new_context(
@@ -202,23 +138,11 @@ class IndeedSearchScraper:
                 if mosaic_data and isinstance(mosaic_data, dict):
                     stubs = self._extract_tiles(mosaic_data, url)
                     if stubs:
-                        print(" ✓ (mosaic JS)", file=sys.stderr)
                         return stubs
-                    # Got the object but tiles were empty — dump top-level keys
-                    # so we can diagnose the structure change.
-                    meta = mosaic_data.get("metaData", {})
-                    model = meta.get("mosaicProviderJobCardsModel", meta.get("jobCardsModel", {}))
-                    print(
-                        f" ✓ (mosaic JS — 0 tiles; top={list(mosaic_data)[:6]}"
-                        f" model={list(model)[:8]})",
-                        file=sys.stderr,
-                    )
 
                 # Fall back to DOM parsing of the rendered HTML.
                 html = page.content()
-                print(" ✓ (DOM fallback)", file=sys.stderr)
             except PlaywrightTimeout:
-                print(" ✗ (timeout)", file=sys.stderr)
                 raise JobFetchError(
                     "Playwright timed out loading Indeed search page.",
                     url=url,
@@ -226,7 +150,6 @@ class IndeedSearchScraper:
             except JobFetchError:
                 raise
             except Exception as exc:
-                print(f" ✗ ({exc})", file=sys.stderr)
                 raise JobFetchError(
                     f"Playwright error fetching Indeed search: {exc}",
                     url=url,
@@ -234,7 +157,6 @@ class IndeedSearchScraper:
             finally:
                 browser.close()
 
-        # Parse from rendered HTML.
         stubs_html = self._parse_mosaic_json(html, url)
         if stubs_html:
             return stubs_html
@@ -292,21 +214,11 @@ class IndeedSearchScraper:
     # ------------------------------------------------------------------
 
     def _parse_mosaic_json(self, html: str, url: str) -> list[JobStub]:
-        """Extract job stubs from the embedded Mosaic / initialData JSON blob."""
-
-        raw_json: str | None = None
-
-        # Try the modern Mosaic provider data first.
+        """Extract job stubs from the Mosaic JSON blob embedded in rendered HTML."""
         m = _MOSAIC_RE.search(html)
-        if m:
-            raw_json = m.group(1)
-        else:
-            m = _INITIAL_DATA_RE.search(html)
-            if m:
-                raw_json = m.group(1)
-
-        if not raw_json:
+        if not m:
             return []
+        raw_json = m.group(1)
 
         try:
             data = json.loads(raw_json)
@@ -530,7 +442,6 @@ def build_indeed_url(query: str, location: str) -> str:
         build_indeed_url("junior software engineer", "Melbourne VIC")
         # → https://au.indeed.com/jobs?q=junior+software+engineer&l=Melbourne+VIC&sort=date
     """
-    from urllib.parse import quote_plus
     return (
         f"{_INDEED_BASE}/jobs"
         f"?q={quote_plus(query)}"
@@ -550,29 +461,6 @@ INDEED_LOCATIONS: dict[str, str] = {
     "remote":       "Remote",
     "australia":    "Australia",
 }
-
-
-def _indeed_headers() -> dict[str, str]:
-    """Return request headers that look like a real Chrome browser."""
-    base = _random_headers()
-    base["Accept-Encoding"] = "gzip, deflate, br"
-    base["Connection"] = "keep-alive"
-    base["Upgrade-Insecure-Requests"] = "1"
-    return base
-
-
-def _is_blocked(html: str) -> bool:
-    lower = html.lower()
-    return any(
-        signal in lower
-        for signal in (
-            "please verify you are a human",
-            "captcha",
-            "access denied",
-            "bot detection",
-            "unusual traffic",
-        )
-    )
 
 
 def _deep_get(d: dict, *keys: str):
