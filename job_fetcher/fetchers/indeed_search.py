@@ -200,18 +200,19 @@ class IndeedSearchScraper:
                 mosaic_data = page.evaluate(_JS_EXTRACT_MOSAIC)
 
                 if mosaic_data and isinstance(mosaic_data, dict):
-                    print(" ✓ (mosaic JS)", file=sys.stderr)
-                    stubs: list[JobStub] = []
-                    tiles = (
-                        _deep_get(mosaic_data, "metaData", "mosaicProviderJobCardsModel", "tiles")
-                        or mosaic_data.get("tiles")
-                        or []
+                    stubs = self._extract_tiles(mosaic_data, url)
+                    if stubs:
+                        print(" ✓ (mosaic JS)", file=sys.stderr)
+                        return stubs
+                    # Got the object but tiles were empty — dump top-level keys
+                    # so we can diagnose the structure change.
+                    meta = mosaic_data.get("metaData", {})
+                    model = meta.get("mosaicProviderJobCardsModel", meta.get("jobCardsModel", {}))
+                    print(
+                        f" ✓ (mosaic JS — 0 tiles; top={list(mosaic_data)[:6]}"
+                        f" model={list(model)[:8]})",
+                        file=sys.stderr,
                     )
-                    for tile in tiles:
-                        stub = self._tile_to_stub(tile, url)
-                        if stub:
-                            stubs.append(stub)
-                    return stubs
 
                 # Fall back to DOM parsing of the rendered HTML.
                 html = page.content()
@@ -300,7 +301,6 @@ class IndeedSearchScraper:
         if m:
             raw_json = m.group(1)
         else:
-            # Older / fallback format.
             m = _INITIAL_DATA_RE.search(html)
             if m:
                 raw_json = m.group(1)
@@ -313,14 +313,35 @@ class IndeedSearchScraper:
         except json.JSONDecodeError:
             return []
 
-        # Navigate the mosaic structure to reach the job tiles/cards list.
-        # Path: data -> metaData -> mosaicProviderJobCardsModel -> tiles
+        return self._extract_tiles(data, url)
+
+    def _extract_tiles(self, data: dict, url: str) -> list[JobStub]:
+        """Find the job listing array inside a mosaic/initialData dict.
+
+        Indeed has changed the key name and nesting several times; we try
+        every known path so the scraper survives minor structure changes.
+        """
+        model = (
+            _deep_get(data, "metaData", "mosaicProviderJobCardsModel")
+            or _deep_get(data, "metaData", "jobCardsModel")
+            or {}
+        )
+
         tiles = (
-            _deep_get(data, "metaData", "mosaicProviderJobCardsModel", "tiles")
-            or _deep_get(data, "jobsInResultSet")
-            or _deep_get(data, "jobResults")
+            # Modern: results array inside the model object.
+            (model.get("results") if isinstance(model, dict) else None)
+            # Older: tiles array inside the model object.
+            or (model.get("tiles") if isinstance(model, dict) else None)
+            # Flat: sometimes the array sits directly on the root.
+            or data.get("results")
+            or data.get("tiles")
+            or data.get("jobsInResultSet")
+            or data.get("jobResults")
             or []
         )
+
+        if not tiles:
+            return []
 
         stubs: list[JobStub] = []
         for tile in tiles:
@@ -330,56 +351,52 @@ class IndeedSearchScraper:
         return stubs
 
     def _tile_to_stub(self, tile: dict, page_url: str) -> JobStub | None:
-        """Convert one Mosaic tile dict into a JobStub."""
+        """Convert one Mosaic result/tile dict into a JobStub.
+
+        Indeed's tile structure varies: some versions nest fields under a
+        ``"jobCard"`` sub-dict; others put them flat on the tile itself.
+        We try the nested path first, then fall back to the flat path.
+        """
         try:
+            # job key — always at the tile root regardless of version.
             job_key = (
                 tile.get("jobkey")
                 or tile.get("jobKey")
                 or _deep_get(tile, "jobCard", "jobkey")
                 or ""
-            ).strip()
+            )
+            if isinstance(job_key, str):
+                job_key = job_key.strip()
             if not job_key:
                 return None
 
             job_url = f"{_INDEED_BASE}/viewjob?jk={job_key}"
 
-            title = (
-                _deep_get(tile, "jobCard", "title")
-                or tile.get("title")
-                or ""
-            ).strip()
+            # For each field: try nested jobCard path first, then flat.
+            def _get(*flat_keys: str, nested_key: str | None = None) -> str:
+                """Return the first non-empty value across all candidate paths."""
+                if nested_key:
+                    v = _deep_get(tile, "jobCard", nested_key)
+                    if v and isinstance(v, str):
+                        return v.strip()
+                for k in flat_keys:
+                    v = tile.get(k)
+                    if v and isinstance(v, str):
+                        return v.strip()
+                return ""
 
-            company = (
-                _deep_get(tile, "jobCard", "company")
-                or tile.get("company")
-                or ""
-            ).strip()
+            title    = _get("title",             "displayTitle",      nested_key="title")
+            company  = _get("company",           "companyName",       nested_key="company")
+            location = _get("formattedLocation", "location", "city",  nested_key="formattedLocation")
+            date_listed = _get("formattedRelativeTime", "pubDate",    nested_key="formattedRelativeTime") or None
 
-            location = (
-                _deep_get(tile, "jobCard", "formattedLocation")
-                or _deep_get(tile, "jobCard", "location")
-                or tile.get("formattedLocation")
-                or tile.get("location")
-                or ""
-            ).strip()
+            # Snippet / preview — strip any embedded HTML tags.
+            raw_preview = _get("snippet", "description", nested_key="snippet")
+            preview = re.sub(r"<[^>]+>", " ", raw_preview).strip() if raw_preview else None
 
-            salary = _extract_salary_tile(tile)
+            salary   = _extract_salary_tile(tile)
             work_type = _extract_work_type_tile(tile)
-            date_listed = (
-                _deep_get(tile, "jobCard", "formattedRelativeTime")
-                or tile.get("formattedRelativeTime")
-                or _deep_get(tile, "jobCard", "datePublished")
-                or None
-            )
-            preview = (
-                _deep_get(tile, "jobCard", "snippet")
-                or tile.get("snippet")
-                or ""
-            ).strip()
-            # Strip HTML from snippet.
-            preview = re.sub(r"<[^>]+>", " ", preview).strip()
-
-            visa_eligible, sponsorship = detect_visa_signals(preview)
+            visa_eligible, sponsorship = detect_visa_signals(preview or "")
 
             return JobStub(
                 title=title,
@@ -393,7 +410,11 @@ class IndeedSearchScraper:
                 description_preview=preview or None,
                 visa_eligible=visa_eligible,
                 sponsorship_available=sponsorship,
-                is_featured=bool(tile.get("sponsored") or tile.get("isSponsor")),
+                is_featured=bool(
+                    tile.get("sponsored")
+                    or tile.get("isSponsor")
+                    or _deep_get(tile, "jobCard", "sponsored")
+                ),
             )
         except Exception:
             return None
