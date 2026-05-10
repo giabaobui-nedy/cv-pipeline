@@ -662,6 +662,20 @@ def main() -> None:
     source_urls: dict[str, list[str]] = {}   # {"seek": [...], "indeed": [...]}
     sources = _csv_set(args.source) or {"seek"}
 
+    # LinkedIn search requires login — warn early rather than silently doing nothing.
+    if "linkedin" in sources and (args.search or args.list):
+        print(
+            YELLOW(
+                "  ⚠  LinkedIn search is not supported (requires login + aggressive bot detection).\n"
+                "     Browse manually: https://www.linkedin.com/jobs/search/"
+                f"?keywords={'+'.join((args.search or '').split())}&location={args.location}\n"
+                "     Then pass individual listing URLs directly:\n"
+                "       .venv/bin/python tools/fetch_job.py <linkedin-url>"
+            ),
+            file=sys.stderr,
+        )
+        sources.discard("linkedin")
+
     if args.list:
         # Raw URL list — infer source from the URL itself.
         for u in (u.strip() for u in args.list.split(",") if u.strip()):
