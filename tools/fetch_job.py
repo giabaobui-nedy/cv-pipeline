@@ -665,7 +665,11 @@ def main() -> None:
                 args.location.lower().replace(" ", "-"),
                 args.location,
             )
-            source_urls["indeed"] = [build_indeed_url(args.search, indeed_loc)]
+            if args.variants:
+                keywords = expand_keywords(args.search)
+                source_urls["indeed"] = [build_indeed_url(kw, indeed_loc) for kw in keywords]
+            else:
+                source_urls["indeed"] = [build_indeed_url(args.search, indeed_loc)]
 
     if source_urls:
         all_search_urls = [u for urls in source_urls.values() for u in urls]
