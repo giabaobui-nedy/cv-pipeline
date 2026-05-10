@@ -89,23 +89,73 @@ _COMPILED: dict[str, list[re.Pattern]] = {
     for level, patterns in _LEVEL_PATTERNS.items()
 }
 
-# Check seniority signals FIRST so "Senior Associate" → senior, not junior.
-# Within the junior cluster, intern/graduate/junior are fine in any order
-# since their patterns don't overlap with each other.
-_LEVEL_ORDER = ["senior", "mid", "intern", "graduate", "junior"]
+# Pass 1 (title only): entry-level signals are checked before senior/mid so
+# "Junior – Mid Level Developer" classifies as junior (open to you), not mid.
+_TITLE_JUNIOR_FIRST = ["intern", "graduate", "junior", "mid", "senior"]
+
+# Pass 2 (full text): senior-first so "Senior Associate" beats "associate"
+# and YoE patterns like "5+ years" correctly bubble up.
+_DESC_SENIOR_FIRST = ["senior", "mid", "intern", "graduate", "junior"]
 
 
 def classify_level(stub: JobStub) -> Level:
     """Detect the experience level from a job stub's title and preview text.
 
-    Returns one of: ``"intern"``, ``"graduate"``, ``"junior"``, ``"mid"``,
-    ``"senior"``, ``"unknown"``.
+    Two-pass strategy
+    -----------------
+    Pass 1 — title alone, junior-first order:
+        If the job title contains any entry-level keyword (junior, graduate,
+        intern) we return that immediately, even if the title also mentions
+        a higher level ("Junior – Mid Level" → junior).  This ensures
+        flexible/"span" roles are not over-classified and filtered out.
+
+    Pass 2 — full text (title + description), senior-first order:
+        Used when the title alone has no level signal.  YoE patterns
+        ("3+ years") and description keywords are evaluated here.  Senior
+        wins over junior so that a role body saying "5+ years required" is
+        not accidentally labelled junior just because "junior" appears
+        somewhere in the boilerplate.
+
+    Returns one of: intern · graduate · junior · mid · senior · unknown.
     """
-    text = " ".join(filter(None, [stub.title, stub.description_preview]))
-    for level in _LEVEL_ORDER:
-        for pat in _COMPILED[level]:
-            if pat.search(text):
-                return level  # type: ignore[return-value]
+    title = stub.title or ""
+    description = stub.description_preview or ""
+
+    # Pass 1: title only.
+    #
+    # Conflict rules when multiple level signals appear in the same title:
+    #   "Senior Associate"   → senior wins  (senior overrides any entry-level word)
+    #   "Junior – Mid Level" → junior wins  (flexible span role; open to junior)
+    #
+    # Implementation: find the highest entry-level signal AND the highest
+    # high-level signal, then apply the rules.
+    _entry = ["intern", "graduate", "junior"]
+    _high  = ["senior", "mid"]
+
+    title_entry: str | None = next(
+        (lvl for lvl in _entry if any(p.search(title) for p in _COMPILED[lvl])),
+        None,
+    )
+    title_high: str | None = next(
+        (lvl for lvl in _high if any(p.search(title) for p in _COMPILED[lvl])),
+        None,
+    )
+
+    if title_entry and title_high == "senior":
+        return "senior"   # "Senior Associate" — senior qualifier dominates
+    if title_entry:
+        return title_entry  # type: ignore[return-value]   # junior beats mid in flexible titles
+    if title_high:
+        return title_high   # type: ignore[return-value]   # pure mid/senior title
+
+    # Pass 2: full text — description YoE / preview keywords.
+    if description:
+        full_text = f"{title} {description}"
+        for level in _DESC_SENIOR_FIRST:
+            for pat in _COMPILED[level]:
+                if pat.search(full_text):
+                    return level  # type: ignore[return-value]
+
     return "unknown"
 
 

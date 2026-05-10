@@ -1,9 +1,10 @@
 # job_fetcher
 
 Automated job description fetcher and filter for the CV customiser pipeline.
-Give it a SEEK URL (or a keyword) and get back structured listings with
-automatic visa-eligibility detection, experience-level classification, and
-tech-stack filtering.
+Give it a keyword (or a URL) and get back a filtered, ranked shortlist of
+listings from **SEEK and Indeed** with automatic visa-eligibility detection,
+experience-level classification, tech-stack matching, and an interactive
+browser-open + `spec.yml` writer at the end.
 
 ---
 
@@ -138,19 +139,37 @@ All filter flags work with `--list` and `--search`. They are AND-ed together.
 | `--arrangement MODES` | Keep listings matching at least one mode. Values: `remote`, `hybrid`, `on-site`. Listings with no arrangement signal are always kept. |
 | `--exclude PHRASES` | Drop any listing whose title or preview contains any of these comma-separated phrases (case-insensitive). |
 | `--visa-only` | Drop listings explicitly restricted to citizens/PR (`visa_eligible = False`). |
-| `--deep` | Fetch each matched listing's full description to resolve `?` visa signals. One extra request per unknown — slower but accurate. |
+| `--deep` | Fetch the full description for every `?`-visa listing. Re-runs **visa detection**, **seniority re-classification** (e.g. "3+ years required" → mid), and improves stack + arrangement matching. One extra request per unknown listing. |
 | `--show-excluded` | Print every excluded listing with the exact reason it was dropped. |
 | `--json` | Output matched + excluded results as JSON instead of the terminal table. |
+
+#### Level classification rules
+
+`classify_level` uses a **two-pass title-first** strategy:
+
+| Title signal | Description signal | Result |
+|---|---|---|
+| "Junior …" or "Junior/Mid …" | anything | `junior` — title entry-level signal wins |
+| "Senior Associate …" | — | `senior` — senior overrides entry-level qualifier |
+| "Software Developer" | "3+ years required" | `mid` — no title signal, YoE from description |
+| "Software Developer" | "5+ years required" | `senior` |
+| "Engineering Manager" | — | `senior` — management roles mapped to senior |
+| "Software Developer" | (none) | `unknown` |
+
+**Flexible "Junior to Mid" roles:** these are classified as `junior` so they
+pass through `--level junior,graduate,unknown`. If you also want strict mid
+roles, add `mid` to the filter: `--level junior,graduate,mid,unknown`.
 
 ---
 
 ### Recommended workflow
 
-**Step 1 — broad sweep, fast**
+**Step 1 — broad sweep across SEEK + Indeed**
 
 ```bash
 .venv/bin/python tools/fetch_job.py \
   --search "junior software engineer" \
+  --source seek,indeed \
   --variants \
   --pages 2 \
   --level junior,graduate,unknown \
@@ -161,15 +180,15 @@ All filter flags work with `--list` and `--search`. They are AND-ed together.
   --show-excluded
 ```
 
-This fetches up to ~200 listings across 10 URL variants, deduplicates,
-filters, and shows you the shortlist in one table.
+Fetches up to ~200 SEEK listings (across keyword variants) + Indeed results,
+deduplicates across sources, filters, and prints a single ranked table.
 
-**Step 2 — resolve the `?` visa signals**
+**Step 2 — `--deep`: resolve visa signals AND re-check seniority**
 
 ```bash
-# Re-run the same command with --deep added
 .venv/bin/python tools/fetch_job.py \
   --search "junior software engineer" \
+  --source seek,indeed \
   --variants \
   --level junior,graduate,unknown \
   --stack typescript,python,react,aws,node \
@@ -177,17 +196,27 @@ filters, and shows you the shortlist in one table.
   --deep
 ```
 
-`--deep` fetches the full description of every `?` listing, re-runs visa
-detection, and drops any newly-resolved citizen/PR-only roles automatically.
+For every `?`-visa listing the full description is fetched and the stub is
+updated with:
+- **Resolved visa signal** (`?` → `✓` or `✗`)
+- **Re-classified seniority** — a stub with no title signal (unknown) that
+  says "3+ years required" in the body is bumped to `mid` and excluded
+- **Better stack + arrangement matching** from the full text
 
-**Step 3 — pick, browse, and write specs interactively**
+Progress is shown inline:
+```
+  [3/12] Software Developer @ Acme …  ✓ open  level 'unknown'→'mid'
+  [7/12] Platform Engineer @ Axsys …  ✗ restricted
+```
 
-When the search results table prints in a live terminal, you'll get two prompts automatically:
+**Step 3 — interactive picker: browse then write specs**
+
+After the table prints in a live terminal, two prompts appear automatically:
 
 ```
   Open in browser  (1-24, ranges like 2-5, 'a'=all, Enter=skip): 1 4 7
   → https://seek.com.au/job/111
-  → https://seek.com.au/job/444
+  → https://au.indeed.com/viewjob?jk=abc123
   → https://seek.com.au/job/777
 
   Tabs opened.  Read them, then come back here.
@@ -196,18 +225,13 @@ When the search results table prints in a live terminal, you'll get two prompts 
   Fetching Software Engineer @ Forest One …
   ✓ wrote job-ads/forest-one/spec.yml
     next: tools/compile.sh forest-one
-  Fetching Graduate Engineer @ Twilio …
-  ✓ wrote job-ads/twilio/spec.yml
-    next: tools/compile.sh twilio
 ```
 
-- Prompt 1 opens the selected rows in your browser (non-blocking — tabs appear instantly).
-- You read the ads at your own pace, then come back.
-- Prompt 2 fetches the full listing for each chosen row and writes `job-ads/<slug>/spec.yml`.
-- Both prompts accept: space-separated numbers (`1 3 5`), ranges (`2-5`), `a` for all, or Enter to skip.
-- Prompts are skipped automatically when output is piped or `--json` is used.
-
-Use `--force` to overwrite an existing spec.
+- Prompt 1 opens tabs instantly (non-blocking). You read at your own pace.
+- Prompt 2 fetches the full listing + writes `job-ads/<slug>/spec.yml`.
+- Input: space-separated numbers (`1 3 5`), ranges (`2-5`), `a`=all, Enter=skip.
+- Prompts are skipped when output is piped or `--json` is active.
+- Pass `--force` to overwrite an existing spec.
 
 ---
 
@@ -323,11 +347,94 @@ print(list_groups())
 | Source | Domain | Individual fetch | Search scraping |
 |---|---|---|---|
 | SEEK | `seek.com.au`, `au.seek.com` | Playwright (Cloudflare) | `requests` + BS4 (Redux JSON blob → DOM) |
-| Indeed | `au.indeed.com` | `requests` + BS4 (JSON-LD → DOM) | `requests` + BS4 (Mosaic JSON blob → DOM) |
+| Indeed | `au.indeed.com` | `requests` + BS4 (JSON-LD → DOM) | Playwright fallback when `requests` hits 403 (Mosaic JS → DOM) |
 | LinkedIn | `linkedin.com/jobs` | Playwright → manual paste fallback | ✗ (login wall / aggressive bot detection) |
 
 Use `--source seek,indeed` to query both boards in one run. LinkedIn can be
 searched manually by opening `https://www.linkedin.com/jobs/search/?keywords=<query>&location=<location>` in your browser.
+
+---
+
+## How Indeed search was added (extending the architecture)
+
+The architecture uses the **Strategy Pattern** — every job board is its own
+class, and the CLI/router never needs to change when a new source is added.
+Adding Indeed search required only three steps:
+
+### 1. New scraper class — `fetchers/indeed_search.py`
+
+Mirrors the structure of `SeekSearchScraper` exactly:
+
+```
+SeekSearchScraper                    IndeedSearchScraper
+──────────────────                   ───────────────────
+fetch_page(url, page)       →        fetch_page(url, page)
+fetch_all_pages(url, n)     →        fetch_all_pages(url, n)
+fetch_multiple(urls, …)     →        fetch_multiple(urls, …)
+_parse_redux_json(html)     →        _parse_mosaic_json(html)   ← different blob key
+_parse_dom(soup)            →        _parse_dom(soup)           ← different CSS selectors
+```
+
+**Key difference — bot detection:**
+Indeed returns `403 Forbidden` to plain `requests`. `fetch_page` handles
+this transparently with a two-stage strategy:
+
+```
+Stage 1: requests (fast, no overhead)
+  ├─ 200 OK + no CAPTCHA → parse Mosaic JSON blob from HTML
+  │                         fall back to DOM card parsing
+  └─ 403 / CAPTCHA ──────────────────────────────────────────┐
+                                                              ▼
+Stage 2: Playwright (headless Chromium)
+  ├─ page.evaluate() extracts window.mosaic.providerData["mosaic-provider-jobcards"]
+  │  directly from the live JS state — richer and more reliable than HTML regex
+  └─ DOM parse of fully-rendered HTML as final fallback
+```
+
+### 2. URL builder — `build_indeed_url()` + `INDEED_LOCATIONS`
+
+```python
+# fetchers/indeed_search.py
+def build_indeed_url(query: str, location: str) -> str:
+    return f"https://au.indeed.com/jobs?q={quote_plus(query)}&l={quote_plus(location)}&sort=date"
+
+INDEED_LOCATIONS = {
+    "melbourne": "Melbourne VIC",
+    "sydney":    "Sydney NSW",
+    ...
+}
+```
+
+The same `--location` aliases used for SEEK now also map to Indeed location
+strings via `INDEED_LOCATIONS`.
+
+### 3. CLI dispatch — `--source` flag in `tools/fetch_job.py`
+
+The CLI builds a `source_urls` dict keyed by source name and instantiates
+the right scraper for each:
+
+```python
+if src == "seek":
+    scraper = SeekSearchScraper()
+elif src == "indeed":
+    scraper = IndeedSearchScraper()
+
+new_stubs = scraper.fetch_all_pages(url, max_pages=args.pages)
+```
+
+Results from both scrapers are merged and deduplicated by URL before
+filtering. The rest of the pipeline (filters, `--deep`, interactive picker,
+`write_spec`) is **source-agnostic** and required no changes.
+
+### Adding another source in the future
+
+To add, say, Glassdoor:
+1. Create `fetchers/glassdoor_search.py` with the same three public methods
+2. Add `build_glassdoor_url()` and a location map
+3. Add `"glassdoor"` to the `--source` dispatch block in `fetch_job.py`
+
+The filter, visa detection, level classification, and interactive picker are
+all unchanged.
 
 ---
 
@@ -384,30 +491,38 @@ cannot accidentally trigger the open path.
                 ▼                             ▼
   ┌─────────────────────────┐   ┌─────────────────────────────────────┐
   │   router.py             │   │   seek_variants.py                  │
-  │   JobFetcherRouter      │   │   build_variant_urls()              │
-  │                         │   │   expand_keywords()                 │
+  │   JobFetcherRouter      │   │   build_variant_urls()   (SEEK)     │
+  │                         │   │   build_indeed_url()     (Indeed)   │
   │   can_handle(url) ──────┼──►│   KEYWORD_GROUPS / LOCATIONS        │
   │   delegates to ▼        │   └──────────────┬──────────────────────┘
-  └─────────────────────────┘                  │ list[url]
+  └─────────────────────────┘                  │ list[url]  per source
                 │                              ▼
-                │                ┌─────────────────────────────────────┐
-                │                │   fetchers/seek_search.py           │
-                │                │   SeekSearchScraper                 │
-                │                │                                     │
-                │                │   fetch_page()                      │
-                │                │   fetch_all_pages()                 │
-                │                │   fetch_multiple() ─► dedup by URL  │
-                │                │                                     │
-                │                │   parse: Redux JSON blob            │
-                │                │          → DOM card fallback        │
-                │                └──────────────┬──────────────────────┘
-                │                               │ list[JobStub]
-                │                               ▼
+                │          ┌─────────────────────────────────────────────┐
+                │          │   --source seek,indeed dispatch              │
+                │          │                                             │
+                │          │  ┌────────────────────┐ ┌─────────────────┐ │
+                │          │  │ seek_search.py      │ │ indeed_search.py│ │
+                │          │  │ SeekSearchScraper   │ │ IndeedScraper   │ │
+                │          │  │                     │ │                 │ │
+                │          │  │ requests + BS4      │ │ requests first  │ │
+                │          │  │ Redux JSON blob     │ │ → Playwright if │ │
+                │          │  │ → DOM fallback      │ │   403 detected  │ │
+                │          │  │                     │ │ Mosaic JS blob  │ │
+                │          │  │ fetch_multiple()    │ │ → DOM fallback  │ │
+                │          │  └────────┬────────────┘ └──────┬──────────┘ │
+                │          │           └──────────┬──────────┘            │
+                │          │                      │ merged + dedup by URL │
+                │          └──────────────────────┼───────────────────────┘
+                │                                 │ list[JobStub]
+                │                                 ▼
                 │                ┌─────────────────────────────────────┐
                 │                │   filters.py                        │
                 │                │   filter_stubs(stubs, JobFilter)    │
                 │                │                                     │
-                │                │   • classify_level()  (title regex) │
+                │                │   • classify_level()                │
+                │                │       Pass 1: title only            │
+                │                │         (junior beats mid in title) │
+                │                │       Pass 2: full text (YoE etc.)  │
                 │                │   • stub_matches_stack()            │
                 │                │   • _parse_salary_min()             │
                 │                │   • detect_arrangement()            │
@@ -416,11 +531,11 @@ cannot accidentally trigger the open path.
                 │                               │ (matched / excluded)
                 │                               │
                 │          ┌────────────────────┘
-                │          │  --deep flag: fetch full listing
-                │          │  for each stub with visa_eligible = None
+                │          │  --deep: for each stub with visa = ?
+                │          │    fetch full listing → re-run visa + level
                 │          ▼
   ┌─────────────────────────────────────────────────────────────────────┐
-  │  fetchers/                                                          │
+  │  fetchers/  (individual listing fetchers — source-agnostic router)  │
   │                                                                     │
   │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  │
   │  │  seek.py         │  │  linkedin.py     │  │  indeed.py       │  │
@@ -461,22 +576,32 @@ cannot accidentally trigger the open path.
 ```
 User runs CLI
     │
-    ├─► --search / --list / --variants
+    ├─► --search / --list / --variants   (with --source seek,indeed)
     │       │
-    │       ├─► seek_variants.py  builds list of SEEK search URLs
+    │       ├─► seek_variants.py  builds SEEK search URLs from keyword
+    │       │   build_indeed_url()  builds Indeed search URLs
     │       │
-    │       ├─► SeekSearchScraper.fetch_multiple()
-    │       │       fetches search result pages (requests + BS4)
+    │       ├─► SeekSearchScraper.fetch_multiple()     ─┐
+    │       │       requests + BS4 (Redux JSON → DOM)   │ merged +
+    │       ├─► IndeedSearchScraper.fetch_multiple()   ─┤ deduplicated
+    │       │       requests → Playwright fallback       │ by URL
+    │       │       (Mosaic JS blob → DOM)              ─┘
     │       │       returns list[JobStub]  ← preview text only
     │       │
     │       ├─► filter_stubs(stubs, JobFilter)
     │       │       level / stack / salary / arrangement / visa / exclude
+    │       │       classify_level() — two-pass, title-first
     │       │       returns FilterResult(matched, excluded)
     │       │
-    │       └─► --deep: for each stub with visa_eligible = None
-    │               JobFetcherRouter.fetch(stub.url)  ← full description
-    │               detect_visa_signals(full_text)
-    │               re-filter
+    │       ├─► --deep: for each stub with visa_eligible = None
+    │       │       JobFetcherRouter.fetch(stub.url)  ← full description
+    │       │       detect_visa_signals(full_text)   → resolve visa
+    │       │       classify_level(stub_with_full_desc) → resolve seniority
+    │       │       re-filter
+    │       │
+    │       └─► interactive picker (live terminal only)
+    │               prompt 1: open selected rows in browser
+    │               prompt 2: fetch full listing + write spec.yml
     │
     └─► <url>  (single listing)
             │
@@ -491,18 +616,23 @@ User runs CLI
 
 ```
 job_fetcher/
-├── __init__.py          # Public exports
-├── models.py            # JobListing, JobStub, JobFetchError dataclasses
-├── base.py              # JobFetcher ABC + _random_headers() + _polite_delay()
-├── visa_filter.py       # detect_visa_signals() + is_visa_friendly()
-├── filters.py           # JobFilter, filter_stubs(), classify_level()
-├── seek_variants.py     # SEEK URL builder + keyword expansion groups
-├── router.py            # JobFetcherRouter — URL → fetcher dispatch
+├── __init__.py              # Public exports
+├── models.py                # JobListing, JobStub, JobFetchError dataclasses
+├── base.py                  # JobFetcher ABC + _random_headers() + _polite_delay()
+├── visa_filter.py           # detect_visa_signals() + is_visa_friendly()
+├── filters.py               # JobFilter, filter_stubs(), classify_level()
+├── seek_variants.py         # SEEK URL builder + keyword expansion groups
+├── router.py                # JobFetcherRouter — URL → fetcher dispatch
 └── fetchers/
-    ├── seek.py          # SeekFetcher        (Playwright)
-    ├── seek_search.py   # SeekSearchScraper  (requests + BS4)
-    ├── linkedin.py      # LinkedInFetcher    (Playwright → paste fallback)
-    └── indeed.py        # IndeedFetcher      (requests + BS4)
+    ├── seek.py              # SeekFetcher           (Playwright — Cloudflare)
+    ├── seek_search.py       # SeekSearchScraper     (requests + BS4, Redux JSON)
+    ├── linkedin.py          # LinkedInFetcher       (Playwright → paste fallback)
+    ├── indeed.py            # IndeedFetcher         (requests + BS4, JSON-LD)
+    └── indeed_search.py     # IndeedSearchScraper   (requests → Playwright fallback, Mosaic JSON)
+
+tools/
+├── fetch_job.py             # CLI entry point
+└── debug_indeed_structure.py  # One-shot Playwright script to dump Indeed's mosaic key structure
 ```
 
 ## Error handling
