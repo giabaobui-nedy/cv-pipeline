@@ -100,8 +100,23 @@ class IndeedFetcher(JobFetcher):
             )
             page = context.new_page()
             try:
-                # networkidle = no network requests for 500 ms → React has mounted.
-                page.goto(url, timeout=45_000, wait_until="networkidle")
+                # "load" fires after scripts execute; networkidle times out on
+                # Indeed because they have continuous background requests.
+                page.goto(url, timeout=30_000, wait_until="load")
+
+                # Wait for any job-content element to appear (React has mounted).
+                for sel in (
+                    "#jobDescriptionText",
+                    '[data-testid="job-description"]',
+                    '[data-testid="jobsearch-JobInfoHeader-title"]',
+                    "h1.jobsearch-JobInfoHeader-title",
+                ):
+                    try:
+                        page.wait_for_selector(sel, timeout=8_000)
+                        break
+                    except PlaywrightTimeout:
+                        continue
+
                 js_model = page.evaluate(self._JS_EXTRACT_JOB)
                 html = page.content()
                 return html, js_model
