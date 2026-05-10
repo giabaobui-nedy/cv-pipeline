@@ -45,28 +45,47 @@ class IndeedFetcher(JobFetcher):
 
         _polite_delay(_INDEED_MIN_DELAY, _INDEED_MAX_DELAY)
 
-        html = self._fetch_html(url)
+        html, js_model = self._fetch_html_and_state(url)
         soup = BeautifulSoup(html, "html.parser")
 
+        # Preferred path: JS state model (most reliable, not affected by DOM changes).
+        if js_model and isinstance(js_model, dict):
+            listing = self._parse_js_model(js_model, url)
+            if listing:
+                return listing
+
+        # Standard paths: JSON-LD block → DOM selectors.
         listing = self._parse_json_ld(soup, url)
         if listing:
             return listing
         return self._parse_dom(soup, url)
 
-    # Selectors that indicate the React app has fully mounted the job content.
-    _READY_SELECTORS = [
-        "#jobDescriptionText",
-        '[data-testid="jobsearch-JobInfoHeader-title"]',
-        '[data-testid="job-description"]',
-        "h1.jobsearch-JobInfoHeader-title",
-    ]
+    # JS snippet to pull job data from Indeed's client-side state.
+    # viewjob pages expose the full job posting in window._initialData.
+    _JS_EXTRACT_JOB = """
+    () => {
+        try {
+            const d = window._initialData;
+            if (!d) return null;
+            // Try common paths Indeed has used across versions.
+            return (
+                d?.jobInfoWrapperModel?.jobInfoModel
+                || d?.viewJobData?.jobInfoWrapperModel?.jobInfoModel
+                || null
+            );
+        } catch(e) { return null; }
+    }
+    """
 
-    def _fetch_html(self, url: str) -> str:
-        """Render the Indeed viewjob page with Playwright and return the HTML.
+    def _fetch_html_and_state(self, url: str) -> tuple[str, dict | None]:
+        """Render the Indeed viewjob page and return (html, js_model).
 
-        Indeed's viewjob is a React SPA — content mounts after
-        ``domcontentloaded``.  We wait for a known job-content selector
-        before snapshotting the HTML so the parser always sees a hydrated page.
+        Indeed's viewjob is a React SPA.  We use ``networkidle`` so the
+        browser waits until the JS bundle has finished executing before we
+        snapshot the page, guaranteeing the DOM is fully hydrated.
+
+        Also extracts ``window._initialData`` from the live JS state — this
+        is the most reliable source and survives DOM selector changes.
         """
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
@@ -81,17 +100,11 @@ class IndeedFetcher(JobFetcher):
             )
             page = context.new_page()
             try:
-                page.goto(url, timeout=30_000, wait_until="domcontentloaded")
-
-                # Wait for any known content selector (first one wins).
-                for sel in self._READY_SELECTORS:
-                    try:
-                        page.wait_for_selector(sel, timeout=10_000)
-                        break
-                    except PlaywrightTimeout:
-                        continue
-
-                return page.content()
+                # networkidle = no network requests for 500 ms → React has mounted.
+                page.goto(url, timeout=45_000, wait_until="networkidle")
+                js_model = page.evaluate(self._JS_EXTRACT_JOB)
+                html = page.content()
+                return html, js_model
             except PlaywrightTimeout:
                 raise JobFetchError(
                     "Playwright timed out loading Indeed listing page.", url=url
@@ -102,6 +115,52 @@ class IndeedFetcher(JobFetcher):
                 )
             finally:
                 browser.close()
+
+    def _parse_js_model(self, model: dict, url: str) -> JobListing | None:
+        """Build a JobListing from Indeed's ``window._initialData`` job model."""
+        try:
+            title = (model.get("jobTitle") or model.get("title") or "").strip()
+            company = (
+                model.get("companyName")
+                or model.get("company")
+                or ""
+            ).strip()
+            if not title or not company:
+                return None
+
+            location = (model.get("formattedLocation") or model.get("location") or "").strip()
+
+            # Description: may be HTML — strip tags.
+            raw_desc = (
+                model.get("sanitizedJobDescription")
+                or model.get("jobDescription")
+                or model.get("description")
+                or ""
+            )
+            description = _strip_html(raw_desc) if "<" in raw_desc else raw_desc.strip()
+
+            salary = (model.get("salaryInfoModel", {}) or {}).get("formattedRange") or None
+            work_type = _normalise_work_type(
+                model.get("jobType") or model.get("employmentType")
+            )
+            date_posted = model.get("datePosted") or model.get("pubDate") or None
+            visa_eligible, sponsorship = detect_visa_signals(description)
+
+            return JobListing(
+                title=title,
+                company=company,
+                location=location,
+                description=description,
+                url=url,
+                source="indeed",
+                salary=salary,
+                work_type=work_type,
+                date_posted=date_posted,
+                visa_eligible=visa_eligible,
+                sponsorship_available=sponsorship,
+            )
+        except Exception:
+            return None
 
     def _parse_json_ld(self, soup: BeautifulSoup, url: str) -> JobListing | None:
         """Try to extract a JobListing from the page's JSON-LD block."""
