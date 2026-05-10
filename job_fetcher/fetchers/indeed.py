@@ -53,8 +53,21 @@ class IndeedFetcher(JobFetcher):
             return listing
         return self._parse_dom(soup, url)
 
+    # Selectors that indicate the React app has fully mounted the job content.
+    _READY_SELECTORS = [
+        "#jobDescriptionText",
+        '[data-testid="jobsearch-JobInfoHeader-title"]',
+        '[data-testid="job-description"]',
+        "h1.jobsearch-JobInfoHeader-title",
+    ]
+
     def _fetch_html(self, url: str) -> str:
-        """Render the Indeed viewjob page with Playwright and return the HTML."""
+        """Render the Indeed viewjob page with Playwright and return the HTML.
+
+        Indeed's viewjob is a React SPA — content mounts after
+        ``domcontentloaded``.  We wait for a known job-content selector
+        before snapshotting the HTML so the parser always sees a hydrated page.
+        """
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
             context = browser.new_context(
@@ -69,7 +82,15 @@ class IndeedFetcher(JobFetcher):
             page = context.new_page()
             try:
                 page.goto(url, timeout=30_000, wait_until="domcontentloaded")
-                _polite_delay(1.5, 3.0)   # let JS hydrate
+
+                # Wait for any known content selector (first one wins).
+                for sel in self._READY_SELECTORS:
+                    try:
+                        page.wait_for_selector(sel, timeout=10_000)
+                        break
+                    except PlaywrightTimeout:
+                        continue
+
                 return page.content()
             except PlaywrightTimeout:
                 raise JobFetchError(
