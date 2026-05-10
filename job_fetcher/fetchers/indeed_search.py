@@ -1,15 +1,19 @@
 """
 fetchers/indeed_search.py — scraper for Indeed (au.indeed.com) search result pages.
 
-Indeed's search pages are partially server-side rendered.  We try two
-extraction strategies in order:
+Indeed protects its search pages with Cloudflare and bot-detection, so a plain
+``requests`` call usually returns 403.  We use a two-stage strategy:
 
-  1. Embedded JSON blob — Indeed injects a ``window.mosaic.providerData``
-     structure (or similar ``_initialData`` blob) into a ``<script>`` tag.
-     This is the richest and most reliable source.
+  Stage 1 — requests (fast, no overhead)
+      Tried first.  If the response is 200 and not a CAPTCHA page we parse the
+      ``window.mosaic.providerData`` JSON blob embedded in the HTML, falling
+      back to CSS-selector DOM parsing.
 
-  2. DOM card parsing — falls back to CSS-selector scraping of job card
-     ``<div>`` elements when the JSON blob is absent or unparseable.
+  Stage 2 — Playwright (headless Chromium)
+      Triggered automatically on a 403 / CAPTCHA response.  We navigate with a
+      real browser, pull ``window.mosaic.providerData`` directly from the live
+      JavaScript state via ``page.evaluate()``, and fall back to DOM parsing of
+      the rendered HTML if the JS object is unavailable.
 
 Each job is identified by an ``&jk=`` key, from which we construct the
 canonical ``https://au.indeed.com/viewjob?jk=...`` URL.
@@ -27,7 +31,7 @@ from __future__ import annotations
 
 import json
 import re
-from urllib.parse import urljoin, urlparse, urlencode, parse_qs, urlunparse
+from urllib.parse import urlparse, urlencode, parse_qs, urlunparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -42,8 +46,14 @@ _INDEED_BASE = "https://au.indeed.com"
 _MIN_DELAY = 2.0
 _MAX_DELAY = 5.0
 
+# Playwright is optional — import lazily so the package works without it.
+try:
+    from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+    _PLAYWRIGHT_AVAILABLE = True
+except ImportError:
+    _PLAYWRIGHT_AVAILABLE = False
+
 # Regex to find common Indeed data blobs embedded in <script> tags.
-# Indeed has used several patterns over the years; we try each in order.
 _MOSAIC_RE = re.compile(
     r'window\.mosaic\.providerData\["mosaic-provider-jobcards"\]\s*=\s*(\{.+?\});',
     re.DOTALL,
@@ -52,6 +62,18 @@ _INITIAL_DATA_RE = re.compile(
     r'window\._initialData\s*=\s*(\{.+?\});',
     re.DOTALL,
 )
+
+# JavaScript snippet that extracts the mosaic job-cards provider from the live
+# page state — more reliable than regex-parsing the raw HTML.
+_JS_EXTRACT_MOSAIC = """
+() => {
+    try {
+        return window.mosaic?.providerData?.["mosaic-provider-jobcards"] ?? null;
+    } catch (e) {
+        return null;
+    }
+}
+"""
 
 
 class IndeedSearchScraper:
@@ -72,6 +94,8 @@ class IndeedSearchScraper:
         paged_url = _inject_page(url, page)
         _polite_delay(_MIN_DELAY, _MAX_DELAY)
 
+        # ── Stage 1: plain requests (fast) ───────────────────────────────
+        html: str | None = None
         try:
             resp = requests.get(
                 paged_url,
@@ -80,7 +104,9 @@ class IndeedSearchScraper:
                 allow_redirects=True,
                 verify=True,
             )
-            resp.raise_for_status()
+            if resp.status_code not in (403, 429) and not _is_blocked(resp.text):
+                resp.raise_for_status()
+                html = resp.text
         except requests.exceptions.SSLError:
             import urllib3, warnings
             warnings.warn(
@@ -96,35 +122,34 @@ class IndeedSearchScraper:
                     allow_redirects=True,
                     verify=False,
                 )
-                resp.raise_for_status()
-            except requests.RequestException as exc:
-                raise JobFetchError(
-                    f"Network error on Indeed search page {page} "
-                    f"(SSL fallback failed): {exc}",
-                    url=paged_url,
-                ) from exc
-        except requests.RequestException as exc:
-            raise JobFetchError(
-                f"Network error fetching Indeed search page {page}: {exc}",
-                url=paged_url,
-            ) from exc
+                if resp.status_code not in (403, 429) and not _is_blocked(resp.text):
+                    html = resp.text
+            except requests.RequestException:
+                pass  # Will fall through to Playwright below.
+        except requests.RequestException:
+            pass  # Will fall through to Playwright below.
 
-        if _is_blocked(resp.text):
+        if html:
+            stubs = self._parse_mosaic_json(html, paged_url)
+            if stubs:
+                return stubs
+            soup = BeautifulSoup(html, "html.parser")
+            stubs = self._parse_dom(soup, paged_url)
+            if stubs:
+                return stubs
+            # Got a page but parsed nothing — may be an empty results page.
+            # Don't try Playwright if the page loaded fine; just return [].
+            if not _is_blocked(html):
+                return []
+
+        # ── Stage 2: Playwright (handles Cloudflare / bot-detection) ────
+        if not _PLAYWRIGHT_AVAILABLE:
             raise JobFetchError(
-                "Indeed returned a CAPTCHA or bot-detection page. "
-                "Wait a few minutes before retrying.",
+                "Indeed search returned 403/CAPTCHA and Playwright is not installed. "
+                "Run: playwright install chromium",
                 url=paged_url,
             )
-
-        soup = BeautifulSoup(resp.text, "html.parser")
-
-        # Primary: parse the embedded JSON blob.
-        stubs = self._parse_mosaic_json(resp.text, paged_url)
-        if stubs:
-            return stubs
-
-        # Fallback: DOM card scraping.
-        return self._parse_dom(soup, paged_url)
+        return self._fetch_with_playwright(paged_url)
 
     def fetch_all_pages(self, url: str, max_pages: int = 3) -> list[JobStub]:
         """Paginate through Indeed search results up to *max_pages* pages.
@@ -140,6 +165,80 @@ class IndeedSearchScraper:
             if len(stubs) < 10:
                 break
         return all_stubs
+
+    def _fetch_with_playwright(self, url: str) -> list[JobStub]:
+        """Navigate Indeed search with a headless browser and extract job stubs.
+
+        Pulls ``window.mosaic.providerData["mosaic-provider-jobcards"]``
+        directly from the live JavaScript state, falling back to DOM parsing
+        of the fully-rendered HTML if the JS object is unavailable.
+        """
+        import sys
+        print(
+            "  [Indeed] 403 detected — retrying with Playwright …",
+            end="", flush=True, file=sys.stderr,
+        )
+
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            context = browser.new_context(
+                user_agent=_random_headers()["User-Agent"],
+                locale="en-AU",
+                viewport={"width": 1280, "height": 900},
+                extra_http_headers={
+                    "Accept-Language": "en-AU,en;q=0.9",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                },
+            )
+            page = context.new_page()
+
+            try:
+                page.goto(url, timeout=30_000, wait_until="domcontentloaded")
+                _polite_delay(2.0, 4.0)   # let JS hydrate
+
+                # Try to extract mosaic data from the live JS state.
+                mosaic_data = page.evaluate(_JS_EXTRACT_MOSAIC)
+
+                if mosaic_data and isinstance(mosaic_data, dict):
+                    print(" ✓ (mosaic JS)", file=sys.stderr)
+                    stubs: list[JobStub] = []
+                    tiles = (
+                        _deep_get(mosaic_data, "metaData", "mosaicProviderJobCardsModel", "tiles")
+                        or mosaic_data.get("tiles")
+                        or []
+                    )
+                    for tile in tiles:
+                        stub = self._tile_to_stub(tile, url)
+                        if stub:
+                            stubs.append(stub)
+                    return stubs
+
+                # Fall back to DOM parsing of the rendered HTML.
+                html = page.content()
+                print(" ✓ (DOM fallback)", file=sys.stderr)
+            except PlaywrightTimeout:
+                print(" ✗ (timeout)", file=sys.stderr)
+                raise JobFetchError(
+                    "Playwright timed out loading Indeed search page.",
+                    url=url,
+                )
+            except JobFetchError:
+                raise
+            except Exception as exc:
+                print(f" ✗ ({exc})", file=sys.stderr)
+                raise JobFetchError(
+                    f"Playwright error fetching Indeed search: {exc}",
+                    url=url,
+                )
+            finally:
+                browser.close()
+
+        # Parse from rendered HTML.
+        stubs_html = self._parse_mosaic_json(html, url)
+        if stubs_html:
+            return stubs_html
+        soup = BeautifulSoup(html, "html.parser")
+        return self._parse_dom(soup, url)
 
     def fetch_multiple(
         self,
