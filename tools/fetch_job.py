@@ -24,6 +24,7 @@ Search — keyword shorthand (builds SEEK URL automatically)
 Filter flags (work with --list and --search)
 ---------------------------------------------
     --pages N             paginate N pages per URL (default: 1)
+    --source seek,indeed  sources to search (default: seek)
     --level junior,graduate
     --stack typescript,python,react,aws
     --min-salary 80000
@@ -51,6 +52,9 @@ try:
     from job_fetcher import JobFetcherRouter, is_visa_friendly
     from job_fetcher.models import JobFetchError, JobListing, JobStub
     from job_fetcher.fetchers.seek_search import SeekSearchScraper
+    from job_fetcher.fetchers.indeed_search import (
+        IndeedSearchScraper, build_indeed_url, INDEED_LOCATIONS,
+    )
     from job_fetcher.filters import JobFilter, FilterResult, filter_stubs, classify_level
     from job_fetcher.seek_variants import (
         build_variant_urls, build_seek_url, expand_keywords,
@@ -332,6 +336,17 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="N",
         help="Number of search result pages to fetch per URL (default: 1)",
     )
+    ap.add_argument(
+        "--source",
+        metavar="SOURCES",
+        default="seek",
+        help=(
+            "Comma-separated job sources to search. "
+            "Values: seek, indeed. "
+            "Default: seek. "
+            "Example: --source seek,indeed"
+        ),
+    )
 
     # Filters (all used with --list)
     ap.add_argument(
@@ -602,39 +617,55 @@ def main() -> None:
         return
 
     # ── resolve search URLs from --list or --search ──────────────────────
-    search_urls: list[str] = []
+    # Keyed by source name so we can dispatch to the right scraper.
+    source_urls: dict[str, list[str]] = {}   # {"seek": [...], "indeed": [...]}
+    sources = _csv_set(args.source) or {"seek"}
 
     if args.list:
-        # Accept comma-separated URLs.
-        search_urls = [u.strip() for u in args.list.split(",") if u.strip()]
+        # Raw URL list — infer source from the URL itself.
+        for u in (u.strip() for u in args.list.split(",") if u.strip()):
+            src = "indeed" if "indeed.com" in u.lower() else "seek"
+            source_urls.setdefault(src, []).append(u)
 
     elif args.search:
-        loc_slug = LOCATIONS.get(args.location.lower().replace(" ", "-"), args.location)
-        if args.variants:
-            keywords = expand_keywords(args.search)
-            search_urls = [build_seek_url(kw, loc_slug) for kw in keywords]
-        else:
-            search_urls = [build_seek_url(args.search, loc_slug)]
+        if "seek" in sources:
+            loc_slug = LOCATIONS.get(args.location.lower().replace(" ", "-"), args.location)
+            if args.variants:
+                keywords = expand_keywords(args.search)
+                source_urls["seek"] = [build_seek_url(kw, loc_slug) for kw in keywords]
+            else:
+                source_urls["seek"] = [build_seek_url(args.search, loc_slug)]
 
-    if search_urls:
-        scraper = SeekSearchScraper()
+        if "indeed" in sources:
+            indeed_loc = INDEED_LOCATIONS.get(
+                args.location.lower().replace(" ", "-"),
+                args.location,
+            )
+            source_urls["indeed"] = [build_indeed_url(args.search, indeed_loc)]
+
+    if source_urls:
+        all_search_urls = [u for urls in source_urls.values() for u in urls]
+        total_requests = len(all_search_urls) * args.pages
+        est_min = total_requests * 1
+        est_max = total_requests * 9   # 5 s delay + 4 s inter-URL (Indeed is slower)
 
         # ── Pre-flight summary + polite-use warnings ─────────────────────
-        total_requests = len(search_urls) * args.pages
-        est_min = total_requests * 1   # lower bound: 1 s per request
-        est_max = total_requests * 8   # upper bound: 3 s request + 5 s inter-URL gap
         print(file=sys.stderr)
-        if len(search_urls) == 1:
-            print(DIM(f"  Scraping: {search_urls[0]}"), file=sys.stderr)
+        if len(all_search_urls) == 1:
+            src_name = next(iter(source_urls))
+            print(DIM(f"  [{src_name.upper()}] Scraping: {all_search_urls[0]}"), file=sys.stderr)
         else:
+            src_labels = " + ".join(
+                f"{len(v)} {k.upper()} URL{'s' if len(v) > 1 else ''}"
+                for k, v in source_urls.items()
+            )
             print(
-                BOLD(f"  Fetching {len(search_urls)} search URLs "
-                     f"({args.pages} page(s) each) …"),
+                BOLD(f"  Fetching {src_labels} ({args.pages} page(s) each) …"),
                 file=sys.stderr,
             )
             print(
                 DIM(f"  ≈ {total_requests} requests  ·  est. {est_min}–{est_max} s"
-                    f"  ·  spacing ~1–3 s per page + ~2–5 s between URLs"),
+                    f"  ·  spacing ~1–5 s per page + cooldown between URLs"),
                 file=sys.stderr,
             )
 
@@ -642,32 +673,54 @@ def main() -> None:
             print(
                 YELLOW(
                     f"  ⚠  --pages {args.pages} will make {total_requests} requests."
-                    f" Consider keeping --pages ≤ 3 to be respectful of SEEK's servers."
+                    f" Keep --pages ≤ 3 to be respectful of their servers."
                 ),
                 file=sys.stderr,
             )
-
         if total_requests > 30:
             print(
                 YELLOW(
-                    "  ⚠  Large batch detected. Please don't repeat this run"
-                    " frequently — treat SEEK's search like a polite browser user would."
+                    "  ⚠  Large batch — please don't repeat this run frequently."
                 ),
                 file=sys.stderr,
             )
         print(file=sys.stderr)
 
-        if len(search_urls) == 1:
-            try:
-                stubs = scraper.fetch_all_pages(search_urls[0], max_pages=args.pages)
-            except JobFetchError as e:
-                print(RED(f"Error: {e}"), file=sys.stderr)
-                sys.exit(1)
-        else:
-            stubs = scraper.fetch_multiple(
-                search_urls, max_pages=args.pages, verbose=True
-            )
+        # ── Fetch each source ─────────────────────────────────────────────
+        stubs: list[JobStub] = []
+        seen_urls: set[str] = set()
 
+        for src, urls in source_urls.items():
+            if src == "seek":
+                scraper = SeekSearchScraper()
+            elif src == "indeed":
+                scraper = IndeedSearchScraper()
+            else:
+                print(YELLOW(f"  ⚠  Unknown source '{src}' — skipping."), file=sys.stderr)
+                continue
+
+            if len(urls) == 1:
+                try:
+                    new_stubs = scraper.fetch_all_pages(urls[0], max_pages=args.pages)
+                    print(
+                        DIM(f"  [{src.upper()}] {len(new_stubs)} listings fetched"),
+                        file=sys.stderr,
+                    )
+                except JobFetchError as e:
+                    print(RED(f"  [{src.upper()}] Error: {e}"), file=sys.stderr)
+                    new_stubs = []
+            else:
+                new_stubs = scraper.fetch_multiple(
+                    urls, max_pages=args.pages, verbose=True
+                )
+
+            # Deduplicate across sources by URL.
+            for s in new_stubs:
+                if s.url not in seen_urls:
+                    seen_urls.add(s.url)
+                    stubs.append(s)
+
+        print(file=sys.stderr)
         if not stubs:
             print(YELLOW("No listings found."), file=sys.stderr)
             sys.exit(0)
@@ -698,7 +751,8 @@ def main() -> None:
                     for s, r in result.excluded
                 ],
                 "summary": result.summary(),
-                "urls_searched": search_urls,
+                "urls_searched": all_search_urls,
+                "sources": list(source_urls.keys()),
                 "deep": args.deep,
             }
             print(json.dumps(out, indent=2, default=str))

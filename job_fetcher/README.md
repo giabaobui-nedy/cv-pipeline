@@ -50,60 +50,77 @@ All commands are run from `cv-pipeline/`:
 
 ### Search results — `--list`
 
-Scrape a SEEK search results page directly. Accepts one URL or a
-comma-separated list (results are deduplicated by job ID).
+Scrape a search results page directly. Accepts one URL or a comma-separated
+list (results are deduplicated by job ID). SEEK and Indeed URLs are both
+supported and auto-detected.
 
 ```bash
-# Single search page
+# Single SEEK search page
 .venv/bin/python tools/fetch_job.py \
   --list "https://au.seek.com/Junior-Software-Engineer-jobs/in-All-Melbourne-VIC"
+
+# Single Indeed search page
+.venv/bin/python tools/fetch_job.py \
+  --list "https://au.indeed.com/jobs?q=junior+software+engineer&l=Melbourne+VIC"
 
 # Paginate 3 pages (~60 listings)
 .venv/bin/python tools/fetch_job.py \
   --list "https://au.seek.com/Junior-Software-Engineer-jobs/in-All-Melbourne-VIC" \
   --pages 3
 
-# Multiple search URLs in one run (deduplicated)
+# Mix SEEK + Indeed URLs in one run (deduplicated across sources)
 .venv/bin/python tools/fetch_job.py \
-  --list "https://au.seek.com/Junior-Software-Engineer-jobs/in-All-Melbourne-VIC,https://au.seek.com/Graduate-Software-Engineer-jobs/in-All-Melbourne-VIC"
+  --list "https://au.seek.com/Junior-Software-Engineer-jobs/in-All-Melbourne-VIC,https://au.indeed.com/jobs?q=junior+software+engineer&l=Melbourne+VIC"
 ```
 
 ---
 
 ### Search by keyword — `--search`
 
-Builds the SEEK URL for you from a keyword phrase.
+Builds search URLs from a keyword phrase. Use `--source` to control which
+job boards to query (default: SEEK only).
 
 ```bash
-# Single keyword search, Melbourne (default location)
+# SEEK only (default)
 .venv/bin/python tools/fetch_job.py --search "junior software engineer"
 
+# Indeed only
+.venv/bin/python tools/fetch_job.py --search "junior software engineer" --source indeed
+
+# Both SEEK and Indeed in one run (results merged and deduplicated)
+.venv/bin/python tools/fetch_job.py --search "junior software engineer" --source seek,indeed
+
 # Different city
-.venv/bin/python tools/fetch_job.py --search "junior software engineer" --location sydney
+.venv/bin/python tools/fetch_job.py --search "junior software engineer" \
+  --source seek,indeed --location sydney
 
-# Expand to all related keyword variants (Junior Developer, Graduate SWE, etc.)
-# and deduplicate across all searches
-.venv/bin/python tools/fetch_job.py --search "junior software engineer" --variants
+# Expand SEEK to all keyword variants + Indeed in parallel
+.venv/bin/python tools/fetch_job.py --search "junior software engineer" \
+  --variants --source seek,indeed
 
-# Every built-in keyword group at once
+# Every built-in keyword group at once (SEEK)
 .venv/bin/python tools/fetch_job.py --search all --variants --location melbourne
 
 # See all available keyword groups
 .venv/bin/python tools/fetch_job.py --list-groups
 ```
 
-**Location aliases** (use with `--location`):
+**Location aliases** (used with `--location` for both SEEK and Indeed):
 
-| Alias | SEEK slug |
-|---|---|
-| `melbourne` *(default)* | `All-Melbourne-VIC` |
-| `melbourne-cbd` | `Melbourne-CBD-Melbourne-VIC-3000` |
-| `sydney` | `All-Sydney-NSW` |
-| `brisbane` | `All-Brisbane-QLD` |
-| `perth` | `All-Perth-WA` |
-| `adelaide` | `All-Adelaide-SA` |
-| `canberra` | `All-Canberra-ACT` |
-| `remote` / `australia` | `Australia` |
+| Alias | SEEK slug | Indeed string |
+|---|---|---|
+| `melbourne` *(default)* | `All-Melbourne-VIC` | `Melbourne VIC` |
+| `sydney` | `All-Sydney-NSW` | `Sydney NSW` |
+| `brisbane` | `All-Brisbane-QLD` | `Brisbane QLD` |
+| `perth` | `All-Perth-WA` | `Perth WA` |
+| `adelaide` | `All-Adelaide-SA` | `Adelaide SA` |
+| `canberra` | `All-Canberra-ACT` | `Canberra ACT` |
+| `remote` / `australia` | `Australia` | `Remote` / `Australia` |
+
+> **Note on Indeed scraping:** Indeed's page structure changes frequently.
+> The scraper tries an embedded JSON blob first, then falls back to DOM
+> parsing. If results seem thin, Indeed may be serving a bot-detection page —
+> wait a few minutes before retrying.
 
 ---
 
@@ -113,7 +130,8 @@ All filter flags work with `--list` and `--search`. They are AND-ed together.
 
 | Flag | What it does |
 |---|---|
-| `--pages N` | Paginate N pages per URL (default: 1, ~20 listings/page) |
+| `--pages N` | Paginate N pages per URL (default: 1, ~20 listings/page on SEEK, ~10 on Indeed) |
+| `--source SOURCES` | Comma-separated job boards to query. Values: `seek`, `indeed`. Default: `seek`. |
 | `--level LEVELS` | Keep only listings whose detected level is in this comma-separated set. Values: `intern`, `graduate`, `junior`, `mid`, `senior`, `unknown` |
 | `--stack KEYWORDS` | Keep listings that mention at least one of these tech keywords in title or preview. Example: `typescript,python,react,aws` |
 | `--min-salary AUD` | Drop listings whose advertised minimum is below this value. Listings with no salary are kept. |
@@ -302,12 +320,14 @@ print(list_groups())
 
 ## Supported sources
 
-| Source | Domain | Fetch technique |
-|---|---|---|
-| SEEK listings | `seek.com.au`, `au.seek.com` | **Playwright** (Cloudflare requires real browser) |
-| SEEK search | `seek.com.au` search URLs | `requests` + BeautifulSoup (Redux JSON blob) |
-| LinkedIn | `linkedin.com/jobs` | Playwright → manual paste fallback |
-| Indeed | `au.indeed.com` | `requests` + BeautifulSoup (JSON-LD → DOM) |
+| Source | Domain | Individual fetch | Search scraping |
+|---|---|---|---|
+| SEEK | `seek.com.au`, `au.seek.com` | Playwright (Cloudflare) | `requests` + BS4 (Redux JSON blob → DOM) |
+| Indeed | `au.indeed.com` | `requests` + BS4 (JSON-LD → DOM) | `requests` + BS4 (Mosaic JSON blob → DOM) |
+| LinkedIn | `linkedin.com/jobs` | Playwright → manual paste fallback | ✗ (login wall / aggressive bot detection) |
+
+Use `--source seek,indeed` to query both boards in one run. LinkedIn can be
+searched manually by opening `https://www.linkedin.com/jobs/search/?keywords=<query>&location=<location>` in your browser.
 
 ---
 
