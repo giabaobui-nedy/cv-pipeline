@@ -134,7 +134,7 @@ All filter flags work with `--list` and `--search`. They are AND-ed together.
 | `--pages N` | Paginate N pages per URL (default: 1, ~20 listings/page on SEEK, ~10 on Indeed) |
 | `--source SOURCES` | Comma-separated job boards to query. Values: `seek`, `indeed`. Default: `seek`. |
 | `--level LEVELS` | Keep only listings whose detected level is in this comma-separated set. Values: `intern`, `graduate`, `junior`, `mid`, `senior`, `unknown` |
-| `--stack KEYWORDS` | Keep listings that mention at least one of these tech keywords in title or preview. Example: `typescript,python,react,aws` |
+| `--stack KEYWORDS` | Keep listings that mention at least one of these tech keywords in title or preview. Example: `typescript,python,react,aws`. Also useful as an industry filter — adding generic terms like `software,developer,engineer` blocks off-domain noise (e.g. "Associate Dentist" sneaking in via the `associate` → junior signal on Indeed). |
 | `--min-salary AUD` | Drop listings whose advertised minimum is below this value. Listings with no salary are kept. |
 | `--arrangement MODES` | Keep listings matching at least one mode. Values: `remote`, `hybrid`, `on-site`. Listings with no arrangement signal are always kept. |
 | `--exclude PHRASES` | Drop any listing whose title or preview contains any of these comma-separated phrases (case-insensitive). |
