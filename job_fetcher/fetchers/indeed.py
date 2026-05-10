@@ -1,13 +1,9 @@
 """
-fetchers/indeed.py — scraper for Indeed (au.indeed.com).
+fetchers/indeed.py — scraper for individual Indeed (au.indeed.com) job listings.
 
-Indeed is server-side rendered for most listing pages, so requests +
-BeautifulSoup works.  We are extra cautious with rate-limiting here because
-Indeed is aggressive about bot detection: random delays and User-Agent rotation
-are mandatory (both are applied by the base class helpers).
-
-Indeed sometimes redirects bare job IDs to a "ViewJob" URL — we follow
-redirects transparently via requests.
+Indeed's viewjob pages block plain HTTP requests with Cloudflare bot-detection
+(403), so we use Playwright (headless Chromium) to render the page and then
+apply the same JSON-LD → DOM parsing pipeline as before.
 """
 
 from __future__ import annotations
@@ -15,7 +11,6 @@ from __future__ import annotations
 import json
 import re
 
-import requests
 from bs4 import BeautifulSoup
 
 from ..base import JobFetcher, _polite_delay, _random_headers
@@ -24,78 +19,68 @@ from ..visa_filter import detect_visa_signals
 
 _INDEED_DOMAINS = ("indeed.com", "au.indeed.com")
 
-# Indeed sometimes embeds longer delays between pages under bot suspicion;
-# we use a wider random window to blend in.
 _INDEED_MIN_DELAY = 2.0
 _INDEED_MAX_DELAY = 5.0
 
+try:
+    from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+    _PLAYWRIGHT_AVAILABLE = True
+except ImportError:
+    _PLAYWRIGHT_AVAILABLE = False
+
 
 class IndeedFetcher(JobFetcher):
-    """Fetches a single job listing from au.indeed.com."""
+    """Fetches a single job listing from au.indeed.com via Playwright."""
 
     def can_handle(self, url: str) -> bool:
         return any(domain in url.lower() for domain in _INDEED_DOMAINS)
 
     def fetch(self, url: str) -> JobListing:
-        _polite_delay(_INDEED_MIN_DELAY, _INDEED_MAX_DELAY)
-        try:
-            response = requests.get(
-                url,
-                headers=_random_headers(),
-                timeout=15,
-                allow_redirects=True,
-                verify=True,
-            )
-            response.raise_for_status()
-        except requests.exceptions.SSLError:
-            import urllib3, warnings
-            warnings.warn("SSL error on Indeed — retrying without verification.", stacklevel=2)
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-            try:
-                response = requests.get(url, headers=_random_headers(), timeout=15,
-                                        allow_redirects=True, verify=False)
-                response.raise_for_status()
-            except requests.RequestException as exc:
-                raise JobFetchError(
-                    f"Network error fetching Indeed listing (SSL fallback failed): {exc}", url=url
-                ) from exc
-        except requests.RequestException as exc:
+        if not _PLAYWRIGHT_AVAILABLE:
             raise JobFetchError(
-                f"Network error while fetching Indeed listing: {exc}", url=url
-            ) from exc
-
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        # Check for CAPTCHA / bot block page.
-        if self._is_blocked(soup, response.text):
-            raise JobFetchError(
-                "Indeed returned a CAPTCHA or bot-detection page. "
-                "Try again in a few minutes, or use a different network.",
+                "Playwright is required for Indeed listings but is not installed. "
+                "Run: playwright install chromium",
                 url=url,
             )
 
-        # Prefer JSON-LD when available.
+        _polite_delay(_INDEED_MIN_DELAY, _INDEED_MAX_DELAY)
+
+        html = self._fetch_html(url)
+        soup = BeautifulSoup(html, "html.parser")
+
         listing = self._parse_json_ld(soup, url)
         if listing:
             return listing
-
         return self._parse_dom(soup, url)
 
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
-
-    def _is_blocked(self, soup: BeautifulSoup, raw: str) -> bool:
-        """Detect CAPTCHA / block pages heuristically."""
-        block_signals = [
-            "please verify you are a human",
-            "captcha",
-            "access denied",
-            "bot detection",
-            "enable javascript",
-        ]
-        lower = raw.lower()
-        return any(signal in lower for signal in block_signals)
+    def _fetch_html(self, url: str) -> str:
+        """Render the Indeed viewjob page with Playwright and return the HTML."""
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            context = browser.new_context(
+                user_agent=_random_headers()["User-Agent"],
+                locale="en-AU",
+                viewport={"width": 1280, "height": 900},
+                extra_http_headers={
+                    "Accept-Language": "en-AU,en;q=0.9",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                },
+            )
+            page = context.new_page()
+            try:
+                page.goto(url, timeout=30_000, wait_until="domcontentloaded")
+                _polite_delay(1.5, 3.0)   # let JS hydrate
+                return page.content()
+            except PlaywrightTimeout:
+                raise JobFetchError(
+                    "Playwright timed out loading Indeed listing page.", url=url
+                )
+            except Exception as exc:
+                raise JobFetchError(
+                    f"Playwright error fetching Indeed listing: {exc}", url=url
+                )
+            finally:
+                browser.close()
 
     def _parse_json_ld(self, soup: BeautifulSoup, url: str) -> JobListing | None:
         """Try to extract a JobListing from the page's JSON-LD block."""
