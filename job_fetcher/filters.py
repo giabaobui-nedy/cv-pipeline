@@ -70,6 +70,15 @@ _LEVEL_PATTERNS: dict[str, list[str]] = {
         r"\barchitect\b",
         r"\b[5-9]\+?\s+years?\b",  # "5+ years"
         r"\b1[0-9]\+?\s+years?\b",
+        # Management roles — above IC senior; excluded by --level junior,graduate
+        r"\bmanager\b",
+        r"\bdirector\b",
+        r"\bvp\b",
+        r"\bvice[- ]president\b",
+        r"\bexecutive\b",
+        r"\bcto\b",
+        r"\bcpo\b",
+        r"\bcoo\b",
     ],
 }
 
