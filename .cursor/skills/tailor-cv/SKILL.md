@@ -41,6 +41,22 @@ default:
   TypeScript migration, event-driven integration, infrastructure scheduling
   — these are the foreground bullets. "Digital signage" stays background.
 
+## Hard rules — verify before writing any file
+
+These are the most commonly violated rules. Check every one mechanically before
+writing `spec.yml`. A spec that violates any of them is invalid, regardless of
+how good the bullet selection is.
+
+| # | Rule | Common failure mode |
+|---|---|---|
+| H1 | **`education_bullets` must be set explicitly — never omit, never leave `[]`.** Default: Highest Achieving Graduate only. Add the database-paper line only when `sql`/`database`/`schema` are ad keywords. Never include the scholarship line for engineering roles. | Auto-tools write `education_bullets: []`, silently dropping the credential. |
+| H2 | **Skills block must use structured `category`/`items` YAML.** Never use a raw LaTeX string (e.g. `\textbf{Languages:} ...`). | Some models copy the LaTeX form from `main.tex` directly. |
+| H3 | **Profile opening: preserve "Junior Software Engineer" as the first three words.** Never substitute a different title ("Full-stack Engineer", "Cloud Engineer", "Software Developer"). The actual current role title is the ceiling for self-description. | Models infer the target role title from the ad and use that instead. |
+| H4 | **`soniq-stack` and `csiro-stack` are mandatory** in their respective role sections. Never omit them — they are the primary ATS keyword anchors. | Dropped when trimming for page length. Stack lines must be the last to go. |
+| H5 | **Never invent bullet IDs.** Only IDs present in `bullet-bank/*.yml` may appear in `bullets:` lists. If a relevant bullet is missing, invoke `add-bullet` or flag the gap to the user. | Models hallucinate plausible-sounding IDs. |
+| H6 | **Output must compile to 1 page.** Always run the compile step and check. If > 1 page, enter the prune loop before declaring done. | Models write the spec but skip the compile verification. |
+| H7 | **YoE qualifier must describe duration only — never attach domain-specific claims to it.** Write "1+ year of commercial experience building and supporting production systems", not "1+ year of commercial experience in cloud-native infrastructure, CI/CD, and X". The domains differ between CSIRO (15 months) and SONIQ (3 months); claiming the full duration covered a specific domain is false. Domain-specific skills belong in the second profile sentence without a duration attached. | Models mirror the ad's language by writing "X years of experience in [ad keyword]", over-claiming scope. |
+
 ## Primary objective: one page, high signal
 
 The tailored CV **must compile to exactly one page**. At early-career stage,
@@ -145,6 +161,21 @@ Total `\resumeItem` count target: **≤ 13** (including stack lines, education, 
 
 If you include one of these, drop one short bullet elsewhere to compensate. The `*-stack` bullets are also typically 2 visual lines — count them as such.
 
+### Bullet anti-patterns — default avoid list
+
+These bullets are often selected by mistake. Check your shortlist against this
+table before proposing:
+
+| Bullet ID | Why to avoid by default | Include only when… |
+|---|---|---|
+| `csiro-firmware-abstraction` | Modbus/hardware abstraction layer — reads as embedded/industrial, not SWE | Role explicitly involves hardware, firmware, or embedded systems |
+| `csiro-oop-hardware` | Hardware communication OOP — same framing problem | Same as above |
+| `csiro-locks-deployment` | "Three-month continuous operation in a live laboratory" — industrial/lab context | Reliability, SRE, or safety-critical roles |
+| `csiro-overview` | 52-word lab automation summary — very heavy (3–4 visual lines) and CSIRO-domain-specific | Research, science, or automation-adjacent roles with page room to spare |
+| `soniq-overview` | Names "digital signage CMS" explicitly — small-company framing | Media, CMS, AdTech, or digital signage roles |
+| `soniq-responsive-redesign` | CSS layout/mobile-first redesign — low signal for backend/fullstack/cloud roles | Roles explicitly asking for responsive design, CSS, or mobile UI work |
+| `soniq-portrait-landscape` | IoT screen orientations — very domain-specific, narrow signal | Signage, IoT, or display technology roles only |
+
 Present the shortlist as a markdown table, then **wait for user approval or edits** before writing any files:
 
 ```
@@ -157,6 +188,19 @@ Present the shortlist as a markdown table, then **wait for user approval or edit
 Also propose:
 
 - A **2–3 sentence `profile` paragraph** (≤ ~50 words) that mirrors the ad's vocabulary and culture signals. Adapt the master profile in `cv/main.tex` — do not rewrite from scratch. Cut filler ("Motivated by…") if it doesn't directly mirror the ad.
+
+  **Profile YoE structure — follow this pattern exactly:**
+
+  ```
+  Sentence 1: "Junior Software Engineer and Highest Achieving Graduate in Computer Science
+               with 1+ year of commercial experience [general description of work nature]."
+  Sentence 2: "Hands-on in [skill A], [skill B], and [skill C], with [outcome pattern]."
+  ```
+
+  - Sentence 1 uses the YoE qualifier with a **general** work description only ("building and supporting production systems", "across fullstack and backend engineering"). Never attach a role-specific domain here — the 1+ year spans both CSIRO and SONIQ, which covered different things.
+  - Sentence 2 carries the **role-specific** technical vocabulary without a duration claim. Skills named here must appear in at least one bullet from each role or both stack lines — not just one role.
+  - Bad: `"1+ year of commercial experience in cloud-native infrastructure and CI/CD"` (falsely implies both roles covered this)
+  - Good: `"1+ year of commercial experience building and supporting production systems. Hands-on in Python, Docker, and CI/CD automation…"`
 - A **reordered, pruned `skills` block** (structured YAML): keep the master's structure, move ad-relevant categories to the top, and **drop categories that would be noise** for this role. Better to have 3 dense lines than 6 thin ones.
 
 ### 4. Write the spec
