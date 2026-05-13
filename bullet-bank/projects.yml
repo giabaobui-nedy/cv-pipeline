@@ -143,3 +143,28 @@ projects:
           Integrated both databases behind a FastAPI service layer, enabling core bidding UI flows ---
           list, bid, settle assets --- by exposing validated REST endpoints that coordinate the business
           logic on on- or off-chain data.
+
+  - id: cv-pipeline
+    title: \textbf{Automated CV Tailoring Pipeline}
+    stack: Python, LaTeX/Tectonic, YAML, Bash, Cursor Agent Skills
+    links:
+      - {label: GitHub, url: https://github.com/giabaobui-nedy/cv-pipeline}
+    tags: [python, automation, yaml, latex, tooling, ai-agents, devtools]
+    bullets:
+      - id: cv-pipeline-spec-driven
+        tags: [python, yaml, architecture, automation, devtools]
+        text: >-
+          Designed a spec-driven CV tailoring pipeline where YAML job-ad specs select canonical
+          evidence bullets, decoupling tailoring decisions from LaTeX rendering to make every
+          submitted application reproducible and auditable.
+      - id: cv-pipeline-renderers
+        tags: [python, latex, automation, tooling, devtools]
+        text: >-
+          Built Python renderers and a one-command Bash compile pipeline transforming YAML specs
+          and a reusable bullet bank into submission-ready PDF CVs and cover letters via Tectonic.
+      - id: cv-pipeline-agent-skills
+        tags: [ai-agents, python, automation, tooling]
+        text: >-
+          Implemented four LLM agent skills (research, tailor-cv, cover-letter, add-bullet) that
+          constrain model output to canonical evidence records, preventing overclaim while
+          standardising application artefacts across models.
