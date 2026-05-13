@@ -102,6 +102,14 @@ cover_letter:
       contribute to the team.
 
 # Structured skills block. Reorder/drop categories per job.
+#
+# IMPORTANT — write plain text here, not pre-escaped LaTeX.
+# The renderer (tools/render_tailored.py) calls _latex_escape() on every
+# category name and item automatically. Pre-escaping causes double-escaping:
+#   BAD:  category: "Cloud \& DevOps"        -> renders as literal \& in PDF
+#   BAD:  items: ["AWS (Lambda\, EventBridge)"] -> renders as literal \, in PDF
+#   GOOD: category: "Cloud & DevOps"          -> renderer writes \& correctly
+#   GOOD: items: ["AWS (Lambda, EventBridge)"]  -> renders as clean comma
 skills:
   - category: Languages
     items: [TypeScript, JavaScript, Python, Java]
