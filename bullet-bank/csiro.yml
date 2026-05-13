@@ -116,6 +116,15 @@ bullets:
       national intern cohorts, effectively communicating architectural decisions and the strategic
       value of applied software engineering within mineral processing research.
 
+  - id: csiro-onboarding-handover
+    tags: [documentation, onboarding, knowledge-transfer, leadership, communication]
+    text: >-
+      Produced a structured handover suite at system completion --- maintained SRS/SDD documentation
+      spanning frontend to backend, built UML architecture diagrams used to brief a mechatronics
+      engineer with adjacent software experience as a relay for future onboarding, and co-recorded
+      a step-by-step deployment tutorial with the team lead to ensure the system was fully
+      reproducible end-to-end.
+
   - id: csiro-stack
     tags: [stack, python, flask, vue, nuxt, react-native, postgresql, influxdb, docker, azure]
     text: >-

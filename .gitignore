@@ -17,3 +17,4 @@ job-ads/*
 !job-ads/_example/
 !job-ads/_example/spec.yml
 !job-ads/_example/spec.schema.json
+tools/debug_indeed_viewjob.html

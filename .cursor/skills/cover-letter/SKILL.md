@@ -51,6 +51,16 @@ default:
   infrastructure-as-code, production, scalability, reliability,
   observability, blast radius*.
 
+## Hard rules — verify before writing the cover_letter block
+
+| # | Rule | Common failure mode |
+|---|---|---|
+| C1 | **All six structural fields are required:** `recipient_name`, `salutation`, `tone`, `evidence.technical`, `evidence.values`, and all five `paragraphs` keys. | Models omit `tone` and `evidence`, making the output untraceable and the evidence anchor missing. |
+| C2 | **`tone` must be one of the five named modes** (or `hybrid_warm_professional`). Never leave it blank — it is the traceability marker for future edits. | Left unset when models skip the tone-detection step. |
+| C3 | **Hook must not open with any banned phrase.** Run the hook self-check (see §5 P1) before writing. | "I'm excited by…", "I am writing to…", "I would like to apply…" still appear despite the ban list. |
+| C4 | **`evidence.technical` and `evidence.values` must be real bullet IDs from the bank.** The cover letter narrates these bullets — if the IDs are wrong the paragraphs will be incoherent. | Models use plausible-sounding but non-existent IDs. |
+| C5 | **Never copy a CV bullet verbatim into a paragraph.** The cover letter zooms into the story behind the bullet; it does not restate the bullet text. | P2 often just paraphrases the bullet text, adding no new depth. |
+
 ## Why this skill matters
 
 Most cover letters are skipped because they open with "I am writing to express
@@ -145,6 +155,15 @@ Strong opener templates (adapt, don't copy):
 - "[Specific product/blog post/initiative of theirs] is the kind of problem I've been deliberately steering toward."
 
 The paragraph should: name the role + company, prove you read the ad with one specific reference, signal the angle of fit. ~50–60 words.
+
+**Hook self-check — run before finalising P1:**
+
+Ask: *could this exact opening sentence appear in a cover letter for a different company's similar role?* If yes — rewrite. P1 passes only if it contains at least one of:
+- A specific product name, platform name, or feature from **this company** (not just the job title)
+- A specific phrase or framing lifted verbatim from **this ad** (quoted or closely mirrored)
+- A specific reason grounded in **your own work** that links to their exact context
+
+If none of these are present, the hook is generic and will not differentiate.
 
 #### P2 — Technical match
 

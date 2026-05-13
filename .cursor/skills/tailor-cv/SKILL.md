@@ -41,6 +41,22 @@ default:
   TypeScript migration, event-driven integration, infrastructure scheduling
   — these are the foreground bullets. "Digital signage" stays background.
 
+## Hard rules — verify before writing any file
+
+These are the most commonly violated rules. Check every one mechanically before
+writing `spec.yml`. A spec that violates any of them is invalid, regardless of
+how good the bullet selection is.
+
+| # | Rule | Common failure mode |
+|---|---|---|
+| H1 | **`education_bullets` must be set explicitly — never omit, never leave `[]`.** Default: Highest Achieving Graduate only. Add the database-paper line only when `sql`/`database`/`schema` are ad keywords. Never include the scholarship line for engineering roles. | Auto-tools write `education_bullets: []`, silently dropping the credential. |
+| H2 | **Skills block must use structured `category`/`items` YAML.** Never use a raw LaTeX string (e.g. `\textbf{Languages:} ...`). | Some models copy the LaTeX form from `main.tex` directly. |
+| H3 | **Profile opening: preserve "Junior Software Engineer" as the first three words.** Never substitute a different title ("Full-stack Engineer", "Cloud Engineer", "Software Developer"). The actual current role title is the ceiling for self-description. | Models infer the target role title from the ad and use that instead. |
+| H4 | **`soniq-stack` and `csiro-stack` are mandatory** in their respective role sections. Never omit them — they are the primary ATS keyword anchors. | Dropped when trimming for page length. Stack lines must be the last to go. |
+| H5 | **Never invent bullet IDs.** Only IDs present in `bullet-bank/*.yml` may appear in `bullets:` lists. If a relevant bullet is missing, invoke `add-bullet` or flag the gap to the user. | Models hallucinate plausible-sounding IDs. |
+| H6 | **Output must compile to 1 page.** Always run the compile step and check. If > 1 page, enter the prune loop before declaring done. | Models write the spec but skip the compile verification. |
+| H7 | **YoE qualifier must describe duration only — never attach domain-specific claims to it.** Write "1+ year of commercial experience building and supporting production systems", not "1+ year of commercial experience in cloud-native infrastructure, CI/CD, and X". The domains differ between CSIRO (15 months) and SONIQ (3 months); claiming the full duration covered a specific domain is false. Domain-specific skills belong in the second profile sentence without a duration attached. | Models mirror the ad's language by writing "X years of experience in [ad keyword]", over-claiming scope. |
+
 ## Primary objective: one page, high signal
 
 The tailored CV **must compile to exactly one page**. At early-career stage,
@@ -131,7 +147,7 @@ Pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`impac
 - SONIQ: **4 bullets** + `soniq-stack` (mandatory). 5 is borderline.
 - CSIRO: **3–4 bullets** + `csiro-stack` (mandatory).
 - Projects: **2 projects**, **1–2 bullets each**. Pick projects whose `tags` mirror the ad's stack.
-- Education bullets: **default to 1** (Highest Achieving Graduate only). Education is the lowest-priority section — every line stolen from it goes to experience instead. Add the database-paper bullet **only** when `database`, `schema`, `sql`, or similar appears in the ad's keywords. Always drop the scholarship line for engineering roles. Override via the `education_bullets` spec key.
+- Education bullets: **always explicitly set `education_bullets` in the spec** — never leave it unset (unset defaults to all 3, which wastes space on the scholarship and database-paper lines). Default for every engineering role: **Highest Achieving Graduate only** (1 bullet). Add the database-paper bullet only when `database`, `schema`, `sql`, or similar is a keyword in the ad. Always drop the scholarship line for engineering roles. Experience and projects always take priority over education lines.
 - `*-overview` bullets: **default to omitting them**. Include only if the ad emphasises breadth the overview captures and there is page room left.
 
 Total `\resumeItem` count target: **≤ 13** (including stack lines, education, and project bullets). **Empirically, 14+ overflows to a second page** — and `\resumeItem` count alone is a misleading proxy: a single long bullet (~50 words like `csiro-overview` or `csiro-fullstack-leadership`) wraps to 3–4 visual lines and eats the budget of three short bullets. Track **visual lines**, not just bullet count.
@@ -145,6 +161,21 @@ Total `\resumeItem` count target: **≤ 13** (including stack lines, education, 
 
 If you include one of these, drop one short bullet elsewhere to compensate. The `*-stack` bullets are also typically 2 visual lines — count them as such.
 
+### Bullet anti-patterns — default avoid list
+
+These bullets are often selected by mistake. Check your shortlist against this
+table before proposing:
+
+| Bullet ID | Why to avoid by default | Include only when… |
+|---|---|---|
+| `csiro-firmware-abstraction` | Modbus/hardware abstraction layer — reads as embedded/industrial, not SWE | Role explicitly involves hardware, firmware, or embedded systems |
+| `csiro-oop-hardware` | Hardware communication OOP — same framing problem | Same as above |
+| `csiro-locks-deployment` | "Three-month continuous operation in a live laboratory" — industrial/lab context | Reliability, SRE, or safety-critical roles |
+| `csiro-overview` | 52-word lab automation summary — very heavy (3–4 visual lines) and CSIRO-domain-specific | Research, science, or automation-adjacent roles with page room to spare |
+| `soniq-overview` | Names "digital signage CMS" explicitly — small-company framing | Media, CMS, AdTech, or digital signage roles |
+| `soniq-responsive-redesign` | CSS layout/mobile-first redesign — low signal for backend/fullstack/cloud roles | Roles explicitly asking for responsive design, CSS, or mobile UI work |
+| `soniq-portrait-landscape` | IoT screen orientations — very domain-specific, narrow signal | Signage, IoT, or display technology roles only |
+
 Present the shortlist as a markdown table, then **wait for user approval or edits** before writing any files:
 
 ```
@@ -157,6 +188,19 @@ Present the shortlist as a markdown table, then **wait for user approval or edit
 Also propose:
 
 - A **2–3 sentence `profile` paragraph** (≤ ~50 words) that mirrors the ad's vocabulary and culture signals. Adapt the master profile in `cv/main.tex` — do not rewrite from scratch. Cut filler ("Motivated by…") if it doesn't directly mirror the ad.
+
+  **Profile YoE structure — follow this pattern exactly:**
+
+  ```
+  Sentence 1: "Junior Software Engineer and Highest Achieving Graduate in Computer Science
+               with 1+ year of commercial experience [general description of work nature]."
+  Sentence 2: "Hands-on in [skill A], [skill B], and [skill C], with [outcome pattern]."
+  ```
+
+  - Sentence 1 uses the YoE qualifier with a **general** work description only ("building and supporting production systems", "across fullstack and backend engineering"). Never attach a role-specific domain here — the 1+ year spans both CSIRO and SONIQ, which covered different things.
+  - Sentence 2 carries the **role-specific** technical vocabulary without a duration claim. Skills named here must appear in at least one bullet from each role or both stack lines — not just one role.
+  - Bad: `"1+ year of commercial experience in cloud-native infrastructure and CI/CD"` (falsely implies both roles covered this)
+  - Good: `"1+ year of commercial experience building and supporting production systems. Hands-on in Python, Docker, and CI/CD automation…"`
 - A **reordered, pruned `skills` block** (structured YAML): keep the master's structure, move ad-relevant categories to the top, and **drop categories that would be noise** for this role. Better to have 3 dense lines than 6 thin ones.
 
 ### 4. Write the spec
@@ -179,9 +223,10 @@ section_order:         # optional; defaults to [profile, experience, projects, s
   - projects
   - skills
   - education
-education_bullets:     # optional; defaults to all 3 from main.tex if omitted.
-  - Recognised as \textbf{Highest Achieving Graduate} ...
-  - Received lecturer compliment ...
+education_bullets:     # ALWAYS set explicitly — never leave unset (unset defaults to all 3).
+  - Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.
+  # Only add the database-paper line when database/schema/sql are ad keywords.
+  # Never include the scholarship line for engineering roles.
 profile: >-
   <3-sentence tailored profile>
 experience:
@@ -243,12 +288,13 @@ If any threshold is exceeded, prune (using the priority order in the next step) 
 If compiled, report the PDF page count and **enforce one page**:
 
 - **= 1 page**: report success, show the chosen shortlist, hand off to step 7.
-- **> 1 page**: enter a prune loop. Drop bullets in this priority order until the PDF fits. **Project bullets are less important than experience bullets** — projects exist to colour gaps experience doesn't fill, so cut them first.
+- **> 1 page**: enter a prune loop. Drop bullets in this priority order until the PDF fits. **Education is the lowest-priority section** — cut it before touching projects or experience. **Within experience and projects, projects are less important than experience bullets** — projects exist to colour gaps experience doesn't fill.
   1. Any `*-overview` bullet still in the spec.
-  2. The database-paper education bullet, if `database`/`schema`/`sql` aren't ad keywords.
-  3. The weakest project's bullets, then the project itself.
-  4. The lowest-signal experience bullet (fewest keyword hits, no `impact-metric` tag).
-  5. The longest single bullet in the lowest-priority role.
+  2. The scholarship education bullet (if `education_bullets` wasn't already locked to Highest Achieving Graduate only).
+  3. The database-paper education bullet, if `database`/`schema`/`sql` aren't ad keywords.
+  4. The weakest project's bullets, then the project itself.
+  5. The lowest-signal experience bullet (fewest keyword hits, no `impact-metric` tag).
+  6. The longest single bullet in the lowest-priority role.
   Re-render and re-compile after each prune. After 3 unsuccessful prune passes, stop and tell the user which bullets you'd cut and ask them to choose. Never strip the `*-stack` bullets, the role overview structure, or the contact header.
 - **< 1 page** (rare): suggest 1–2 strong bullets to add back, drawn from the bank's unused IDs that match remaining keywords. Don't pad with low-signal content just to fill space — a slightly short, dense page beats a full-but-watery one.
 
