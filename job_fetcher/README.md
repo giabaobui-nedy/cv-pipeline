@@ -173,11 +173,9 @@ roles, add `mid` to the filter: `--level junior,graduate,mid,unknown`.
   --variants \
   --pages 2 \
   --level junior,graduate,unknown \
-  --stack typescript,python,react,aws,node \
-  --arrangement hybrid,remote \
-  --exclude "clearance,nv1,defence,10+ years" \
-  --visa-only \
-  --show-excluded
+  --stack typescript,python,react,aws \     
+  --exclude "clearance,nv1,defence,10+ years, C#" \
+  --visa-only
 ```
 
 Fetches up to ~200 SEEK listings (across keyword variants) + Indeed results,
@@ -188,22 +186,24 @@ deduplicates across sources, filters, and prints a single ranked table.
 ```bash
 .venv/bin/python tools/fetch_job.py \
   --search "junior software engineer" \
-  --source seek,indeed \
+  --source seek \       
   --variants \
   --level junior,graduate,unknown \
-  --stack typescript,python,react,aws,node \
-  --visa-only \
+  --stack typescript,python,react,aws \     
+  --visa-only
   --deep
 ```
 
 For every `?`-visa listing the full description is fetched and the stub is
 updated with:
+
 - **Resolved visa signal** (`?` → `✓` or `✗`)
 - **Re-classified seniority** — a stub with no title signal (unknown) that
   says "3+ years required" in the body is bumped to `mid` and excluded
 - **Better stack + arrangement matching** from the full text
 
 Progress is shown inline:
+
 ```
   [3/12] Software Developer @ Acme …  ✓ open  level 'unknown'→'mid'
   [7/12] Platform Engineer @ Axsys …  ✗ restricted
@@ -429,6 +429,7 @@ filtering. The rest of the pipeline (filters, `--deep`, interactive picker,
 ### Adding another source in the future
 
 To add, say, Glassdoor:
+
 1. Create `fetchers/glassdoor_search.py` with the same three public methods
 2. Add `build_glassdoor_url()` and a location map
 3. Add `"glassdoor"` to the `--source` dispatch block in `fetch_job.py`
