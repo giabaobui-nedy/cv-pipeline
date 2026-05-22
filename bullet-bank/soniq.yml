@@ -135,6 +135,31 @@ bullets:
       microservices (EventBridge + SQS), enabling automated CMS trial activation flows and reducing
       customer onboarding friction between hardware purchases and software usage.
 
+  - id: soniq-shopify-trial-requirements
+    tags: [requirements, stakeholders, communication, collaboration, ux, backend, frontend, saas]
+    text: >-
+      Conducted a structured discovery phase with the managing director and engineering team
+      to surface business context, define feature scope, and align on UX constraints and
+      implementation best practices for a Shopify-to-CMS trial activation system — converting
+      ambiguous requirements into a clear specification before development began.
+
+  - id: soniq-stripe-trial-activation
+    tags: [stripe, backend, billing, saas, entitlement, integration, reliability]
+    text: >-
+      Implemented a no-payment Stripe trial subscription activation flow within the billing
+      service, creating a Business Tier trial subscription at claim time without capturing
+      payment details, and engineered deterministic idempotency key handling to safely
+      resolve Stripe customer-creation race conditions between CMS signup and activation.
+
+  - id: soniq-activation-claim-page
+    tags: [frontend, react, ux, ui, fullstack, saas, onboarding]
+    text: >-
+      Designed and built the CMS activation claim page and end-to-end customer claim flow,
+      handling token validation, authentication round-trips, account eligibility
+      enforcement, and trial confirmation UI — connecting Shopify hardware purchasers to
+      an active CMS Business Tier trial in a single email-driven interaction, successfully
+      deployed to the development environment.
+
   - id: soniq-stack
     tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd]
     text: >-
