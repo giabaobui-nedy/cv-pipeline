@@ -125,6 +125,14 @@ bullets:
       a step-by-step deployment tutorial with the team lead to ensure the system was fully
       reproducible end-to-end.
 
+  - id: csiro-accessibility-ux
+    tags: [accessibility, ux, frontend, aria, css, mobile, ui]
+    text: >-
+      Improved platform accessibility and UI consistency across web and mobile interfaces
+      by introducing ARIA labels, enforcing colour-contrast standards, and standardising
+      typography, component styling, and interactive element patterns --- aligning the
+      system with web accessibility best practices.
+
   - id: csiro-stack
     tags: [stack, python, flask, vue, nuxt, react-native, postgresql, influxdb, docker, azure]
     text: >-
