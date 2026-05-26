@@ -133,9 +133,18 @@ bullets:
       typography, component styling, and interactive element patterns --- aligning the
       system with web accessibility best practices.
 
+  - id: csiro-figma-prototype
+    tags: [figma, prototyping, mobile, ux, stakeholders, requirements, ui]
+    text: >-
+      Designed a Figma prototype with variable-driven state management and dynamic view transitions
+      to distil the most operationally critical data from an existing desktop system into a
+      mobile-first interface for operators working in a constrained, hazardous on-site environment,
+      clarifying scope and aligning the industry partner on layout and data load before React Native
+      development began.
+
   - id: csiro-stack
-    tags: [stack, python, flask, vue, nuxt, react-native, postgresql, influxdb, docker, azure]
+    tags: [stack, python, flask, vue, nuxt, react-native, postgresql, influxdb, docker, azure, tailwind]
     text: >-
       \textbf{Stack:} \emph{Python (Flask, threading), JavaScript/TypeScript (Vue, Nuxt, Node),
-      React Native, PostgreSQL, InfluxDB, Modbus, Docker Compose, Git/GitHub, Linux, Azure Entra
-      ID (SSO), ECharts, WebSockets.}
+      React Native, Tailwind CSS, PostgreSQL, InfluxDB, Modbus, Docker Compose, Git/GitHub, Linux,
+      Azure Entra ID (SSO), ECharts, WebSockets.}

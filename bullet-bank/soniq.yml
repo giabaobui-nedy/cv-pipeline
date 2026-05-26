@@ -161,7 +161,7 @@ bullets:
       deployed to the development environment.
 
   - id: soniq-stack
-    tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd]
+    tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd, tailwind, vite]
     text: >-
-      \textbf{Stack:} \emph{TypeScript, React, NestJS, Python (FastAPI), AWS, Docker, Git/GitHub,
-      CI/CD, GitHub Actions.}
+      \textbf{Stack:} \emph{TypeScript, React, Tailwind CSS, Vite, NestJS, Python (FastAPI), AWS,
+      Docker, Git/GitHub, CI/CD, GitHub Actions.}
