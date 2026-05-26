@@ -398,6 +398,17 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     ap.add_argument(
+        "--title",
+        metavar="KEYWORDS",
+        default="",
+        help=(
+            "Comma-separated words — keep only listings whose title contains at "
+            "least one of them (whole-word, case-insensitive).  Useful for "
+            "filtering out non-software roles from broad Indeed searches. "
+            "Example: --title software,developer,engineer,devops,programmer"
+        ),
+    )
+    ap.add_argument(
         "--visa-only",
         action="store_true",
         help="Alias for --level with visa_friendly=True (shorthand)",
@@ -792,6 +803,7 @@ def main() -> None:
             arrangements=_csv_set(args.arrangement),
             visa_friendly=args.visa_only,
             exclude_keywords=_csv_set(args.exclude),
+            title_keywords=_csv_set(args.title),
         )
         result = filter_stubs(stubs, f)
 

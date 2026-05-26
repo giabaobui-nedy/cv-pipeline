@@ -109,6 +109,9 @@ _CITIZEN_ONLY_PATTERNS: list[str] = [
     r"(hold|obtain|maintain) (a |an )?(security|defence) clearance",
     r"eligible for (a |an )?(security|defence|nv1|baseline) clearance",
 
+    # ── AU abbreviation (appears in job titles, e.g. "AU Citizen only") ──
+    r"\bau\s+citizen(s)?\b",
+
     # ── Temporary visa exclusion ──────────────────────────────────────────
     # Direct statement that temp visa holders cannot apply.
     # "Sponsorship is not available" alone is NOT here — a 485 holder has

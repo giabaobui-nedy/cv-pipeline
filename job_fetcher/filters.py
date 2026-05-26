@@ -169,12 +169,29 @@ def _stack_tokens(text: str) -> set[str]:
 
 
 def stub_matches_stack(stub: JobStub, required: set[str]) -> bool:
-    """Return True if at least one token in *required* appears in the stub."""
+    """Return True if at least one token in *required* appears in the stub.
+
+    Title + company are always checked.  The description_preview is only
+    checked when it is long enough to be a full (or near-full) description
+    (>= 500 chars, i.e. populated by --deep).  Short search-result snippets
+    from SEEK and Indeed rarely mention specific technologies, so applying
+    the stack filter to them produces too many false negatives.  Stubs
+    without a long enough preview pass the filter (benefit of the doubt),
+    matching the convention used by the salary and arrangement filters.
+    """
     if not required:
         return True
-    text = " ".join(filter(None, [stub.title, stub.description_preview, stub.company]))
-    tokens = _stack_tokens(text)
-    return bool(required & tokens)
+    # Always check the title and company name — tech often appears there.
+    title_tokens = _stack_tokens(" ".join(filter(None, [stub.title, stub.company])))
+    if required & title_tokens:
+        return True
+    # Only check the preview when it is long enough to be a full description.
+    # Short snippets (both SEEK teasers and Indeed snippets are < 300 chars)
+    # don't reliably reflect the stack, so we pass through rather than exclude.
+    if stub.description_preview and len(stub.description_preview) >= 500:
+        preview_tokens = _stack_tokens(stub.description_preview)
+        return bool(required & preview_tokens)
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -267,6 +284,13 @@ class JobFilter:
         Drop stubs whose title or preview contains any of these phrases
         (case-insensitive).  Useful for blocking roles you don't want, e.g.
         ``{"security clearance", "nv1", "defence"}``.
+
+    title_keywords
+        Keep only stubs whose *title* contains at least one of these words
+        (case-insensitive, whole-word match).  Useful for filtering out
+        non-software roles that slip through broad Indeed searches, e.g.
+        ``{"software", "developer", "engineer", "devops"}``.
+        Empty set means no restriction.
     """
 
     levels: set[str] = field(default_factory=set)
@@ -275,9 +299,11 @@ class JobFilter:
     arrangements: set[str] = field(default_factory=set)
     visa_friendly: bool = False
     exclude_keywords: set[str] = field(default_factory=set)
+    title_keywords: set[str] = field(default_factory=set)
 
-    # Compiled exclude patterns — built lazily on first use.
+    # Compiled patterns — built on first use.
     _exclude_re: list[re.Pattern] = field(default_factory=list, repr=False)
+    _title_re: list[re.Pattern] = field(default_factory=list, repr=False)
 
     def __post_init__(self) -> None:
         # Normalise sets to lowercase.
@@ -285,9 +311,14 @@ class JobFilter:
         self.stack = {s.lower() for s in self.stack}
         self.arrangements = {s.lower() for s in self.arrangements}
         self.exclude_keywords = {s.lower() for s in self.exclude_keywords}
+        self.title_keywords = {s.lower() for s in self.title_keywords}
         self._exclude_re = [
             re.compile(re.escape(kw), re.IGNORECASE)
             for kw in self.exclude_keywords
+        ]
+        self._title_re = [
+            re.compile(r"\b" + re.escape(kw) + r"\b", re.IGNORECASE)
+            for kw in self.title_keywords
         ]
 
 
@@ -338,6 +369,15 @@ def _why_excluded(stub: JobStub, f: JobFilter) -> str | None:
     # 1. Visa filter.
     if f.visa_friendly and stub.visa_eligible is False:
         return "citizens/PR only"
+
+    # 1b. Title keyword allowlist — drop roles whose title doesn't contain any
+    #     of the required words.  Checked early so non-software roles are
+    #     discarded before heavier level/stack checks.
+    if f._title_re:
+        title = stub.title or ""
+        if not any(p.search(title) for p in f._title_re):
+            matched_words = sorted(f.title_keywords)
+            return f"title missing any of {matched_words}"
 
     # 2. Exclude keywords.
     if f._exclude_re:

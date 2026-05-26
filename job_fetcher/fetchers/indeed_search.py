@@ -308,7 +308,9 @@ class IndeedSearchScraper:
 
             salary   = _extract_salary_tile(tile)
             work_type = _extract_work_type_tile(tile)
-            visa_eligible, sponsorship = detect_visa_signals(preview or "")
+            visa_eligible, sponsorship = detect_visa_signals(
+                title + " " + (preview or "")
+            )
 
             return JobStub(
                 title=title,
@@ -402,7 +404,9 @@ class IndeedSearchScraper:
             date_listed = date_el.get_text(strip=True) if date_el else None
 
             work_type = _extract_work_type_text(salary_raw + " " + preview)
-            visa_eligible, sponsorship = detect_visa_signals(preview or "")
+            visa_eligible, sponsorship = detect_visa_signals(
+                (title or "") + " " + (preview or "")
+            )
 
             is_sponsored = bool(
                 card.select_one(".sponsoredJob")

@@ -235,7 +235,7 @@ class SeekSearchScraper:
             is_featured = bool(job.get("isFeatured") or job.get("isPremium"))
 
             job_url = urljoin(_SEEK_BASE, f"/job/{job_id}")
-            visa_eligible, sponsorship = detect_visa_signals(preview)
+            visa_eligible, sponsorship = detect_visa_signals(title + " " + preview)
 
             return JobStub(
                 title=title,
@@ -302,7 +302,9 @@ class SeekSearchScraper:
                                or "featured" in card.get("class", []))
 
             work_type = _normalise_work_type(work_type_raw)
-            visa_eligible, sponsorship = detect_visa_signals(preview or "")
+            visa_eligible, sponsorship = detect_visa_signals(
+                (title or "") + " " + (preview or "")
+            )
 
             return JobStub(
                 title=title,

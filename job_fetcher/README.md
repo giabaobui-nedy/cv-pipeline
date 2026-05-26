@@ -138,6 +138,7 @@ All filter flags work with `--list` and `--search`. They are AND-ed together.
 | `--min-salary AUD` | Drop listings whose advertised minimum is below this value. Listings with no salary are kept. |
 | `--arrangement MODES` | Keep listings matching at least one mode. Values: `remote`, `hybrid`, `on-site`. Listings with no arrangement signal are always kept. |
 | `--exclude PHRASES` | Drop any listing whose title or preview contains any of these comma-separated phrases (case-insensitive). |
+| `--title KEYWORDS` | Keep only listings whose **title** contains at least one of these words (whole-word, case-insensitive). Essential for Indeed where searches like "junior software engineer" return retail, food-service, and trade roles. Example: `--title software,developer,engineer,devops,programmer`. |
 | `--visa-only` | Drop listings explicitly restricted to citizens/PR (`visa_eligible = False`). |
 | `--deep` | Fetch the full description for every `?`-visa listing. Re-runs **visa detection**, **seniority re-classification** (e.g. "3+ years required" → mid), and improves stack + arrangement matching. One extra request per unknown listing. |
 | `--show-excluded` | Print every excluded listing with the exact reason it was dropped. |
@@ -173,8 +174,9 @@ roles, add `mid` to the filter: `--level junior,graduate,mid,unknown`.
   --variants \
   --pages 2 \
   --level junior,graduate,unknown \
-  --stack typescript,python,react,aws \     
-  --exclude "clearance,nv1,defence,10+ years, C#" \
+  --stack typescript,python,react,aws \
+  --title "software,developer,engineer,devops,programmer" \
+  --exclude "clearance,nv1,defence,10+ years,C#" \
   --visa-only
 ```
 
