@@ -117,10 +117,13 @@ bullets:
       infrastructure cost.
 
   - id: soniq-ts-frontend-architecture
-    tags: [typescript, frontend, react, architecture, refactoring, leadership]
+    tags: [typescript, frontend, react, architecture, refactoring, leadership, state-management, tanstack]
     text: >-
-      Led a TypeScript migration and architected a scalable frontend system with modular feature
-      design, layered hooks, and strict type-safe boundaries.
+      Led a TypeScript migration and architected a scalable frontend system: standardised core
+      React Context providers (authentication, theme, layout) for cross-cutting state management,
+      and established a layered data-flow pattern (DTO $\rightarrow$ mapper $\rightarrow$ domain
+      $\rightarrow$ API $\rightarrow$ TanStack $\rightarrow$ manager/state hook) enforcing
+      separation of concerns and strict type-safe boundaries.
 
   - id: soniq-architectural-validation
     tags: [tooling, architecture, quality, ai-assisted]
@@ -159,6 +162,14 @@ bullets:
       enforcement, and trial confirmation UI — connecting Shopify hardware purchasers to
       an active CMS Business Tier trial in a single email-driven interaction, successfully
       deployed to the development environment.
+
+  - id: soniq-claude-code-jira
+    tags: [ai-assisted, tooling, agile, jira, agentic]
+    text: >-
+      Leveraged Claude Code with Jira MCP connectors in daily engineering
+      workflow --- using agentic tooling for requirement brainstorming, epic
+      decomposition, and task creation and updates directly from the IDE,
+      reducing context-switching overhead during sprint planning.
 
   - id: soniq-stack
     tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd, tailwind, vite]
