@@ -11,7 +11,7 @@
 \newcommand{\pdfauthor}{\covertitle}
 
 \newcommand{\authoraddress}{Box Hill South, VIC 3128}
-\newcommand{\authoremail}{bbgiabao362003@gmail.com}
+\newcommand{\authoremail}{giabaobui@baobuild.dev}
 \newcommand{\authortel}{0402 595 747}
 \newcommand{\authorlinkedin}{https://www.linkedin.com/in/gia-bao-bui-227476227/}
 \newcommand{\authorgithub}{https://github.com/giabaobui-nedy}
