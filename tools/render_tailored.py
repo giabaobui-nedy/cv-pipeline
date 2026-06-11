@@ -52,7 +52,19 @@ def _latex_escape(text: object) -> str:
 
     Bullet-bank entries are already LaTeX-ready and should not pass through this
     helper. It is for structured spec fields such as skills categories/items.
+
+    Accepts both plain text ("Cloud & DevOps") and pre-escaped LaTeX
+    ("Cloud \\& DevOps") — pre-escaped sequences are normalised to plain text
+    first so either form produces identical output.
     """
+    s = str(text)
+    # Normalise pre-escaped sequences so authors can write `&` or `\&` and get
+    # the same result. Must run before the char-by-char escape pass below.
+    for seq, plain in (
+        (r"\&", "&"), (r"\%", "%"), (r"\$", "$"),
+        (r"\#", "#"), (r"\_", "_"), (r"\{", "{"), (r"\}", "}"),
+    ):
+        s = s.replace(seq, plain)
     replacements = {
         "\\": r"\textbackslash{}",
         "&": r"\&",
@@ -65,7 +77,7 @@ def _latex_escape(text: object) -> str:
         "~": r"\textasciitilde{}",
         "^": r"\textasciicircum{}",
     }
-    return "".join(replacements.get(ch, ch) for ch in str(text))
+    return "".join(replacements.get(ch, ch) for ch in s)
 
 
 def render_skills(skills: object) -> str:
