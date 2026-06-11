@@ -164,12 +164,21 @@ bullets:
       deployed to the development environment.
 
   - id: soniq-claude-code-jira
-    tags: [ai-assisted, tooling, agile, jira, agentic]
+    tags: [ai-assisted, agentic, tooling, jira, coordination, planning]
     text: >-
-      Leveraged Claude Code with Jira MCP connectors in daily engineering
-      workflow --- using agentic tooling for requirement brainstorming, epic
-      decomposition, and task creation and updates directly from the IDE,
-      reducing context-switching overhead during sprint planning.
+      Leveraged Claude Code with Jira MCP connectors to translate post-discussion
+      engineering decisions into structured, PR-ready implementation plans with
+      sequenced Jira tasks and delivery timelines, preserving decision context
+      and enabling clearer team coordination.
+
+  - id: soniq-event-propagation-debug
+    tags: [debugging, event-driven, microservices, backend, aws, observability]
+    text: >-
+      Diagnosed a silent cross-service authentication failure during end-to-end testing of the
+      Shopify activation flow, inspecting CloudWatch logs across the billing and IAM microservices
+      to trace the root cause to an event topic rename introduced by a concurrent JWT minter
+      re-architecture, and updating the billing service's event subscription to restore the
+      activation flow.
 
   - id: soniq-stack
     tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd, tailwind, vite]
