@@ -56,6 +56,7 @@ how good the bullet selection is.
 | H5 | **Never invent bullet IDs.** Only IDs present in `bullet-bank/*.yml` may appear in `bullets:` lists. If a relevant bullet is missing, invoke `add-bullet` or flag the gap to the user. | Models hallucinate plausible-sounding IDs. |
 | H6 | **Output must compile to 1 page.** Always run the compile step and check. If > 1 page, enter the prune loop before declaring done. | Models write the spec but skip the compile verification. |
 | H7 | **YoE qualifier must describe duration only — never attach domain-specific claims to it.** Write "1+ year of commercial experience building and supporting production systems", not "1+ year of commercial experience in cloud-native infrastructure, CI/CD, and X". The domains differ between CSIRO (15 months) and SONIQ (3 months); claiming the full duration covered a specific domain is false. Domain-specific skills belong in the second profile sentence without a duration attached. | Models mirror the ad's language by writing "X years of experience in [ad keyword]", over-claiming scope. |
+| H8 | **Fill the page before declaring done.** After the first clean 1-page compile, check whether the CV is visibly sparse (roughly fewer than 11 `\resumeItem` content lines, excluding stack and education). If it is, enter the fill loop (see §5 below) and add bullets until the page is dense or the 13-item ceiling is approaching. A sparse 1-page CV wastes signal and looks unpolished. | First clean compile declared success without checking space usage. |
 
 ## Primary objective: one page, high signal
 
@@ -114,6 +115,8 @@ Track progress with this checklist:
 - [ ] 4. Write job-ads/<slug>/spec.yml
 - [ ] 5. Run the renderer
 - [ ] 6. Compile to PDF if possible
+- [ ] 6a. If > 1 page: prune loop until 1 page
+- [ ] 6b. If < 1 page (sparse): fill loop until dense or ceiling reached
 - [ ] 7. Offer iteration
 ```
 
@@ -296,7 +299,12 @@ If compiled, report the PDF page count and **enforce one page**:
   5. The lowest-signal experience bullet (fewest keyword hits, no `impact-metric` tag).
   6. The longest single bullet in the lowest-priority role.
   Re-render and re-compile after each prune. After 3 unsuccessful prune passes, stop and tell the user which bullets you'd cut and ask them to choose. Never strip the `*-stack` bullets, the role overview structure, or the contact header.
-- **< 1 page** (rare): suggest 1–2 strong bullets to add back, drawn from the bank's unused IDs that match remaining keywords. Don't pad with low-signal content just to fill space — a slightly short, dense page beats a full-but-watery one.
+- **< 1 page — actively fill the space.** This is not rare; it happens whenever the initial shortlist was conservative. A visibly sparse CV wastes signal and looks unpolished. Enter the fill loop:
+  1. Add the highest-keyword-overlap unused experience bullet (SONIQ first, then CSIRO). Never add a bullet that scores zero keyword hits.
+  2. Add a second bullet to an existing project before adding a new project.
+  3. Add a new project from the bank if the project section is sparse and a strong candidate exists.
+  4. `*-overview` bullets only if all stronger options are exhausted and the page still has room.
+  Re-compile after each addition. Stop when the page looks visually dense (few obvious gaps) or the 13-item ceiling is within 1–2 items. **Never pad with zero-signal bullets** — if the only remaining options don't hit any ad keyword, stop and report that the page is as full as the bank can honestly fill.
 
 ### 7. Offer iteration
 
