@@ -8,7 +8,7 @@ projects:
     title: \textbf{Logistics Company Platform (Cloud-Native Full Stack)}
     stack: NextJS, GraphQL, Terraform, GitHub Actions
     links:
-      - {label: GitHub, url: https://github.com/giabaobui-nedy/Dad-Project}
+      - { label: GitHub, url: https://github.com/giabaobui-nedy/Dad-Project }
     tags: [nextjs, graphql, terraform, aws, ci-cd, fullstack, iac]
     bullets:
       - id: logistics-iac
@@ -26,7 +26,7 @@ projects:
     title: \textbf{Weekly Planner (Clean Architecture System)}
     stack: Java, JavaFX, Maven, ORMLite, SQLite, JUnit
     links:
-      - {label: GitHub, url: https://github.com/giabaobui-nedy/WeeklyPlanner}
+      - { label: GitHub, url: https://github.com/giabaobui-nedy/WeeklyPlanner }
     tags: [java, clean-architecture, testing, oop]
     bullets:
       - id: weekly-planner-clean-architecture
@@ -52,8 +52,9 @@ projects:
     title: \textbf{Battery Manufacturing Digital Twin (Capstone)}
     stack: Python, FastAPI, WebSockets, Docker, PostgreSQL
     links:
-      - {label: Demo, url: https://youtu.be/Zto54hkfC2M}
-    tags: [python, fastapi, websockets, docker, postgresql, capstone, leadership]
+      - { label: Demo, url: https://youtu.be/Zto54hkfC2M }
+    tags:
+      [python, fastapi, websockets, docker, postgresql, capstone, leadership]
     bullets:
       - id: battery-modular-backend
         tags: [backend, architecture, event-driven, threading]
@@ -80,8 +81,8 @@ projects:
     title: \textbf{Traffic-based Route Guidance System}
     stack: Python, Tensorflow
     links:
-      - {label: GitHub, url: https://github.com/giabaobui-nedy/COS30019-TBRGS}
-      - {label: Demo, url: https://youtu.be/iLoNkyOPR7Y}
+      - { label: GitHub, url: https://github.com/giabaobui-nedy/COS30019-TBRGS }
+      - { label: Demo, url: https://youtu.be/iLoNkyOPR7Y }
     tags: [python, tensorflow, ml, algorithms]
     bullets:
       - id: tbrgs-dl-search
@@ -106,8 +107,11 @@ projects:
     title: \textbf{Planner \& Diary}
     stack: Kotlin, Android Jetpack
     links:
-      - {label: GitHub, url: https://github.com/giabaobui-nedy/COS30017-HD-Mobile-Application/tree/level3-stage2}
-      - {label: Demo, url: https://youtu.be/y-l_yVBvjus}
+      - {
+          label: GitHub,
+          url: https://github.com/giabaobui-nedy/COS30017-HD-Mobile-Application/tree/level3-stage2,
+        }
+      - { label: Demo, url: https://youtu.be/y-l_yVBvjus }
     tags: [kotlin, android, mobile, jetpack]
     bullets:
       - id: planner-diary-room
@@ -127,8 +131,11 @@ projects:
     title: \textbf{Decentralised Trading Platform}
     stack: Python, React, Ganache, MySQL
     links:
-      - {label: GitHub, url: https://github.com/giabaobui-nedy/COS30049-Innovation-Project}
-      - {label: Demo, url: https://youtu.be/C8dyaWJs_uQ}
+      - {
+          label: GitHub,
+          url: https://github.com/giabaobui-nedy/COS30049-Innovation-Project,
+        }
+      - { label: Demo, url: https://youtu.be/C8dyaWJs_uQ }
     tags: [python, react, blockchain, mysql, fastapi]
     bullets:
       - id: decentralised-trading-dual-db
@@ -146,9 +153,9 @@ projects:
 
   - id: cv-pipeline
     title: \textbf{Automated CV Tailoring Pipeline}
-    stack: Python, LaTeX/Tectonic, YAML, Bash, Cursor Agent Skills
+    stack: Python, LaTeX/Tectonic, YAML, Bash, Claude Agent Skills
     links:
-      - {label: GitHub, url: https://github.com/giabaobui-nedy/cv-pipeline}
+      - { label: GitHub, url: https://github.com/giabaobui-nedy/cv-pipeline }
     tags: [python, automation, yaml, latex, tooling, ai-agents, devtools]
     bullets:
       - id: cv-pipeline-spec-driven
