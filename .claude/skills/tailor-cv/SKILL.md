@@ -145,6 +145,8 @@ Extract from the ad text:
 
 Pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`impact-metric` tagged bullets win) and recency (SONIQ over CSIRO when both fit).
 
+**For client-facing roles (FDE, consulting, professional services, solutions engineering):** when two CSIRO bullets score similarly on tag overlap, prefer the one that shows *delivery + communication* over *communication only*. A bullet showing multi-stakeholder collaboration on a real commissioned system (e.g. `csiro-collaboration`) is stronger evidence of client-facing capability than a bullet about presenting or demonstrating (e.g. `csiro-demos`). Recruiters for these roles want to see ownership and delivery alongside communication — one-way presentation bullets underdeliver on the ownership half.
+
 **Budget for one page** (start here, prune harder if compilation overflows):
 
 - SONIQ: **4 bullets** + `soniq-stack` (mandatory). 5 is borderline.
@@ -178,6 +180,7 @@ table before proposing:
 | `soniq-overview` | Names "digital signage CMS" explicitly — small-company framing | Media, CMS, AdTech, or digital signage roles |
 | `soniq-responsive-redesign` | CSS layout/mobile-first redesign — low signal for backend/fullstack/cloud roles | Roles explicitly asking for responsive design, CSS, or mobile UI work |
 | `soniq-portrait-landscape` | IoT screen orientations — very domain-specific, narrow signal | Signage, IoT, or display technology roles only |
+| `csiro-demos` | One-way presentation (demos to audiences) — thin evidence for client-facing roles that require ownership + delivery. Prefer `csiro-collaboration` for consulting/FDE/professional-services roles. | Roles where public communication or teaching is the primary function (DevRel, advocacy, academic) |
 
 Present the shortlist as a markdown table, then **wait for user approval or edits** before writing any files:
 
