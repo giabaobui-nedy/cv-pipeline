@@ -113,6 +113,11 @@ def render_role(role_meta: dict, bullet_ids: list[str], bank: dict[str, dict]) -
             print(f"warn: missing bullet id {bid}", file=sys.stderr)
             continue
         items.append(f"            \\resumeItem{{{_normalise(bank[bid]['text'])}}}")
+    stack = role_meta.get("stack")
+    if stack:
+        items.append(
+            f"            \\resumeItem{{\\textbf{{Stack:}} \\emph{{{_latex_escape(stack.strip())}}}}}"
+        )
     items_block = "\n".join(items)
     return (
         f"      \\resumeSubheading\n"
