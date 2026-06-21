@@ -12,11 +12,14 @@
 \usepackage{verbatim}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
+\usepackage[normalem]{ulem}
 \usepackage{fancyhdr}
 \usepackage[english]{babel}
 \usepackage{tabularx}
 \usepackage{ragged2e}
 \usepackage[none]{hyphenat}
+\usepackage{fontspec}
+\setmainfont{Calibri}
 
 \setlength{\parskip}{0pt}
 \setlength{\parindent}{0pt}
@@ -48,7 +51,7 @@
   \pdfgentounicode=1
 \fi
 
-\newcommand{\resumeItem}[1]{\item\small #1}
+\newcommand{\resumeItem}[1]{\item #1}
 \newcommand{\resumeSubheading}[4]{
   \vspace{0pt}\item
     \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
@@ -72,10 +75,10 @@
 
 \begin{center}
     \textbf{\Huge \scshape Gia Bao Bui} \\ \vspace{1pt}
-    \small (+61) 402 595 747 $|$ \href{mailto:giabaobui@baobuild.dev}{\underline{giabaobui@baobuild.dev}} $|$
-    \href{https://www.linkedin.com/in/gia-bao-bui-227476227/}{\underline{LinkedIn}} $|$
-    \href{https://github.com/giabaobui-nedy}{\underline{GitHub}} $|$
-    \href{https://www.baobuild.dev/}{\underline{Portfolio Website}}
+    \small (+61) 402 595 747 $|$ \href{mailto:giabaobui@baobuild.dev}{\uline{giabaobui@baobuild.dev}} $|$
+    \href{https://www.linkedin.com/in/gia-bao-bui-227476227/}{\uline{LinkedIn}} $|$
+    \href{https://github.com/giabaobui-nedy}{\uline{GitHub}} $|$
+    \href{https://www.baobuild.dev/}{\uline{Portfolio Website}}
 \end{center}
 
 {{SECTIONS}}

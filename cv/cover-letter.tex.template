@@ -25,6 +25,8 @@
 
 \date{{{LETTER_DATE}}}
 
+\usepackage{fontspec}
+\setmainfont{Calibri}
 \usepackage[a4paper, bindingoffset=0cm, left=\marginleft, right=\marginright, top=\margintop, bottom=\marginbottom, footskip=.25in]{geometry}
 \usepackage[bottom]{footmisc}
 \usepackage{url}
