@@ -55,6 +55,56 @@ projects:
       - { label: Demo, url: https://youtu.be/Zto54hkfC2M }
     tags:
       [python, fastapi, websockets, docker, postgresql, capstone, leadership]
+    timeline: |
+      === Semester 1 (Project A) ===
+
+      Team: 6 people. Role: team lead.
+
+      Context: The project brief sat at the intersection of software engineering and
+      industrial simulation — simulating mock battery manufacturing data for a client
+      building an AI product. Requirements were genuinely ambiguous; they didn't map
+      cleanly to a CS/SWE deliverable.
+
+      Scope clarification: Rather than stalling on unclear requirements, proactively
+      engaged the client to reframe scope. Agreed to build a product that visualises
+      the manufacturing process and allows users to view/export data. Offloaded domain-
+      specific simulation research back to the client. Unblocked ~4 weeks of stalled
+      research and gave the team a deliverable they could own.
+
+      Team structure: Identified each member's strengths, assigned roles and sub-team
+      responsibilities. Set a cadence of weekly client updates + milestone check-ins
+      every 3 weeks. Client consistently praised team organisation, communication, and
+      presentations as "comparable to industrial level."
+
+      Technical decision — MATLAB vs Python: One team member proposed MATLAB for the
+      simulation engine. Argued against it: the client needed an MVP to validate their
+      own thinking, not a production-grade scientific tool. Advocated for Python (known
+      by 5/6 members), starting from simple scripts growing into a proper backend.
+      Initial team split; proceeded with majority. As development progressed the
+      codebase naturally evolved toward Python — validated by how it actually grew.
+
+      === Semester 2 (Project B) ===
+
+      Context: Scope was consolidated after Sem 1. Better team dynamics — took time to
+      understand each person's implicit needs and made sure everyone was happy to
+      contribute their best. Aligned on interfaces early so sub-teams could work in
+      parallel without blockers.
+
+      My role: Owned the backend and overall codebase quality. Established the core
+      data models so the research sub-team could implement state/transition logic
+      independently without restructuring the system. Linked everything together for
+      the frontend to play the simulation.
+
+      Technical: Implemented a multi-threaded continuous batch simulation engine — not
+      a one-shot run, but an ongoing process that checks machine availability before
+      advancing each batch. Threading was implemented correctly on first deployment.
+
+      Handover: Enforced codebase standards with a future process scientist (not SWE)
+      in mind — modular architecture, clear API contracts, documented handover so the
+      simulation's realism could be extended by a domain specialist.
+
+      Outcome: Client was extremely happy with both the collaboration process and the
+      delivered system. Consistently praised team professionalism across both semesters.
     bullets:
       - id: battery-modular-backend
         tags: [backend, architecture, event-driven, threading]
