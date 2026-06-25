@@ -138,9 +138,9 @@ projects:
       - id: tbrgs-dl-search
         tags: [ml, deep-learning, algorithms, gui]
         text: >-
-          Integrated Deep Learning (DL) models with the graph search algorithms, and both with the GUI,
-          delivering the core intelligent route planning capability, informing users of the optimal
-          path between two intersections and the ETA.
+          Integrated TensorFlow DL models with graph search algorithms to deliver intelligent route
+          planning with ETA estimation, connecting pre-trained model outputs end-to-end through to
+          a live GUI.
       - id: tbrgs-networkx
         tags: [visualization, graph, python]
         text: >-
