@@ -216,6 +216,16 @@ bullets:
       multi-level directory views, and added touch-interaction affordances --- driven by iterative
       client and management feedback.
 
+  - id: soniq-outbox-pipeline-migration
+    tags: [aws, eventbridge, fargate, microservices, event-driven, cost, architecture, impact-metric]
+    text: >-
+      Cut cross-service event-publishing infrastructure cost by re-architecting the
+      transactional-outbox pipeline --- eliminating a managed DMS $\rightarrow$ Kinesis
+      $\rightarrow$ Lambda fan-out that alone consumed \textbf{$\sim$36\%} of total monthly
+      non-production cloud spend --- by relocating the poller to a sidecar on each microservice's
+      underutilised Fargate task and centralising the polling and EventBridge \texttt{PutEvents}
+      logic into a shared library.
+
   - id: soniq-stack
     tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd, tailwind, vite]
     text: >-
