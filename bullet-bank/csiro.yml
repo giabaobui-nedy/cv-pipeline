@@ -8,8 +8,9 @@ bullets:
     text: >-
       Architected and delivered a production-grade lab automation system integrating real-time
       telemetry, firmware control, and secure user authentication, transforming a traditionally
-      manual experimental workflow into a safe, automated and traceable research platform supporting
-      a multi-disciplinary team of research scientists.
+      manual experimental workflow into a safe, automated and traceable research platform, working
+      within a multi-disciplinary team of engineers to build the facility for a group of
+      research scientists.
 
   - id: csiro-fullstack-leadership
     tags: [fullstack, vue, nuxt, node, sql, influxdb, leadership]
@@ -57,7 +58,7 @@ bullets:
   - id: csiro-locks-deployment
     tags: [concurrency, threading, firmware, reliability, impact-metric, hardware]
     text: >-
-      Implemented safe, correct lock mechanisms to prevent multi-threaded access to the hardware
+      Implemented safe, correct lock mechanisms to prevent concurrent access to the hardware
       and firmware-level caching to minimise hardware interference, contributing to stable
       three-month continuous production operation in a live laboratory setting.
 

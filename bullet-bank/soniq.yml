@@ -36,7 +36,7 @@ bullets:
   - id: soniq-responsive-redesign
     tags: [frontend, responsive, css, ui, refactoring]
     text: >-
-      Led responsive redesign across multiple web pages by introducing mobile-first layout
+      Delivered a responsive redesign across multiple web pages by introducing mobile-first layout
       adjustments and reusable UI patterns, improving cross-device consistency and reducing
       duplicated styling logic.
 
@@ -152,7 +152,7 @@ bullets:
       Implemented a no-payment Stripe trial subscription activation flow within the billing
       service, creating a Business Tier trial subscription at claim time without capturing
       payment details, and engineered deterministic idempotency key handling to safely
-      resolve Stripe customer-creation race conditions between CMS signup and activation.
+      prevent duplicate Stripe customer creation between the signup and activation flows.
 
   - id: soniq-activation-claim-page
     tags: [frontend, react, ux, ui, fullstack, saas, onboarding]
@@ -201,7 +201,7 @@ bullets:
   - id: soniq-frontend-design-system
     tags: [frontend, react, typescript, ui, design-system, refactoring, architecture]
     text: >-
-      Authored a production-ready frontend design-system layer: established Apple-aligned semantic
+      Authored a production-ready frontend design-system layer: established Apple-inspired semantic
       type and colour token systems, standardised control and icon sizes via CVA, extracted shared
       presentational primitives (Badge, EmptyState, StatusDot, list shell), and built opinionated
       form layout components (Field, Stack) to enforce consistent visual hierarchy across the
