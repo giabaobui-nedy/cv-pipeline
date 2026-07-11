@@ -6,10 +6,10 @@
 projects:
   - id: logistics-platform
     title: \textbf{Logistics Company Platform (Cloud-Native Full Stack)}
-    stack: NextJS, GraphQL, Terraform, GitHub Actions
+    stack: NextJS, Terraform, GitHub Actions
     links:
       - { label: GitHub, url: https://github.com/giabaobui-nedy/Dad-Project }
-    tags: [nextjs, graphql, terraform, aws, ci-cd, fullstack, iac]
+    tags: [nextjs, terraform, aws, ci-cd, fullstack, iac]
     bullets:
       - id: logistics-iac
         tags: [terraform, aws, iac, ecs, fargate, cloudwatch]

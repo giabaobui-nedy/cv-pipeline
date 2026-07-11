@@ -182,6 +182,14 @@ bullets:
       then updated the billing service's event subscription and flagged event topic renames as
       a contract-breaking class requiring explicit versioning.
 
+  - id: soniq-event-propagation-debug-compact
+    tags: [debugging, event-driven, microservices, backend, aws, observability, incident-response]
+    text: >-
+      Diagnosed a silent production activation failure by tracing CloudWatch logs across the
+      billing and IAM microservices to a renamed event topic that had severed a service
+      subscription --- restored the subscription and flagged event-topic renames as a
+      contract-breaking change requiring explicit versioning.
+
   - id: soniq-device-grouping
     tags: [fullstack, frontend, backend, react, fastapi, typescript, feature-delivery, ai-assisted]
     text: >-
