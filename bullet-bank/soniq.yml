@@ -227,10 +227,10 @@ bullets:
   - id: soniq-outbox-pipeline-migration
     tags: [aws, eventbridge, fargate, microservices, event-driven, cost, architecture, impact-metric]
     text: >-
-      Cut cross-service event-publishing infrastructure cost by re-architecting the
-      transactional-outbox pipeline --- eliminating a managed DMS $\rightarrow$ Kinesis
-      $\rightarrow$ Lambda fan-out that alone consumed \textbf{$\sim$36\%} of total monthly
-      non-production cloud spend --- by relocating the poller to a sidecar on each microservice's
+      Cut total non-production cloud spend by \textbf{$\sim$33\%} month-over-month
+      (measured: 31--36\% across dev, $\sim$50\% in staging) by re-architecting the
+      transactional-outbox pipeline --- replacing a managed DMS $\rightarrow$ Kinesis
+      $\rightarrow$ Lambda fan-out with a poller sidecar co-located on each microservice's
       underutilised Fargate task and centralising the polling and EventBridge \texttt{PutEvents}
       logic into a shared library.
 

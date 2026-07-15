@@ -26,6 +26,14 @@ bullets:
       firmware $\rightarrow$ Modbus hardware, replacing rigid single hardware bindings with
       configuration-driven patterns to support evolving multi-column setups without major refactors.
 
+  - id: csiro-pragmatic-tradeoff
+    tags: [pragmatism, decision-making, architecture, hardware, tradeoff]
+    text: >-
+      Chose to invest in a reusable, configuration-driven hardware interface over a faster
+      hardcoded API when a second control-box configuration arrived, trading longer initial
+      delivery for unblocking the team's electronics engineer to continue R\&D on the control
+      box without repeat rework.
+
   - id: csiro-vue-refactor
     tags: [vue, frontend, refactoring, architecture, recognition]
     text: >-
