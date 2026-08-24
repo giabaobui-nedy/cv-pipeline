@@ -10,232 +10,409 @@ bullets:
   - id: soniq-overview
     tags: [react, aws, microservices, event-driven, saas, overview]
     text: >-
-      Contributing to frontend (React) and backend services (microservices-based and event-driven)
-      within a production digital signage and content management platform (CMS) operating in a
-      cloud-native AWS environment as a SaaS product.
+      Build the React frontend and the event-driven backend microservices behind a live digital
+      signage and content management platform (CMS), sold as a SaaS product and running on AWS.
 
   - id: soniq-fullstack-debugging
     tags: [debugging, production, fullstack, reliability, meta]
     text: >-
-      Diagnosed and resolved production issues across frontend and backend systems, ensuring
-      reliability and minimal disruption to live digital signage deployments.
+      Diagnosed and fixed production bugs across frontend and backend services, keeping live
+      digital signage deployments running with little downtime.
 
   - id: soniq-collaboration
-    tags: [collaboration, communication, requirements, stakeholders, microservices, meta]
+    tags:
+      [
+        collaboration,
+        communication,
+        requirements,
+        stakeholders,
+        microservices,
+        meta,
+      ]
     text: >-
-      Collaborated with product managers and engineers to define system requirements, workflows,
-      and edge cases across multiple features in a distributed microservice environment.
+      Scoped features with product managers and engineers before any code was written, agreeing
+      requirements, user workflows and edge cases so work spanning several microservices started
+      from one shared spec.
 
   - id: soniq-media-transcoding
     tags: [backend, media, pipeline, optimization, legacy]
     text: >-
-      Designed and implemented a media transcoding pipeline to automatically convert 4K video
-      assets into optimised Full HD outputs for a legacy CMS, improving playback compatibility
-      and reducing asset delivery overhead across client deployments.
+      Automated 4K-to-Full-HD transcoding for a legacy CMS by building a media pipeline, so client
+      uploads play back correctly and less video data ships to each site.
 
   - id: soniq-responsive-redesign
     tags: [frontend, responsive, css, ui, refactoring]
     text: >-
-      Delivered a responsive redesign across multiple web pages by introducing mobile-first layout
-      adjustments and reusable UI patterns, improving cross-device consistency and reducing
-      duplicated styling logic.
+      Rebuilt several web pages mobile-first with reusable UI patterns, so they work on any screen
+      size and no longer carry duplicated CSS.
 
   - id: soniq-aws-analysis-ts-migration
     tags: [aws, typescript, migration, architecture, analysis]
     text: >-
-      Analysed and visualised existing AWS infrastructure and service interactions to support
-      a large-scale TypeScript migration (.js $\rightarrow$ .ts, .jsx $\rightarrow$ .tsx),
-      improving type safety and long-term maintainability.
+      Unblocked a large TypeScript migration (.js $\rightarrow$ .ts, .jsx $\rightarrow$ .tsx) that
+      made the codebase type-safe and easier to maintain, by mapping and diagramming the existing
+      AWS infrastructure and how each service talks to the others.
 
   - id: soniq-architecture-docs
     tags: [documentation, architecture, microservices, onboarding]
     text: >-
-      Authored comprehensive technical documentation and system architecture diagrams for a
-      complex microservice ecosystem, formalising design patterns and service flows to streamline
-      engineering onboarding.
+      Documented the architecture of a large microservice system in writing and diagrams, capturing
+      the service flows and design patterns that until then lived only in people's heads, so new
+      engineers could get up to speed on their own.
 
   - id: soniq-jira-workflow
     tags: [agile, delivery, team, jira]
     text: >-
-      Improved delivery workflow by restructuring Jira epics into smaller, iterative tasks,
-      increasing progress visibility and supporting more continuous delivery practices within
-      the team.
+      Split large Jira epics into small tasks that each ship on their own, making team progress
+      visible week to week and letting work land continuously instead of in one lump.
 
   - id: soniq-subscription-tier
     tags: [microservices, backend, saas, entitlement]
     text: >-
-      Implemented subscription-tier enforcement across distributed microservices by fixing
-      entitlement inconsistencies, ensuring reliable behaviour for free-tier users across
-      interconnected services.
+      Aligned free-tier limits across distributed microservices, by fixing entitlement checks that
+      disagreed with each other from service to service.
 
   - id: soniq-scheduling-defect
     tags: [debugging, backend, production, testing, timezone, ci-cd]
     text: >-
-      Investigated and resolved a production scheduling defect where enabling monthly recurrence
-      caused timeline events to disappear, reproducing the issue through targeted test scenarios,
-      which were later integrated into the CI/CD pipeline, and correcting timezone-sensitive
-      scheduling logic.
+      Fixed a production bug where switching on monthly recurrence made timeline events disappear,
+      by reproducing it with targeted tests and correcting timezone-sensitive scheduling logic,
+      then added those tests to the CI/CD pipeline so it cannot come back unnoticed.
 
   - id: soniq-device-protocol-migration
     tags: [iot, cloud, migration, realtime, backend]
     text: >-
-      Engineered the migration of device communication protocols to a modern cloud-native
-      synchronisation service, improving real-time data reliability and system scalability
-      across distributed signage displays.
+      Migrated device communication onto a cloud-native synchronisation service, so data syncs
+      reliably in real time across distributed signage displays and more displays can be added.
 
   - id: soniq-portrait-landscape
     tags: [frontend, responsive, css, iot]
     text: >-
-      Implemented responsive layout support for portrait (1080$\times$1920) and landscape
-      (1920$\times$1080) digital signage displays, ensuring consistent rendering across
-      different screen orientations used in real-world deployments.
+      Added layout support for portrait (1080$\times$1920) and landscape (1920$\times$1080)
+      screens, so signage renders correctly in both orientations customers mount displays in.
 
   - id: soniq-qa-debugging
     tags: [debugging, qa, production, reliability, ux]
     text: >-
-      Participated in debugging and resolving production issues as reported during QA, ensuring
-      system reliability and minimal disruption to live deployments and improving UX.
+      Cleared production issues as QA reported them, keeping live deployments stable and the UI
+      predictable for customers.
 
   - id: soniq-hubspot-lambda
     tags: [aws, lambda, serverless, integration, crm]
     text: >-
-      Engineered a scalable user inquiry and notification routing service using AWS Lambda,
-      integrating with HubSpot CRM to automate and streamline customer feedback workflows.
+      Routed user inquiries and notifications straight into HubSpot CRM with a serverless AWS
+      Lambda service, taking manual handling out of the customer feedback loop.
 
   - id: soniq-cost-optimisation
     tags: [aws, lambda, eventbridge, serverless, cost, impact-metric]
     text: >-
-      Designed and deployed an event-driven infrastructure scheduling service (AWS Lambda + EventBridge)
-      to automatically shut down non-production environments, reducing development costs by
-      \textbf{10--12\%} and staging costs by \textbf{33\%} through time-based optimisation.
-
-  - id: soniq-data-integration-redesign
-    tags: [architecture, serverless, analysis, cost]
-    text: >-
-      Analysed an existing data integration architecture and proposed a simplified serverless
-      alternative to achieve eventual consistency while reducing system complexity and
-      infrastructure cost.
+      Cut development costs by \textbf{$\sim$20\%} and staging costs by \textbf{33\%}, by building
+      an event-driven scheduling service (AWS Lambda + EventBridge) that shuts non-production
+      environments down overnight and at weekends, and by fixing a cron bug that had left weekends
+      running around the clock.
 
   - id: soniq-ts-frontend-architecture
-    tags: [typescript, frontend, react, architecture, refactoring, leadership, state-management, tanstack]
+    tags:
+      [
+        typescript,
+        frontend,
+        react,
+        architecture,
+        refactoring,
+        leadership,
+        state-management,
+        tanstack,
+      ]
     text: >-
-      Led a TypeScript migration and architected a scalable frontend system: standardised core
-      React Context providers (authentication, theme, layout) for cross-cutting state management,
-      and established a layered data-flow pattern (DTO $\rightarrow$ mapper $\rightarrow$ domain
-      $\rightarrow$ API $\rightarrow$ TanStack $\rightarrow$ manager/state hook) enforcing
-      separation of concerns and strict type-safe boundaries.
+      Led a TypeScript migration that gave a React frontend strict type-safe boundaries and one
+      clear path for data, by standardising core Context providers (authentication, theme, layout)
+      for shared state and setting a layered data flow
+      (DTO $\rightarrow$ mapper $\rightarrow$ domain $\rightarrow$ API $\rightarrow$ TanStack
+      $\rightarrow$ state hook).
 
   - id: soniq-architectural-validation
     tags: [tooling, architecture, quality, ai-assisted]
     text: >-
-      Built automated validation tooling to enforce architectural constraints, reducing coupling
-      and ensuring consistent code quality, particularly for AI-assisted development.
+      Stopped AI-assisted development eroding code quality and coupling, by building tooling that
+      enforces the codebase's architectural rules and fails the build when code breaks them.
 
   - id: soniq-shopify-eventbridge
     tags: [aws, eventbridge, sqs, event-driven, integration, saas, onboarding]
     text: >-
-      Implemented an event-driven integration pipeline connecting Shopify webhooks to internal
-      microservices (EventBridge + SQS), enabling automated CMS trial activation flows and reducing
-      customer onboarding friction between hardware purchases and software usage.
+      Wired Shopify webhooks into internal microservices (EventBridge + SQS) so a hardware
+      purchase activates a CMS trial on its own, with no manual setup between buying the device
+      and using the software.
 
   - id: soniq-shopify-trial-requirements
-    tags: [requirements, stakeholders, communication, collaboration, ux, backend, frontend, saas]
+    tags:
+      [
+        requirements,
+        stakeholders,
+        communication,
+        collaboration,
+        ux,
+        backend,
+        frontend,
+        saas,
+      ]
     text: >-
-      Conducted a structured discovery phase with the managing director and engineering team
-      to surface business context, define feature scope, and align on UX constraints and
-      implementation best practices for a Shopify-to-CMS trial activation system — converting
-      ambiguous requirements into a clear specification before development began.
+      Converted a vague request into a written spec before any code was written, by running a
+      discovery phase with the managing director and the engineering team on the business context,
+      the scope and the UX limits of a Shopify-to-CMS trial activation system.
 
   - id: soniq-stripe-trial-activation
-    tags: [stripe, backend, billing, saas, entitlement, integration, reliability]
+    tags:
+      [stripe, backend, billing, saas, entitlement, integration, reliability]
     text: >-
-      Implemented a no-payment Stripe trial subscription activation flow within the billing
-      service, creating a Business Tier trial subscription at claim time without capturing
-      payment details, and engineered deterministic idempotency key handling to safely
-      prevent duplicate Stripe customer creation between the signup and activation flows.
+      Built the Stripe trial activation flow in the billing service so customers can start a
+      Business Tier trial without entering card details, using deterministic idempotency keys to
+      stop a duplicate Stripe customer being created between signup and activation.
 
   - id: soniq-activation-claim-page
     tags: [frontend, react, ux, ui, fullstack, saas, onboarding]
     text: >-
-      Designed and built the CMS activation claim page and end-to-end customer claim flow,
-      handling token validation, authentication round-trips, account eligibility
-      enforcement, and trial confirmation UI — connecting Shopify hardware purchasers to
-      an active CMS Business Tier trial in a single email-driven interaction, successfully
-      deployed to the development environment.
+      Turned a Shopify hardware purchase into an active CMS Business Tier trial in one email-driven
+      step, by building the claim page and the flow behind it: token validation, authentication
+      round-trips, account eligibility checks and trial confirmation UI. Deployed to the
+      development environment.
 
   - id: soniq-claude-code-jira
     tags: [ai-assisted, agentic, tooling, jira, coordination, planning]
     text: >-
-      Leveraged Claude Code with Jira MCP connectors to translate post-discussion
-      engineering decisions into structured, PR-ready implementation plans with
-      sequenced Jira tasks and delivery timelines, preserving decision context
-      and enabling clearer team coordination.
+      Translated decisions from engineering discussions into PR-ready plans with ordered Jira tasks
+      and delivery dates, using Claude Code with Jira MCP connectors, so the reasoning behind each
+      decision stayed attached to the work.
 
   - id: soniq-event-propagation-debug
     tags: [debugging, event-driven, microservices, backend, aws, observability]
     text: >-
-      Diagnosed a silent CMS activation failure while end-to-end testing as a newly onboarded
-      customer --- hardware purchased on Shopify, activation code received, claim flow silently
-      non-functional --- inspecting CloudWatch logs across the billing and IAM microservices to
-      trace the root cause to a JWT minter re-architecture that renamed the IAM identity-sync
-      event topic, severing billing's subscription and blocking customer identity from syncing,
-      then updated the billing service's event subscription and flagged event topic renames as
-      a contract-breaking class requiring explicit versioning.
+      Traced why new customers could not activate the CMS (hardware bought on Shopify, activation
+      code received, claim flow silently doing nothing) by walking the flow end to end as a new
+      customer and reading CloudWatch logs across the billing and IAM microservices,
+      finding a JWT minter rewrite that had renamed the IAM identity-sync event topic and cut
+      billing's subscription, so customer identity never synced; then fixed the subscription and
+      raised the rename with the engineer who made it, so the new event was checked against every
+      consumer with no old event shape left behind.
 
   - id: soniq-event-propagation-debug-compact
-    tags: [debugging, event-driven, microservices, backend, aws, observability, incident-response]
+    tags:
+      [
+        debugging,
+        event-driven,
+        microservices,
+        backend,
+        aws,
+        observability,
+        incident-response,
+      ]
     text: >-
-      Diagnosed a silent production activation failure by tracing CloudWatch logs across the
-      billing and IAM microservices to a renamed event topic that had severed a service
-      subscription --- restored the subscription and flagged event-topic renames as a
-      contract-breaking change requiring explicit versioning.
+      Restored a customer activation flow that was silently broken in production, by tracing
+      CloudWatch logs across the billing and IAM microservices to a renamed event topic that had
+      cut a service's subscription, then raising it so the new event was checked against every
+      consumer.
+
+  - id: soniq-event-propagation-debug-versioning
+    tags:
+      [
+        debugging,
+        event-driven,
+        microservices,
+        backend,
+        aws,
+        observability,
+        incident-response,
+        reliability,
+      ]
+    text: >-
+      Restored a customer activation flow that was silently broken in production, by tracing
+      CloudWatch logs across the billing and IAM microservices to a renamed event topic that had
+      cut a service's subscription, then got event-topic renames treated as a breaking change
+      that needs explicit versioning.
 
   - id: soniq-device-grouping
-    tags: [fullstack, frontend, backend, react, fastapi, typescript, feature-delivery, ai-assisted]
+    tags:
+      [
+        fullstack,
+        frontend,
+        backend,
+        react,
+        fastapi,
+        typescript,
+        feature-delivery,
+        ai-assisted,
+      ]
     text: >-
-      Delivered an end-to-end device grouping feature: extended the FastAPI data model with a
-      group association field, built group CRUD and bulk assign/unassign APIs, and shipped the
-      complete React UI --- a GroupsRail filter lens, color-coded GroupChip primitives, contextual
-      action bars, bulk multi-select, and a React Table--based device grid redesign.
+      Shipped device grouping end to end, so users can filter and manage devices in bulk by group,
+      by adding a group field to the FastAPI data model, building group CRUD and bulk
+      assign/unassign APIs, and building the React UI: a group filter rail, colour-coded chips,
+      contextual action bars, multi-select, and a React Table device grid.
 
   - id: soniq-fallback-content
     tags: [backend, frontend, react, fastapi, scheduling, saas, reliability]
     text: >-
-      Implemented a priority-based content fallback system: removed server-side conflict checking,
-      built event-priority playback resolution and a per-schedule dedicated fallback field
-      (FastAPI), and delivered the schedule editor UI --- event priority selector, fallback-create
-      affordance with informational banner, and soft-warning dialog for overlapping events.
+      Kept screens from going blank when schedules overlap or run out, by replacing server-side
+      conflict checking with priority-based playback resolution and a per-schedule fallback field
+      (FastAPI), and building the schedule editor UI: priority selector, fallback-create prompt
+      with an explanatory banner, and a soft warning on overlapping events.
 
   - id: soniq-frontend-design-system
-    tags: [frontend, react, typescript, ui, design-system, refactoring, architecture]
+    tags:
+      [
+        frontend,
+        react,
+        typescript,
+        ui,
+        design-system,
+        refactoring,
+        architecture,
+      ]
     text: >-
-      Authored a production-ready frontend design-system layer: established Apple-inspired semantic
-      type and colour token systems, standardised control and icon sizes via CVA, extracted shared
-      presentational primitives (Badge, EmptyState, StatusDot, list shell), and built opinionated
-      form layout components (Field, Stack) to enforce consistent visual hierarchy across the
-      codebase.
+      Standardised how the UI looks and behaves across the codebase with a design-system layer:
+      Apple-inspired semantic type and colour tokens, fixed control and icon sizes via CVA, shared
+      presentational primitives (Badge, EmptyState, StatusDot, list shell), and form layout
+      components (Field, Stack).
 
   - id: soniq-hospital-app-accessibility
     tags: [frontend, aws, accessibility, ui, client-delivery]
     text: >-
-      Delivered UI improvements and accessibility upgrades for a client-facing hospital directory
-      application (AWS Amplify): applied WCAG colour-contrast best practices, introduced
-      alternating-row colour coding for readability, standardised typography and spacing across
-      multi-level directory views, and added touch-interaction affordances --- driven by iterative
-      client and management feedback.
+      Reworked a client-facing hospital directory app (AWS Amplify) for readability and touch use:
+      applied WCAG colour-contrast rules, added alternating row colours, standardised type and
+      spacing across multi-level directory views, and added touch affordances, all shaped by
+      rounds of client and management feedback.
 
   - id: soniq-outbox-pipeline-migration
-    tags: [aws, eventbridge, fargate, microservices, event-driven, cost, architecture, impact-metric]
+    tags:
+      [
+        aws,
+        eventbridge,
+        fargate,
+        microservices,
+        event-driven,
+        cost,
+        architecture,
+        impact-metric,
+      ]
     text: >-
-      Cut total non-production cloud spend by \textbf{$\sim$33\%} month-over-month
-      (measured: 31--36\% across dev, $\sim$50\% in staging) by re-architecting the
-      transactional-outbox pipeline --- replacing a managed DMS $\rightarrow$ Kinesis
-      $\rightarrow$ Lambda fan-out with a poller sidecar co-located on each microservice's
-      underutilised Fargate task and centralising the polling and EventBridge \texttt{PutEvents}
-      logic into a shared library.
+      Re-architected the transactional-outbox pipeline across three environments, replacing a
+      managed DMS $\rightarrow$ Kinesis $\rightarrow$ Lambda fan-out with a small poller running
+      on each microservice's already-underused Fargate task that publishes straight to EventBridge.
+      This removed $\sim$\$1.3k/month of DMS and Kinesis spend and cut total cloud cost by
+      \textbf{$\sim$26\%} month-over-month (trending to $\sim$40\% once the teardown finished).
+
+  - id: soniq-outbox-index-tuning
+    tags:
+      [
+        database,
+        postgres,
+        aurora,
+        query-optimisation,
+        data-modelling,
+        performance,
+        cost,
+        impact-metric,
+      ]
+    text: >-
+      Indexed a bloated 1.7\,GB outbox table to clear an RDS cost and performance regression: a
+      once-per-second \texttt{ORDER BY created\_at} claim query was scanning the whole table with
+      no index to help it, holding an Aurora Serverless cluster at \textbf{5$\times$} its idle
+      capacity all day. Shipped a composite \texttt{(created\_at, id)} index as a schema migration
+      across four services and twelve databases and documented it in the shared poller package,
+      stopping the same failure at production scale.
+
+  - id: soniq-outbox-shared-library-rollout
+    tags:
+      [
+        aws,
+        fargate,
+        microservices,
+        event-driven,
+        refactoring,
+        shared-library,
+        architecture,
+        cost,
+      ]
+    text: >-
+      Consolidated three copies of the outbox poller that had drifted apart into one versioned
+      shared package used by four microservices, and collapsed per-worker Fargate tasks behind a
+      config-driven async supervisor, finishing the transactional-outbox teardown.
+
+  - id: soniq-styling-migration
+    tags:
+      [
+        frontend,
+        react,
+        design-system,
+        refactoring,
+        tooling,
+        code-quality,
+        ci-cd,
+        migration,
+      ]
+    text: >-
+      Moved a production React codebase off ad-hoc styling onto a central token system, ending
+      with zero offenders left and a merge-blocking check, by writing a custom
+      \texttt{check-styling} lint guard, shipping it advisory-first with an allowlist so CI stayed
+      green, then stripping inline styles, raw hex colours and arbitrary pixel utilities feature
+      by feature.
+
+  - id: soniq-component-consolidation
+    tags:
+      [frontend, react, architecture, refactoring, design-system, code-quality]
+    text: >-
+      Merged two parallel React component libraries into one barrel-exported hierarchy
+      (primitives / composites / dialogs), retiring six duplicated components across $\sim$80
+      files in small steps that changed no behaviour, and locked the layering in as ESLint rules
+      raised from warning to error once the last compatibility shim was deleted.
+
+  - id: soniq-central-data-layer
+    tags:
+      [
+        frontend,
+        typescript,
+        react,
+        tanstack,
+        architecture,
+        api,
+        openapi,
+        refactoring,
+      ]
+    text: >-
+      Reduced a backend contract change to a one-place edit instead of scattered fixes across every
+      feature, by generating TypeScript types from four microservices' live OpenAPI specs and
+      grouping DTO mappers, typed API functions and TanStack hooks into per-service shared modules.
+
+  - id: soniq-organisation-workspace-ui
+    tags:
+      [
+        frontend,
+        react,
+        ui,
+        ux,
+        requirements,
+        collaboration,
+        multi-tenancy,
+        feature-delivery,
+      ]
+    text: >-
+      Designed and built the frontend for a two-tier tenancy feature separating organisations
+      (groups of people) from workspaces (groups of resources), after pairing with a teammate on
+      requirements and domain modelling to turn an open-ended product concept into a defined scope.
 
   - id: soniq-stack
-    tags: [stack, typescript, react, nestjs, python, fastapi, aws, docker, ci-cd, tailwind, vite]
+    tags:
+      [
+        stack,
+        typescript,
+        react,
+        nestjs,
+        python,
+        fastapi,
+        aws,
+        docker,
+        ci-cd,
+        tailwind,
+        vite,
+      ]
     text: >-
       \textbf{Stack:} \emph{TypeScript, React, Tailwind CSS, Vite, NestJS, Python (FastAPI), AWS,
       Docker, Git/GitHub, CI/CD, GitHub Actions.}

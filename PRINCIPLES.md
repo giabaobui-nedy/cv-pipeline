@@ -63,6 +63,30 @@ Implications:
   technical-evidence paragraph must use a quantified outcome, not a process
   narrative.
 
+### Projects are gap-fillers, not a fixture (experience-first policy, Aug 2026)
+
+With nearly 2 years of paid production work on the CV, Experience carries the
+application; Projects exist only to cover ad requirements Experience can't.
+
+- **Default budget: 0–1 project, 1–2 bullets.** A CV with no Projects section
+  is fine at this stage — spend the reclaimed space on more experience bullets.
+- **Inclusion test**: a project earns its place only if it hits an ad keyword
+  that zero experience bullets cover. If every project bullet is redundant
+  with experience, drop the section.
+- **Uni-era projects age out first** (Weekly Planner, TBRGS, Planner & Diary,
+  Decentralised Trading, Battery Digital Twin) — they read increasingly junior
+  next to production work. The **cv-pipeline** project is the exception:
+  current, self-owned, real engineering, and uniquely strong evidence for
+  AI-forward roles (it is a demonstrable agentic workflow).
+- A second project is justified only when it covers a *second* uncovered
+  requirement — and apply the test strictly. Worked example, Unity Care
+  (Aug 2026): `cv-pipeline` stayed (nothing in experience answers
+  "screen-share your agentic workflow"), but `weekly-planner-orm-tests`
+  ("validate AI-generated code") was cut on review because
+  `soniq-architectural-validation` already carried the AI-output-quality
+  signal; the freed space went to `soniq-fallback-content`, a scheduling
+  bullet matching the ad's domain.
+
 ### Pivoting from SONIQ → big tech
 
 SONIQ is real production AWS / microservices / TypeScript work, but the
@@ -105,6 +129,51 @@ hidden.
 4. **Detect ad gates before drafting.** If the ad says "Australian/NZ citizens or PR only" (common in defence, government, banking, some financial services), **flag this and ask the user whether to proceed** before writing anything. Do not silently submit.
 5. **Cover letter body handling.** If the ad does not gate on PR, do *not* raise the visa in the body — the contact-line statement is enough. If the ad explicitly mentions sponsorship as a benefit or names visa support, briefly note in P5: "I have full Australian work rights via the Subclass 485 visa, so no sponsorship is required." This turns a perceived blocker into an asset.
 6. **Application-form fields trump the CV.** Most AU job portals have a dedicated "do you have full work rights?" question. Answer it there. The cover letter's contact line is the backup signal for the manual screen.
+
+### Form fields with a "now or in the future" clause
+
+Some AU portals go past the simple work-rights tickbox and force a choice between:
+
+- *"I currently hold a valid visa (and can freely commence work, with no support required)"*
+- *"I currently hold a valid visa on a temporary basis (and would require visa assistance in the future)"*
+
+then add a free-text prompt: *"If you require any visa assistance (either now or in the
+future), please let us know details below."* (Observed: Xero, August 2026.)
+
+The 485 makes the **first** option true today and the **second** option true from expiry
+(January 2028) onward. The choice therefore turns on a future fact the radio buttons
+cannot capture, and the two options are not actually mutually exclusive for a 485 holder.
+
+**Default: pick the "no support required" option, and disclose the expiry in the box.**
+
+- The parenthetical in that option is a claim about *commencing work*, which is
+  unambiguously true — you can start tomorrow and the employer does nothing.
+- The box then carries the temporary status, so nothing is concealed.
+- Picking the "requires assistance" option self-selects into the sponsorship bucket over
+  a question about 2028. That is a disproportionate cost at the screening stage, where
+  the reviewer is deciding whether hiring you is complicated *now*.
+
+Canonical box text:
+
+```
+I hold a Subclass 485 (Temporary Graduate) visa with full Australian working rights,
+valid to January 2028. No visa support is required to commence or for the foreseeable
+term of the visa. As the 485 is temporary, I would be seeking permanent residency ahead
+of its expiry, and I am happy to discuss options closer to the time.
+```
+
+**Never leave the box empty when the question says "now or in the future."** Silence
+there is the version that reads as concealment if it surfaces later — which is a far
+worse outcome than an early conversation about PR timing.
+
+**Exception.** If PR is genuinely *not* being pursued independently and employer
+sponsorship would be needed at expiry, pick the "assistance in the future" option.
+Honest disclosure beats a rescinded offer. This is a decision for the user, not the
+agent — surface the trade-off and let them choose.
+
+**Do not answer this from the agent's memory of the expiry date.** Prompt the user to
+confirm the current 485 stream and expiry on VEVO before submitting, and note that PR
+strategy is a question for a registered migration agent, not this pipeline.
 
 ### When to renew the canonical phrasing
 

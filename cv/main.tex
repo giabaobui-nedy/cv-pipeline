@@ -129,7 +129,7 @@
 
 %-----------Profile-----------
 \section{Profile}
-\small{Software Engineer and Highest Achieving Graduate in Computer Science with 1+ years of professional experience building production-grade, API-driven systems deployed in real operational lab environments. Strong foundation in problem-solving, system design, and debugging, with hands-on experience across frontend and backend services using Python, TypeScript, and modern web technologies. Motivated by designing resilient, observable systems and strengthening engineering practices in cloud-native environments.}\justifying
+\small{Software Engineer and Highest Achieving Graduate in Computer Science with nearly 2 years of commercial experience building production-grade, API-driven systems deployed in real operational lab environments. Strong foundation in problem-solving, system design, and debugging, with hands-on experience across frontend and backend services using Python, TypeScript, and modern web technologies. Motivated by designing resilient, observable systems and strengthening engineering practices in cloud-native environments.}\justifying
 
 
 %-----------EXPERIENCE-----------
@@ -155,19 +155,25 @@
                 \resumeItem{Engineered a scalable user inquiry and notification routing service using AWS Lambda, integrating with HubSpot CRM to automate and streamline customer feedback workflows.}
                 \resumeItem{Designed and deployed an event-driven infrastructure scheduling service (AWS Lambda + EventBridge) to automatically shut down non-production environments, reducing development costs by \textbf{10–12\%} and staging costs by \textbf{33\%} through time-based optimisation.}
                 \resumeItem{Analysed an existing data integration architecture and proposed a simplified serverless alternative to achieve eventual consistency while reducing system complexity and infrastructure cost.}
-                \resumeItem{Led a TypeScript migration and architected a scalable frontend system with modular feature design, layered hooks, and strict type-safe boundaries.}
+                \resumeItem{Led a TypeScript migration and architected a scalable frontend system: standardised core React Context providers (authentication, theme, layout) for cross-cutting state management, and established a layered data-flow pattern (DTO $\rightarrow$ mapper $\rightarrow$ domain $\rightarrow$ API $\rightarrow$ TanStack $\rightarrow$ manager/state hook) enforcing separation of concerns and strict type-safe boundaries.}
                 \resumeItem{Built automated validation tooling to enforce architectural constraints, reducing coupling and ensuring consistent code quality, particularly for AI-assisted development.}
                 \resumeItem{Implemented an event-driven integration pipeline connecting Shopify webhooks to internal microservices (EventBridge + SQS), enabling automated CMS trial activation flows and reducing customer onboarding friction between hardware purchases and software usage.}
                 \resumeItem{Conducted a structured discovery phase with the managing director and engineering team to surface business context, define feature scope, and align on UX constraints and implementation best practices for a Shopify-to-CMS trial activation system — converting ambiguous requirements into a clear specification before development began.}
                 \resumeItem{Implemented a no-payment Stripe trial subscription activation flow within the billing service, creating a Business Tier trial subscription at claim time without capturing payment details, and engineered deterministic idempotency key handling to safely prevent duplicate Stripe customer creation between the signup and activation flows.}
                 \resumeItem{Designed and built the CMS activation claim page and end-to-end customer claim flow, handling token validation, authentication round-trips, account eligibility enforcement, and trial confirmation UI — connecting Shopify hardware purchasers to an active CMS Business Tier trial in a single email-driven interaction, successfully deployed to the development environment.}
-                \resumeItem{Diagnosed a silent cross-service authentication failure during end-to-end testing of the Shopify activation flow, inspecting CloudWatch logs across the billing and IAM microservices to trace the root cause to an event topic rename introduced by a concurrent JWT minter re-architecture, and updating the billing service's event subscription to restore the activation flow.}
+                \resumeItem{Leveraged Claude Code with Jira MCP connectors to translate post-discussion engineering decisions into structured, PR-ready implementation plans with sequenced Jira tasks and delivery timelines, preserving decision context and enabling clearer team coordination.}
+                \resumeItem{Diagnosed a silent CMS activation failure while end-to-end testing as a newly onboarded customer --- hardware purchased on Shopify, activation code received, claim flow silently non-functional --- inspecting CloudWatch logs across the billing and IAM microservices to trace the root cause to a JWT minter re-architecture that renamed the IAM identity-sync event topic, severing billing's subscription and blocking customer identity from syncing, then updated the billing service's event subscription and flagged event topic renames as a contract-breaking class requiring explicit versioning.}
                 \resumeItem{Delivered an end-to-end device grouping feature: extended the FastAPI data model with a group association field, built group CRUD and bulk assign/unassign APIs, and shipped the complete React UI --- a GroupsRail filter lens, color-coded GroupChip primitives, contextual action bars, bulk multi-select, and a React Table--based device grid redesign.}
                 \resumeItem{Implemented a priority-based content fallback system: removed server-side conflict checking, built event-priority playback resolution and a per-schedule dedicated fallback field (FastAPI), and delivered the schedule editor UI --- event priority selector, fallback-create affordance with informational banner, and soft-warning dialog for overlapping events.}
                 \resumeItem{Authored a production-ready frontend design-system layer: established Apple-inspired semantic type and colour token systems, standardised control and icon sizes via CVA, extracted shared presentational primitives (Badge, EmptyState, StatusDot, list shell), and built opinionated form layout components (Field, Stack) to enforce consistent visual hierarchy across the codebase.}
                 \resumeItem{Delivered UI improvements and accessibility upgrades for a client-facing hospital directory application (AWS Amplify): applied WCAG colour-contrast best practices, introduced alternating-row colour coding for readability, standardised typography and spacing across multi-level directory views, and added touch-interaction affordances --- driven by iterative client and management feedback.}
                 \resumeItem{Cut total non-production cloud spend by \textbf{$\sim$33\%} month-over-month (measured: 31--36\% across dev, $\sim$50\% in staging) by re-architecting the transactional-outbox pipeline --- replacing a managed DMS $\rightarrow$ Kinesis $\rightarrow$ Lambda fan-out with a poller sidecar co-located on each microservice's underutilised Fargate task and centralising the polling and EventBridge \texttt{PutEvents} logic into a shared library.}
-                \resumeItem{\textbf{Stack:} \emph{TypeScript, React, NestJS, Python (FastAPI), AWS, Docker, Git/GitHub, CI/CD, GitHub Actions.}}
+                \resumeItem{Completed the transactional-outbox teardown by unifying three drifted vendored poller copies into a single versioned shared package across four microservices, and collapsing per-worker Fargate tasks behind a config-driven async supervisor.}
+                \resumeItem{Migrated a production React codebase off freehand styling onto a centralised token system by building a custom \texttt{check-styling} lint guard --- shipped advisory-first with an allowlist of existing offenders so CI stayed green --- then eliminating inline styles, raw hex literals and arbitrary pixel utilities feature-by-feature until both allowlists were empty and the guard was promoted to a merge-blocking check.}
+                \resumeItem{Collapsed two parallel React component libraries into a single barrel-exported hierarchy (primitives / composites / dialogs), retiring six duplicated components across $\sim$80 files in sequential behaviour-neutral slices, and encoded the layering contract as ESLint rules escalated from warning to error once the last compatibility shim was deleted.}
+                \resumeItem{Centralised the frontend data layer across four microservices --- generating types directly from each service's live OpenAPI spec, consolidating DTO mappers, typed API functions and TanStack query/mutation hooks with query-key factories into per-service shared modules, then repointing every feature and deleting its per-feature plumbing --- reducing a backend contract change to a one-place edit.}
+                \resumeItem{Collaborated with a teammate on requirements analysis and domain modelling for a two-tier tenancy feature separating organisations (collections of people) from workspaces (collections of resources), then designed and built the frontend interface for managing both --- turning an open-ended product concept into a defined scope and a working UI.}
+                \resumeItem{\textbf{Stack:} \emph{TypeScript, React, Tailwind CSS, Vite, NestJS, Python (FastAPI), AWS, Docker, Git/GitHub, CI/CD, GitHub Actions.}}
             \resumeItemListEnd
         \resumeSubheading
       {Software Engineering Intern / Casual Software Engineer}{Mar 2024 -- Jun 2025}
@@ -190,9 +196,10 @@
             \resumeItem{Applied end-to-end SDLC practices including requirements analysis, iterative prototyping, Jira-based task tracking, Git version control, formal SRS/SDD documentation, commissioning support, and knowledge transfer to ensure sustainable long-term maintenance.}
             \resumeItem{Collaborated closely with researchers, electronics engineers, and external vendors to align software behaviour with hardware capabilities, supporting commissioning activities, safe laboratory handover, and strengthened industry partnerships.}
             \resumeItem{Led technical demonstrations for internal leadership, visiting industry partners, and national intern cohorts, effectively communicating architectural decisions and the strategic value of applied software engineering within mineral processing research.}
+            \resumeItem{Produced a structured handover suite at system completion --- maintained SRS/SDD documentation spanning frontend to backend, built UML architecture diagrams used to brief a mechatronics engineer with adjacent software experience as a relay for future onboarding, and co-recorded a step-by-step deployment tutorial with the team lead to ensure the system was fully reproducible end-to-end.}
             \resumeItem{Improved platform accessibility and UI consistency across web and mobile interfaces by introducing ARIA labels, enforcing colour-contrast standards, and standardising typography, component styling, and interactive element patterns --- aligning the system with web accessibility best practices.}
             \resumeItem{Designed a Figma prototype with variable-driven state management and dynamic view transitions to distil the most operationally critical data from an existing desktop system into a mobile-first interface for operators working in a constrained, hazardous on-site environment, clarifying scope and aligning the industry partner on layout and data load before React Native development began.}
-            \resumeItem{\textbf{Stack:} \emph{Python (Flask, threading), JavaScript/TypeScript (Vue, Nuxt, Node), React Native, PostgreSQL, InfluxDB, Modbus, Docker Compose, Git/GitHub, Linux, Azure Entra ID (SSO), ECharts, WebSockets.}}
+            \resumeItem{\textbf{Stack:} \emph{Python (Flask, threading), JavaScript/TypeScript (Vue, Nuxt, Node), React Native, Tailwind CSS, PostgreSQL, InfluxDB, Modbus, Docker Compose, Git/GitHub, Linux, Azure Entra ID (SSO), ECharts, WebSockets.}}
         \resumeItemListEnd
   \resumeSubHeadingListEnd
 
@@ -200,14 +207,14 @@
 \section{Projects}
     \resumeSubHeadingListStart
         \resumeProjectHeading
-            {\textbf{Automated CV Tailoring Pipeline} $|$ \emph{Python, LaTeX/Tectonic, YAML, Bash, Cursor Agent Skills}}{}
+            {\textbf{Automated CV Tailoring Pipeline} $|$ \emph{Python, LaTeX/Tectonic, YAML, Bash, Claude Agent Skills}}{\href{https://github.com/giabaobui-nedy/cv-pipeline}{GitHub}}
             \resumeItemListStart
                 \resumeItem{Designed a spec-driven CV tailoring pipeline where YAML job-ad specs select canonical evidence bullets, decoupling tailoring decisions from LaTeX rendering to make every submitted application reproducible and auditable.}
                 \resumeItem{Built Python renderers and a one-command Bash compile pipeline transforming YAML specs and a reusable bullet bank into submission-ready PDF CVs and cover letters via Tectonic.}
                 \resumeItem{Implemented four LLM agent skills (research, tailor-cv, cover-letter, add-bullet) that constrain model output to canonical evidence records, preventing overclaim while standardising application artefacts across models.}
             \resumeItemListEnd
         \resumeProjectHeading
-            {\textbf{Logistics Company Platform (Cloud-Native Full Stack)} $|$ \emph{NextJS, GraphQL, Terraform, GitHub Actions}}{\href{https://github.com/giabaobui-nedy/Dad-Project}{GitHub}}
+            {\textbf{Logistics Company Platform (Cloud-Native Full Stack)} $|$ \emph{NextJS, Terraform, GitHub Actions}}{\href{https://github.com/giabaobui-nedy/Dad-Project}{GitHub}}
             \resumeItemListStart
                 \resumeItem{Designed and implemented a containerised full-stack platform with infrastructure provisioned using Terraform (ECR, ECS Fargate, ALB, IAM, CloudWatch).}
                 \resumeItem{Built CI/CD pipelines using GitHub Actions to automate linting, type checking, Docker image builds, and conditional production deployments with OIDC-based AWS authentication.}
@@ -231,7 +238,7 @@
       \resumeProjectHeading
           {\textbf{Traffic-based Route Guidance System} $|$ \emph{Python, Tensorflow}}{\href{https://github.com/giabaobui-nedy/COS30019-TBRGS}{GitHub} $|$ \href{https://youtu.be/iLoNkyOPR7Y}{Demo}}
           \resumeItemListStart
-            \resumeItem{Integrated Deep Learning (DL) models with the graph search algorithms, and both with the GUI, delivering the core intelligent route planning capability, informing users of the optimal path between two intersections and the ETA.}
+            \resumeItem{Integrated TensorFlow DL models with graph search algorithms to deliver intelligent route planning with ETA estimation, connecting pre-trained model outputs end-to-end through to a live GUI.}
             \resumeItem{Visualised map routing data and coordinate traversal algorithms using networkx, simulating real-world network topographies akin to lat/long mapping systems.}
             \resumeItem{Enforced effective OOP to abstract different stages of developing a DL model, creating a reusable, maintainable codebase by defining a BaseModel interface and delegating each model's specific implementation in its subclass.}
           \resumeItemListEnd
@@ -244,8 +251,8 @@
         \resumeProjectHeading
           {\textbf{Decentralised Trading Platform} $|$ \emph{Python, React, Ganache, MySQL}}{\href{https://github.com/giabaobui-nedy/COS30049-Innovation-Project}{GitHub} $|$ \href{https://youtu.be/C8dyaWJs_uQ}{Demo}}
           \resumeItemListStart
-            \resumeItem{Designed a system with two databases aiming to improve data security and integrity by classifying which data to be stored on-chain (Ganache) or off-chain (MySQL), and how to link related records across databases;}
-            \resumeItem{Integrated both databases behind a FastAPI service layer, enabling core bidding UI flows - list, bid, settle assets, by exposing validated REST endpoints that coordinate the business logic on on- or off-chain data.}
+            \resumeItem{Designed a system with two databases aiming to improve data security and integrity by classifying which data to be stored on-chain (Ganache) or off-chain (MySQL), and how to link related records across databases.}
+            \resumeItem{Integrated both databases behind a FastAPI service layer, enabling core bidding UI flows --- list, bid, settle assets --- by exposing validated REST endpoints that coordinate the business logic on on- or off-chain data.}
           \resumeItemListEnd
     \resumeSubHeadingListEnd
 

@@ -15,9 +15,9 @@ bullets:
   - id: csiro-fullstack-leadership
     tags: [fullstack, vue, nuxt, node, sql, influxdb, leadership]
     text: >-
-      Led full-stack development across Vue/Nuxt frontend, Node-based services, firmware interface,
-      and SQL/InfluxDB databases, enabling remote hardware control and live monitoring in a
-      production laboratory environment.
+      Enabled remote hardware control and live monitoring in a production laboratory, by leading
+      full-stack development across a Vue/Nuxt frontend, Node-based services, a firmware
+      interface, and SQL/InfluxDB databases.
 
   - id: csiro-firmware-abstraction
     tags: [firmware, modbus, architecture, backend, hardware]
@@ -37,10 +37,10 @@ bullets:
   - id: csiro-vue-refactor
     tags: [vue, frontend, refactoring, architecture, recognition]
     text: >-
-      Refactored a large Vue.js frontend by enforcing a presentational/container pattern --- isolating
-      API logic to page-level components and keeping UI components as pure, prop-driven skeletons ---
-      significantly improving maintainability and developer experience for the team, commended by a
-      fellow software engineer.
+      Refactored a large Vue.js frontend into a structure a fellow engineer commended for its
+      maintainability and developer experience, by enforcing a presentational/container pattern
+      that isolated API logic to page-level components and kept UI components pure and
+      prop-driven.
 
   - id: csiro-db-redesign
     tags: [database, sql, schema-design, audit]
@@ -137,10 +137,9 @@ bullets:
   - id: csiro-accessibility-ux
     tags: [accessibility, ux, frontend, aria, css, mobile, ui]
     text: >-
-      Improved platform accessibility and UI consistency across web and mobile interfaces
-      by introducing ARIA labels, enforcing colour-contrast standards, and standardising
-      typography, component styling, and interactive element patterns --- aligning the
-      system with web accessibility best practices.
+      Aligned web and mobile interfaces with web accessibility best practices and a consistent
+      UI, by introducing ARIA labels, enforcing colour-contrast standards, and standardising
+      typography, component styling, and interactive element patterns.
 
   - id: csiro-figma-prototype
     tags: [figma, prototyping, mobile, ux, stakeholders, requirements, ui]
