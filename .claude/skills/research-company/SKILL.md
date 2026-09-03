@@ -3,7 +3,7 @@ name: research-company
 description: >-
   Research a target employer in five concentric layers — company → division →
   team → product/project → tech stack — and produce a structured, cited
-  research file the tailor-cv and cover-letter skills can both consume. Use
+  research file the tailor-cv and write-cover-letter skills can both consume. Use
   when the user pastes a job ad and asks to research the company, says "tell
   me about [Company]", asks "what does [Company] actually do?", wants to go
   deeper before drafting, or explicitly asks for layer-by-layer research.
@@ -35,7 +35,7 @@ See `PRINCIPLES.md`. Specifically: only record what you can cite. **Never** inve
 
 ## When to invoke
 
-- Always before `cover-letter` for any company the agent doesn't already know cold.
+- Always before `write-cover-letter` for any company the agent doesn't already know cold.
 - Optionally before `tailor-cv` when the ad's vocabulary is thin and the bullet selection benefits from product/domain context.
 - Standalone when the user is deciding whether to apply, or preparing for an interview.
 
@@ -50,7 +50,7 @@ See `PRINCIPLES.md`. Specifically: only record what you can cite. **Never** inve
 - [ ] 6. Layer 5 — Tech stack
 - [ ] 7. Synthesise 3–5 cover-letter / interview angles
 - [ ] 8. Write job-ads/<slug>.research.md
-- [ ] 9. (optional) Hand off to cover-letter or tailor-cv
+- [ ] 9. (optional) Hand off to write-cover-letter or tailor-cv
 ```
 
 ### 1. Resolve the company
@@ -207,7 +207,7 @@ Ordered shortest → deepest:
 
 When the user is ready to draft, the next skill should:
 
-- `cover-letter`: read `<slug>.research.md` instead of doing its own search. The "Synthesis" angles directly feed paragraph design.
+- `write-cover-letter`: read `<slug>.research.md` instead of doing its own search. The "Synthesis" angles directly feed paragraph design.
 - `tailor-cv`: use the tech-stack table to refine the `keywords:` list in the spec when the ad's vocabulary is thin.
 
 If the research file is missing when those skills run, they should invoke this skill first (or warn the user explicitly that they're proceeding without research).

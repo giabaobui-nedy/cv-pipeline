@@ -289,7 +289,7 @@ cv-pipeline/
     render_cover_letter.py      # spec -> outputs/<slug>/cover.tex
     compile.sh                  # one-shot render + compile via Tectonic
     track.py                    # spec -> Notion-paste-ready row (manual paste)
-  .cursor/skills/               # research-company, tailor-cv, cover-letter, add-bullet
+  .cursor/skills/               # research-company, tailor-cv, write-cover-letter, add-bullet
   .vscode/                      # LaTeX Workshop preconfigured for Tectonic
   PRINCIPLES.md                 # cross-cutting rules every skill inherits
   BOUNDARIES.md                 # confidentiality guardrails
@@ -542,7 +542,7 @@ The canonical sequence (see `PRINCIPLES.md` §5 for the why):
 ```
 1. research-company   →  job-ads/<slug>/research.md
 2. tailor-cv          →  job-ads/<slug>/spec.yml + outputs/<slug>/cv.pdf
-3. cover-letter       →  cover_letter: block in spec.yml + outputs/<slug>/cover.pdf
+3. write-cover-letter →  cover_letter: block in spec.yml + outputs/<slug>/cover.pdf
 ```
 
 Each step writes its output where the next step expects to read from. You can
@@ -555,7 +555,7 @@ research having happened first.
 Layered research on a target employer — Company → Division → Team → Project →
 Tech stack — with cited sources, confidence tags, and 3–5 cover-letter angles.
 
-Output: `job-ads/<slug>/research.md`. Read by `cover-letter` (and optionally
+Output: `job-ads/<slug>/research.md`. Read by `write-cover-letter` (and optionally
 `tailor-cv`) so you don't pay the research cost twice.
 
 **Trigger phrases**: *"Research Conserve It before I apply"*, *"Tell me about
@@ -596,7 +596,7 @@ The agent will then:
    under-full).
 7. Offer iteration: "swap X for Y", "shorten profile", etc.
 
-### Skill 2: `cover-letter`
+### Skill 2: `write-cover-letter`
 
 Paste a job ad and get a one-page, 5-paragraph cover letter that mirrors the
 company's tone and uses real evidence from the bullet bank. Output:
@@ -614,6 +614,13 @@ The 5-paragraph contract:
 Tone is auto-detected from company size + ad voice across five modes:
 `startup_scrappy`, `corporate_formal`, `research_scientific`,
 `consultancy_clientfacing`, `mission_driven` (or a hybrid default).
+
+Every draft then goes through the `humanizer` skill before it is written into
+the spec. The cover letter is the one artefact here a person reads word by word,
+so it gets an editing pass for stock phrasing, three-item lists, stacked
+em-dashes, and abstract nouns standing in for behaviour. `humanizer` changes how
+a sentence reads, never what it claims — where its advice conflicts with
+`PRINCIPLES.md`, the principle wins.
 
 **Template prompt:**
 

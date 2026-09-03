@@ -1,5 +1,5 @@
 ---
-name: cover-letter
+name: write-cover-letter
 description: >-
   Draft and render a one-page cover letter for Gia Bao Bui against a specific
   job ad, using the bullet bank as evidence and tone-matching the company.
@@ -8,7 +8,7 @@ description: >-
   or extends an existing job-ad spec with cover-letter content.
 ---
 
-# Cover Letter
+# Write Cover Letter
 
 Write a tight, one-page cover letter that earns the read in its first 8 words
 and uses real evidence from the bullet bank. The cover letter is rendered from
@@ -84,6 +84,7 @@ candidate could have written it.
 - [ ] 3. Detect tone from company size + ad voice
 - [ ] 4. Propose evidence bullet IDs for paragraphs 2 and 3
 - [ ] 5. Draft all 5 paragraphs (await user approval)
+- [ ] 5a. Run the draft through the `humanizer` skill
 - [ ] 6. Write the cover_letter block into job-ads/<slug>/spec.yml
 - [ ] 7. Render + compile via tools/compile.sh
 - [ ] 8. Enforce one page; iterate
@@ -103,7 +104,7 @@ Cover letters live or die on specificity. The ad alone is rarely enough.
 
 **Preferred path: defer to the `research-company` skill.** If `job-ads/<slug>.research.md` already exists, read it and skip to step 3 — its "Synthesis — angles" table directly feeds paragraph design, and the "Tech stack" + "Project" layers anchor P1/P2/P4. Trust only findings marked *(confirmed)* or *(likely)*.
 
-If the file is missing, **invoke `research-company` first** rather than doing ad-hoc research inside this skill. The layered output is reusable across CV, cover letter, and interview prep — duplicating it inside cover-letter alone wastes context.
+If the file is missing, **invoke `research-company` first** rather than doing ad-hoc research inside this skill. The layered output is reusable across CV, cover letter, and interview prep — duplicating it inside write-cover-letter alone wastes context.
 
 If the user explicitly says "skip the research, draft now" (e.g. tight deadline, well-known company), do a minimum-viable scan: official site one-liner + flagship product page + one recent news item. Surface a 3-link reading list, then proceed. Flag the resulting cover letter as `ad-only-light-research` so the user knows it's working from less context than usual.
 
@@ -195,6 +196,40 @@ Avoid: "I'm passionate about", "I would love to grow", "I see myself contributin
 
 Thanks for considering, signal availability for a conversation, sign off. ≤ 50 words. No new content. No "looking forward to hearing from you" filler if you can avoid it.
 
+### 5a. Humanise the draft (REQUIRED)
+
+A cover letter is the one artefact in this pipeline a human reads word by word.
+Model-shaped prose is the fastest way to lose that reader, so every draft goes
+through one editing pass before it reaches the spec.
+
+**Invoke the `humanizer` skill on the five drafted paragraphs** — pass the body
+text only, not the YAML. Apply its edits, then re-check this skill's own rules,
+because a rewrite can quietly break them:
+
+- P1 still passes the hook self-check (§5 P1) and opens with none of the banned phrases.
+- No paragraph now restates a CV bullet verbatim (rule C5).
+- No claim has drifted past what the evidence bullet supports (Principle 1).
+- Total body is still ≤ 350 words.
+
+**Precedence.** `humanizer` edits *how* a sentence reads; it never edits *what*
+is claimed. Where its advice conflicts with a rule in this skill or in
+`PRINCIPLES.md`, this skill wins — keep the claim, rewrite the phrasing. If
+humanizer flags a sentence as an inflated or unsourced claim, that is a signal
+to check the bullet bank, not to soften the wording until it sounds safe.
+
+**Watch for these in particular**, since they recur in generated letters:
+
+| Pattern | Fix |
+|---|---|
+| Three-item lists everywhere ("fast, reliable, and maintainable") | Cut to the one item that carries meaning |
+| "Not just X, but Y" framing | State Y directly |
+| Em-dash asides stacked two or three to a paragraph | Keep at most one per paragraph |
+| Every paragraph opening on the same rhythm | Vary the first four words |
+| Abstract nouns doing the work ("a strong sense of ownership") | Replace with the behaviour that showed it |
+
+Report to the user what changed, in one line, so they can see the letter was
+edited rather than regenerated.
+
 ### 6. Write the spec
 
 Append (or replace) the `cover_letter:` block in `job-ads/<slug>/spec.yml`:
@@ -268,6 +303,7 @@ Also avoid: starting consecutive paragraphs with "I". Start at most 2 paragraphs
 - Never copy a bullet verbatim — narrate it.
 - Never include confidential content (`BOUNDARIES.md`).
 - Never claim numbers that aren't already in the bank.
+- Never write the `cover_letter:` block before the `humanizer` pass has run.
 - One page. ≤ 350 words. Always.
 
 ## Example trigger phrases

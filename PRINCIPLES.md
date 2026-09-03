@@ -1,6 +1,6 @@
 # Pipeline Principles
 
-Cross-cutting rules every skill (`tailor-cv`, `cover-letter`, `add-bullet`)
+Cross-cutting rules every skill (`tailor-cv`, `write-cover-letter`, `add-bullet`)
 must respect. Updates here propagate to every application — change once,
 everything inherits.
 
@@ -218,7 +218,7 @@ job ad lands
   ↓
 2. tailor-cv          →  job-ads/<slug>/spec.yml  +  outputs/<slug>/cv.pdf
   ↓
-3. cover-letter       →  cover_letter: block in spec.yml  +  outputs/<slug>/cover.pdf
+3. write-cover-letter →  cover_letter: block in spec.yml  +  outputs/<slug>/cover.pdf
   ↓
 4. tools/export.sh    →  ~/Desktop/(YYYY.MM.DD) Gia Bao Bui - <role> - <company>.pdf
                           ~/Desktop/(YYYY.MM.DD) Gia Bao Bui - Cover letter - <company>.pdf
