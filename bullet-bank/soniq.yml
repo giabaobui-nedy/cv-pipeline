@@ -13,12 +13,6 @@ bullets:
       Build the React frontend and the event-driven backend microservices behind a live digital
       signage and content management platform (CMS), sold as a SaaS product and running on AWS.
 
-  - id: soniq-fullstack-debugging
-    tags: [debugging, production, fullstack, reliability, meta]
-    text: >-
-      Diagnosed and fixed production bugs across frontend and backend services, keeping live
-      digital signage deployments running with little downtime.
-
   - id: soniq-collaboration
     tags:
       [
@@ -78,6 +72,15 @@ bullets:
       Fixed a production bug where switching on monthly recurrence made timeline events disappear,
       by reproducing it with targeted tests and correcting timezone-sensitive scheduling logic,
       then added those tests to the CI/CD pipeline so it cannot come back unnoticed.
+    explanation: >-
+      Schedule times are stored and validated in UTC, but customers set them in local time
+      (Melbourne, UTC+11). A recurring event's conflict check was comparing against the UTC
+      calendar day its start time fell on, instead of the actual start/end instants. Because
+      Melbourne is 11 hours ahead, a same-day local schedule spans two UTC calendar days, so the
+      recurring event's inflated "occupied" window swallowed whichever neighbouring event happened
+      to sit near that UTC day boundary, even though there was no real overlap. Fixed by comparing
+      actual instants instead of UTC-day approximations, and added a test with events packed
+      tight across a UTC day boundary so it can't regress silently.
 
   - id: soniq-device-protocol-migration
     tags: [iot, cloud, migration, realtime, backend]
@@ -130,11 +133,26 @@ bullets:
       (DTO $\rightarrow$ mapper $\rightarrow$ domain $\rightarrow$ API $\rightarrow$ TanStack
       $\rightarrow$ state hook).
 
+  # OUTDATED 2026-09-03 — kept so the ~40 specs referencing this id keep rendering.
+  # The previous text claimed the tooling "enforces the codebase's architectural rules and
+  # fails the build when code breaks them", and that it "stopped AI-assisted development
+  # eroding code quality". Neither happened: the file was built, but enforcement was never
+  # switched on because the frontend architecture was still changing too much to freeze rules
+  # against. That wording was an overclaim under PRINCIPLES §1 and must not be reinstated.
+  # The text below is the truthful version and is what now renders everywhere.
+  # Prefer the guardrail work that actually landed: soniq-styling-migration (custom
+  # check-styling lint guard, advisory-first with an allowlist, then merge-blocking) and
+  # soniq-component-consolidation (ESLint layering rules raised from warning to error).
   - id: soniq-architectural-validation
-    tags: [tooling, architecture, quality, ai-assisted]
+    status: outdated
+    tags: [tooling, architecture, quality, ai-assisted, tradeoff]
+    note: >-
+      Superseded by the move to centralise enforcement in ESLint. Do not select for new specs
+      unless the role specifically rewards judgement about when NOT to enforce a rule.
     text: >-
-      Stopped AI-assisted development eroding code quality and coupling, by building tooling that
-      enforces the codebase's architectural rules and fails the build when code breaks them.
+      Built a validator for a React/TypeScript frontend to keep AI-assisted development from
+      eroding module boundaries, then held enforcement back while the architecture was still
+      moving, rather than freezing rules that would have churned every refactor.
 
   - id: soniq-shopify-eventbridge
     tags: [aws, eventbridge, sqs, event-driven, integration, saas, onboarding]

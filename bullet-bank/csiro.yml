@@ -88,7 +88,7 @@ bullets:
     tags: [docker, devops, deployment, linux]
     text: >-
       Containerised services using Docker and deployed to CSIRO's internal hosting environment
-      via SSH, ensuring reproducible builds and consistent runtime configuration.
+      via SSH, for reproducible builds and consistent runtime configuration.
 
   - id: csiro-refinery-rn
     tags: [react-native, ui-ux, mobile, leadership, industrial]

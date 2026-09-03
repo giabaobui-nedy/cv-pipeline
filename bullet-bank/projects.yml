@@ -115,7 +115,7 @@ projects:
         tags: [leadership, communication, stakeholders]
         text: >-
           Acted as team lead to manage internal team communication styles and external client relations,
-          successfully delivering a modular backend system.
+          delivering a modular backend system.
       - id: battery-api-contracts
         tags: [api, integration, collaboration]
         text: >-
@@ -191,8 +191,8 @@ projects:
       - id: decentralised-trading-dual-db
         tags: [blockchain, database, architecture, security]
         text: >-
-          Designed a system with two databases aiming to improve data security and integrity by
-          classifying which data to be stored on-chain (Ganache) or off-chain (MySQL), and how to
+          Designed a system with two databases to improve data security and integrity by
+          classifying which data to store on-chain (Ganache) or off-chain (MySQL), and how to
           link related records across databases.
       - id: decentralised-trading-fastapi
         tags: [fastapi, api, integration, backend]
