@@ -97,8 +97,10 @@ bullets:
   - id: soniq-qa-debugging
     tags: [debugging, qa, production, reliability, ux]
     text: >-
-      Cleared production issues as QA reported them, keeping live deployments stable and the UI
-      predictable for customers.
+      Cleared production issues as QA reported them across billing, scheduling and configuration
+      screens (entitlement values disagreeing across widgets, missing form validation, an
+      unsurfaced tier-downgrade rejection), keeping live deployments stable and the UI predictable
+      for customers.
 
   - id: soniq-hubspot-lambda
     tags: [aws, lambda, serverless, integration, crm]
@@ -133,16 +135,6 @@ bullets:
       (DTO $\rightarrow$ mapper $\rightarrow$ domain $\rightarrow$ API $\rightarrow$ TanStack
       $\rightarrow$ state hook).
 
-  # OUTDATED 2026-09-03 — kept so the ~40 specs referencing this id keep rendering.
-  # The previous text claimed the tooling "enforces the codebase's architectural rules and
-  # fails the build when code breaks them", and that it "stopped AI-assisted development
-  # eroding code quality". Neither happened: the file was built, but enforcement was never
-  # switched on because the frontend architecture was still changing too much to freeze rules
-  # against. That wording was an overclaim under PRINCIPLES §1 and must not be reinstated.
-  # The text below is the truthful version and is what now renders everywhere.
-  # Prefer the guardrail work that actually landed: soniq-styling-migration (custom
-  # check-styling lint guard, advisory-first with an allowlist, then merge-blocking) and
-  # soniq-component-consolidation (ESLint layering rules raised from warning to error).
   - id: soniq-architectural-validation
     status: outdated
     tags: [tooling, architecture, quality, ai-assisted, tradeoff]
@@ -314,7 +306,7 @@ bullets:
       Re-architected the transactional-outbox pipeline across three environments, replacing a
       managed DMS $\rightarrow$ Kinesis $\rightarrow$ Lambda fan-out with a small poller running
       on each microservice's already-underused Fargate task that publishes straight to EventBridge.
-      This removed $\sim$\$1.3k/month of DMS and Kinesis spend and cut total cloud cost by
+      This removed the recurring DMS and Kinesis spend entirely and cut total cloud cost by
       \textbf{$\sim$26\%} month-over-month (trending to $\sim$40\% once the teardown finished).
 
   - id: soniq-outbox-index-tuning
@@ -336,6 +328,23 @@ bullets:
       capacity all day. Shipped a composite \texttt{(created\_at, id)} index as a schema migration
       across four services and twelve databases and documented it in the shared poller package,
       stopping the same failure at production scale.
+
+  - id: soniq-outbox-index-tuning-compact
+    tags:
+      [
+        database,
+        postgres,
+        aurora,
+        query-optimisation,
+        performance,
+        cost,
+        impact-metric,
+      ]
+    text: >-
+      Cleared an RDS cost and performance regression that held an Aurora Serverless cluster at
+      \textbf{5$\times$} idle capacity all day, by indexing a 1.7\,GB outbox table whose
+      once-per-second claim query scanned it end to end, then rolling the index out across four
+      services and twelve databases.
 
   - id: soniq-outbox-shared-library-rollout
     tags:
@@ -415,6 +424,30 @@ bullets:
       Designed and built the frontend for a two-tier tenancy feature separating organisations
       (groups of people) from workspaces (groups of resources), after pairing with a teammate on
       requirements and domain modelling to turn an open-ended product concept into a defined scope.
+
+  - id: soniq-calendar-week-view-rework
+    tags: [frontend, react, ux, scheduling]
+    text: >-
+      Reworked the schedule editor's week view so events can be dragged and resized directly on
+      the calendar grid instead of only through the event dialog.
+
+  - id: soniq-media-library-rebuild
+    tags: [frontend, react, performance, debugging, ux, impact-metric]
+    text: >-
+      Diagnosed an N+1 request pattern on the media root and dashboard: 14 folders triggered 15
+      requests, and one end-to-end test spent \textbf{75s} across 28 requests. Fixed it by
+      replacing whole-library fetching with per-directory and per-ID reads, and cut a redundant
+      per-folder mediaCount request. Rebuilt the page as a Drive-style browser (unified New menu,
+      sortable table, type-filtered grid, root-level uploads), then brought back account-wide
+      browsing by content type as an explicit opt-in mode instead of the old first-load fan-out.
+
+  - id: soniq-ui-consistency-cleanup
+    tags: [frontend, react, ui, design-system, refactoring]
+    text: >-
+      Continued the design-system consistency effort past the styling-token migration:
+      retokenised the route-fallback loading screen off hardcoded hex values, and migrated seven
+      resource-list pages off duplicated first-run empty-state markup onto one shared component
+      with consistent copy.
 
   - id: soniq-stack
     tags:
