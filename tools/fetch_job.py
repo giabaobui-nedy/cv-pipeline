@@ -217,6 +217,9 @@ def write_spec(job: JobListing, slug: str, force: bool) -> None:
     spec_mod_path = REPO / "tools" / "create_spec.py"
     spec = importlib.util.spec_from_file_location("create_spec", spec_mod_path)
     cs = importlib.util.module_from_spec(spec)   # type: ignore[arg-type]
+    # dataclasses resolves annotations via sys.modules[cls.__module__] on py<3.10,
+    # so the dynamically loaded module must be registered before exec.
+    sys.modules["create_spec"] = cs
     spec.loader.exec_module(cs)                  # type: ignore[union-attr]
 
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as fh:
