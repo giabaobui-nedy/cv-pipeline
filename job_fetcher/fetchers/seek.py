@@ -67,7 +67,11 @@ class SeekFetcher(JobFetcher):
     def _fetch_playwright(self, url: str) -> JobListing:
         _polite_delay()
         with sync_playwright() as pw:
-            browser = pw.chromium.launch(headless=True)
+            try:
+                browser = pw.chromium.launch(headless=True, timeout=60_000)
+            except Exception as exc:
+                # A hung browser launch must not abort the whole batch.
+                raise JobFetchError(f"Playwright failed to launch Chromium: {exc}", url=url)
             context = browser.new_context(
                 user_agent=_random_headers()["User-Agent"],
                 locale="en-AU",
