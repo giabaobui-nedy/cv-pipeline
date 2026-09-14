@@ -55,7 +55,7 @@ bullets:
       engineers could get up to speed on their own.
 
   - id: soniq-jira-workflow
-    tags: [agile, delivery, team, jira]
+    tags: [agile, kanban, delivery, team, jira]
     text: >-
       Split large Jira epics into small tasks that each ship on their own, making team progress
       visible week to week and letting work land continuously instead of in one lump.
@@ -449,6 +449,59 @@ bullets:
       resource-list pages off duplicated first-run empty-state markup onto one shared component
       with consistent copy.
 
+  - id: soniq-legacy-migration-cli
+    tags:
+      [
+        typescript,
+        playwright,
+        migration,
+        automation,
+        testing,
+        api,
+        integration,
+        data-pipeline,
+        ai-assisted,
+        impact-metric,
+      ]
+    note: >-
+      Solo build (all commits), CGI-27. Runs on staging so far, small through enterprise
+      customers. ~1 hour per enterprise customer is the user's own observed time and varies with
+      network. No measured manual baseline exists, so never claim a time saving against manual
+      migration. Expired schedules are filtered out during extraction.
+    text: >-
+      Built a TypeScript CLI to move customers off a legacy CMS one account at a time. It pulls
+      media, templates, campaigns and schedules through Playwright (skipping expired schedules),
+      recreates them through the new platform's APIs, and can dry-run, verify and roll back each
+      load. On staging it moved enterprise accounts with \textbf{8 to 10\,GB} of media in about an
+      hour each, and \textbf{189} Vitest tests cover it.
+
+  - id: soniq-legacy-migration-cli-compact
+    tags: [typescript, playwright, migration, automation, testing, data-pipeline, impact-metric]
+    text: >-
+      Built a TypeScript and Playwright CLI to migrate customers' media, campaigns and schedules off
+      a legacy CMS, with dry runs, verification and rollback. On staging it moved \textbf{8 to
+      10\,GB} enterprise accounts in about an hour each.
+
+  - id: soniq-migration-throttling-diagnosis
+    tags:
+      [
+        debugging,
+        aws,
+        sqs,
+        observability,
+        incident-response,
+        event-driven,
+        reliability,
+      ]
+    note: >-
+      CBE-429. Another engineer shipped the media-worker fix; the user diagnosed, filed, and added
+      the pacing workaround in the migration CLI. Staging, not production.
+    text: >-
+      Found why 30 of \textbf{1,153} videos stayed stuck in processing during a staging migration:
+      upload bursts throttled an endpoint lookup that the media worker never cached. Traced it
+      through the dead-letter queue, MediaConvert jobs and worker logs, filed the cause with a
+      proposed fix, and paced uploads with crash recovery so the migration could keep going.
+
   - id: soniq-stack
     tags:
       [
@@ -467,3 +520,15 @@ bullets:
     text: >-
       \textbf{Stack:} \emph{TypeScript, React, Tailwind CSS, Vite, NestJS, Python (FastAPI), AWS,
       Docker, Git/GitHub, CI/CD, GitHub Actions.}
+
+  - id: soniq-iac-cdk-terraform
+    tags: [aws, iac, cdk, terraform, eventbridge, infrastructure-as-code]
+    note: >-
+      Confirmed by user 2026-09-13: wrote the scheduler CDK stack and the Shopify EventBridge
+      Terraform, and tore down the DMS/Kinesis CDK stacks during the outbox re-architecture.
+      User calls the breadth "dabbling": never frame as platform ownership or "extensive".
+    text: >-
+      Worked hands-on in AWS infrastructure as code across three systems: wrote the environment
+      scheduler (Lambda + EventBridge) as its own CDK stack, wrote the Terraform for the Shopify
+      integration's EventBridge resources, and tore down the CDK stacks behind a retired
+      DMS $\rightarrow$ Kinesis pipeline.

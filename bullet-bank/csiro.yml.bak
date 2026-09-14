@@ -42,14 +42,6 @@ bullets:
       that isolated API logic to page-level components and kept UI components pure and
       prop-driven.
 
-  - id: csiro-vue-refactor-review
-    tags: [vue, frontend, code-review, refactoring, architecture, code-quality, recognition]
-    text: >-
-      Reviewed the code of a large Vue.js frontend, then restructured it with a
-      presentational/container pattern: API logic lives only in page-level components, and UI
-      components stay pure and prop-driven. A fellow engineer commended the result for its
-      maintainability.
-
   - id: csiro-db-redesign
     tags: [database, sql, schema-design, audit]
     text: >-
@@ -96,7 +88,7 @@ bullets:
     tags: [docker, devops, deployment, linux]
     text: >-
       Containerised services using Docker and deployed to CSIRO's internal hosting environment
-      via SSH, for reproducible builds and consistent runtime configuration.
+      via SSH, ensuring reproducible builds and consistent runtime configuration.
 
   - id: csiro-refinery-rn
     tags: [react-native, ui-ux, mobile, leadership, industrial]
@@ -164,12 +156,3 @@ bullets:
       \textbf{Stack:} \emph{Python (Flask, threading), JavaScript/TypeScript (Vue, Nuxt, Node),
       React Native, Tailwind CSS, PostgreSQL, InfluxDB, Modbus, Docker Compose, Git/GitHub, Linux,
       Azure Entra ID (SSO), ECharts, WebSockets.}
-
-  - id: csiro-demos-fifteen-minutes
-    tags: [communication, knowledge-sharing, stakeholders, presentation]
-    note: >-
-      Confirmed by user 2026-09-13. Specific variant of csiro-demos ("national intern cohorts").
-      Use one or the other, never both.
-    text: >-
-      Presented my placement contributions to two of the Electrical Connections team's projects
-      at CSIRO's national ``15 Minutes of Fame'' event for summer students and interns.

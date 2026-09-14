@@ -4,24 +4,6 @@
 # Tailored CVs select a subset of projects, then a subset of bullets per project.
 
 projects:
-  - id: logistics-platform
-    title: \textbf{Logistics Company Platform (Cloud-Native Full Stack)}
-    stack: NextJS, Terraform, GitHub Actions
-    links:
-      - { label: GitHub, url: https://github.com/giabaobui-nedy/Dad-Project }
-    tags: [nextjs, terraform, aws, ci-cd, fullstack, iac]
-    bullets:
-      - id: logistics-iac
-        tags: [terraform, aws, iac, ecs, fargate, cloudwatch]
-        text: >-
-          Designed and implemented a containerised full-stack platform with infrastructure provisioned
-          using Terraform (ECR, ECS Fargate, ALB, IAM, CloudWatch).
-      - id: logistics-cicd
-        tags: [ci-cd, github-actions, docker, oidc, aws]
-        text: >-
-          Built CI/CD pipelines using GitHub Actions to automate linting, type checking, Docker image
-          builds, and conditional production deployments with OIDC-based AWS authentication.
-
   - id: weekly-planner
     title: \textbf{Weekly Planner (Clean Architecture System)}
     stack: Java, JavaFX, Maven, ORMLite, SQLite, JUnit
