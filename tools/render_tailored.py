@@ -106,6 +106,52 @@ def render_skills(skills: object) -> str:
     return " \\\\\n".join(lines)
 
 
+def render_referees(referees: object) -> str:
+    """Render the referee block.
+
+    Monash and most AU public-sector portals require named referees on the CV
+    itself, so this is a first-class section rather than a spec afterthought.
+    """
+    if not referees:
+        return ""
+
+    if not isinstance(referees, list):
+        sys.exit("referees must be a list of name/title/organisation/email mappings")
+
+    lines = []
+    for entry in referees:
+        if not isinstance(entry, dict):
+            sys.exit("each referee entry must be a mapping")
+
+        name = entry.get("name")
+        if not name:
+            sys.exit("each referee entry needs a 'name'")
+
+        role_line = ", ".join(
+            _latex_escape(entry[k])
+            for k in ("title", "organisation")
+            if entry.get(k)
+        )
+
+        contacts = []
+        if entry.get("email"):
+            email = _latex_escape(entry["email"])
+            contacts.append(f"\\href{{mailto:{entry['email']}}}{{{email}}}")
+        if entry.get("phone"):
+            contacts.append(_latex_escape(entry["phone"]))
+        if entry.get("relationship"):
+            contacts.append(_latex_escape(entry["relationship"]))
+
+        head = f"\\textbf{{{_latex_escape(name)}}}"
+        if role_line:
+            head += f" --- {role_line}"
+        if contacts:
+            head += " \\newline " + " $|$ ".join(contacts)
+        lines.append(head)
+
+    return " \\\\[2pt]\n".join(lines)
+
+
 def render_role(role_meta: dict, bullet_ids: list[str], bank: dict[str, dict]) -> str:
     items = []
     for bid in bullet_ids:
@@ -219,6 +265,14 @@ def main() -> None:
             "}}\n"
             "\\end{itemize}"
         ),
+        "referees": (
+            "\\section{Referees}\n"
+            "\\begin{itemize}[leftmargin=0.15in, label={}]\n"
+            "\\small{\\item{\n"
+            f"{render_referees(spec.get('referees'))}\n"
+            "}}\n"
+            "\\end{itemize}"
+        ),
         "education": (
             "\\section{Education}\n"
             "  \\resumeSubHeadingListStart\n"
@@ -231,6 +285,7 @@ def main() -> None:
     }
 
     default_order = ["profile", "experience", "projects", "skills", "education"]
+    # `referees` is opt-in: only AU public-sector / university portals require it.
     order = spec.get("section_order", default_order)
     unknown = [s for s in order if s not in sections]
     if unknown:
