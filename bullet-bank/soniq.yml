@@ -194,17 +194,23 @@ bullets:
       decision stayed attached to the work.
 
   - id: soniq-event-propagation-debug
+    note: >-
+      Corrected by user 2026-09-16: the break was caught in the development environment and never
+      reached production. Never describe it as a production incident.
     tags: [debugging, event-driven, microservices, backend, aws, observability]
     text: >-
-      Traced why new customers could not activate the CMS (hardware bought on Shopify, activation
-      code received, claim flow silently doing nothing) by walking the flow end to end as a new
-      customer and reading CloudWatch logs across the billing and IAM microservices,
+      Traced why the new-customer CMS activation flow broke in the development environment
+      (hardware bought on Shopify, activation code received, claim flow silently doing nothing),
+      before the change reached production, by walking the flow end to end as a new customer and reading CloudWatch logs across the billing and IAM microservices,
       finding a JWT minter rewrite that had renamed the IAM identity-sync event topic and cut
       billing's subscription, so customer identity never synced; then fixed the subscription and
       raised the rename with the engineer who made it, so the new event was checked against every
       consumer with no old event shape left behind.
 
   - id: soniq-event-propagation-debug-compact
+    note: >-
+      Corrected by user 2026-09-16: the break was caught in the development environment and never
+      reached production. Never describe it as a production incident.
     tags:
       [
         debugging,
@@ -216,12 +222,15 @@ bullets:
         incident-response,
       ]
     text: >-
-      Restored a customer activation flow that was silently broken in production, by tracing
-      CloudWatch logs across the billing and IAM microservices to a renamed event topic that had
-      cut a service's subscription, then raising it so the new event was checked against every
-      consumer.
+      Caught a silently broken customer activation flow in the development environment before it
+      reached production, by tracing CloudWatch logs across the billing and IAM microservices to a
+      renamed event topic that had cut a service's subscription, then raising it so the new event
+      was checked against every consumer.
 
   - id: soniq-event-propagation-debug-versioning
+    note: >-
+      Corrected by user 2026-09-16: the break was caught in the development environment and never
+      reached production. Never describe it as a production incident.
     tags:
       [
         debugging,
@@ -234,7 +243,8 @@ bullets:
         reliability,
       ]
     text: >-
-      Restored a customer activation flow that was silently broken in production, by tracing
+      Caught a silently broken customer activation flow in the development environment before it
+      reached production, by tracing
       CloudWatch logs across the billing and IAM microservices to a renamed event topic that had
       cut a service's subscription, then got event-topic renames treated as a breaking change
       that needs explicit versioning.
@@ -322,12 +332,11 @@ bullets:
         impact-metric,
       ]
     text: >-
-      Indexed a bloated 1.7\,GB outbox table to clear an RDS cost and performance regression: a
-      once-per-second \texttt{ORDER BY created\_at} claim query was scanning the whole table with
-      no index to help it, holding an Aurora Serverless cluster at \textbf{5$\times$} its idle
-      capacity all day. Shipped a composite \texttt{(created\_at, id)} index as a schema migration
-      across four services and twelve databases and documented it in the shared poller package,
-      stopping the same failure at production scale.
+      Found the cause of a six-week RDS cost regression that \textbf{doubled} dev Aurora Serverless
+      spend: a once-per-second \texttt{ORDER BY created\_at} claim query was scanning a bloated
+      1.7\,GB outbox table with no index to help it. Implemented a composite
+      \texttt{(created\_at, id)} index as a schema migration to solve it, and reclaimed the bloated
+      table from 1.7\,GB to 24\,kB.
 
   - id: soniq-outbox-index-tuning-compact
     tags:
@@ -341,10 +350,9 @@ bullets:
         impact-metric,
       ]
     text: >-
-      Cleared an RDS cost and performance regression that held an Aurora Serverless cluster at
-      \textbf{5$\times$} idle capacity all day, by indexing a 1.7\,GB outbox table whose
-      once-per-second claim query scanned it end to end, then rolling the index out across four
-      services and twelve databases.
+      Found the cause of a six-week RDS cost regression that \textbf{doubled} dev Aurora spend, an
+      unindexed query scanning a bloated 1.7\,GB outbox table, and implemented a composite index
+      to solve it.
 
   - id: soniq-outbox-shared-library-rollout
     tags:
@@ -360,8 +368,9 @@ bullets:
       ]
     text: >-
       Consolidated three copies of the outbox poller that had drifted apart into one versioned
-      shared package used by four microservices, and collapsed per-worker Fargate tasks behind a
-      config-driven async supervisor, finishing the transactional-outbox teardown.
+      shared package used by four microservices, finishing the transactional-outbox teardown, and
+      added per-environment Fargate task sizing so dev and staging tasks dropped to the smallest
+      size while production kept its capacity.
 
   - id: soniq-styling-migration
     tags:
@@ -376,11 +385,12 @@ bullets:
         migration,
       ]
     text: >-
-      Moved a production React codebase off ad-hoc styling onto a central token system, ending
-      with zero offenders left and a merge-blocking check, by writing a custom
-      \texttt{check-styling} lint guard, shipping it advisory-first with an allowlist so CI stayed
-      green, then stripping inline styles, raw hex colours and arbitrary pixel utilities feature
-      by feature.
+      Led a production React codebase's move off ad-hoc styling onto a central token system by
+      writing a custom \texttt{check-styling} lint guard, shipping it advisory-first with an
+      allowlist so CI stayed green, then stripping inline styles, raw hex colours and arbitrary
+      pixel utilities feature by feature; the migration built consensus rather than finishing
+      outright, with adoption speeding up as more base components landed and each new one cut
+      the friction for the next.
 
   - id: soniq-component-consolidation
     tags:
@@ -476,7 +486,16 @@ bullets:
       hour each, and \textbf{189} Vitest tests cover it.
 
   - id: soniq-legacy-migration-cli-compact
-    tags: [typescript, playwright, migration, automation, testing, data-pipeline, impact-metric]
+    tags:
+      [
+        typescript,
+        playwright,
+        migration,
+        automation,
+        testing,
+        data-pipeline,
+        impact-metric,
+      ]
     text: >-
       Built a TypeScript and Playwright CLI to migrate customers' media, campaigns and schedules off
       a legacy CMS, with dry runs, verification and rollback. On staging it moved \textbf{8 to
