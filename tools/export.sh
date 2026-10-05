@@ -58,7 +58,7 @@ read_yaml="$(.venv/bin/python -c "
 import shlex, sys, yaml
 spec = yaml.safe_load(open(sys.argv[1])) or {}
 def clean(s):
-    return (s or '').strip().replace('/', '-').replace('\"', \"'\")
+    return (s or '').strip().replace('/', '-').replace(':', '-').replace('\"', \"'\")
 print('COMPANY=' + shlex.quote(clean(spec.get('company'))))
 print('ROLE='    + shlex.quote(clean(spec.get('role'))))
 " "$spec")"
