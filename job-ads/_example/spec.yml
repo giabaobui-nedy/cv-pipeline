@@ -4,7 +4,7 @@
 # 1. Paste the raw ad into `ad_raw` (kept for grep, not rendered).
 # 2. List target keywords/themes you want the CV to mirror.
 # 3. Pick which bullets from each role and project to include, by `id`.
-# 4. Run: python tools/render_tailored.py job-ads/<slug>/spec.yml
+# 4. Run: python3 tools/render_tailored.py job-ads/<slug>/spec.yml
 #    -> writes outputs/<slug>/cv.tex
 # 5. Compile with: tools/compile.sh <slug>
 
@@ -21,34 +21,43 @@ keywords:
   - typescript
   - microservices
 
+# The ad's required items as its exact phrases. tailor-cv maps each to a bullet.
+basic_qualifications:
+  - experience with AWS
+  - TypeScript
+preferred_qualifications:
+  - infrastructure as code
+
+page_mode: one        # one | two (AU enterprise, consulting, public sector)
+
+education_bullets:
+  - Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.
+
 # Profile paragraph for the tailored CV (replaces the master profile).
 # Keep it ~3 sentences and mirror the ad's language.
 profile: >-
-  Software Engineer and Highest Achieving Graduate in Computer Science with 1+ years of
-  professional experience building production-grade, API-driven systems on AWS. Strong
+  Associate Software Engineer and Highest Achieving Graduate in Computer Science with 2+ years of
+  commercial experience building production-grade, API-driven systems. Strong
   foundation in TypeScript, distributed services, and event-driven architectures, with
   hands-on experience shipping features into live SaaS environments.
 
-# Roles to include, in display order. `bank` selects which bullet bank to draw from.
-# `bullets` is an ordered list of bullet IDs; aim for ~5-7 per role.
+# Roles to include, newest first. `bank` names a file in bullet-bank/; the heading
+# (title, dates, employer, location) comes from that file's role: block. Add any of
+# those keys here only to override it. `bullets` is an ordered list of bullet IDs.
 experience:
+  - bank: canonical
+    bullets:
+      - canonical-overview
+
   - bank: soniq
-    title: Junior Software Engineer
-    dates: Feb 2026 -- Present
-    employer: SONIQ Digital
-    location: Richmond, VIC
     bullets:
       - soniq-cost-optimisation
+      - soniq-outbox-pipeline-migration-compact
       - soniq-shopify-eventbridge
-      - soniq-ts-frontend-architecture
-      - soniq-architectural-validation
+      - soniq-ts-frontend-architecture-compact
       - soniq-stack
 
   - bank: csiro
-    title: Software Engineering Intern / Casual Software Engineer
-    dates: Mar 2024 -- Jun 2025
-    employer: CSIRO
-    location: Clayton, VIC
     bullets:
       - csiro-fullstack-leadership
       - csiro-locks-deployment
@@ -59,18 +68,14 @@ experience:
 projects:
   - id: logistics-platform
     bullets:
-      - logistics-iac
-      - logistics-cicd
-  - id: battery-digital-twin
-    bullets:
-      - battery-modular-backend
+      - logistics-platform-terraform
 
 # Cover letter (optional). Omit this entire block to skip cover-letter rendering.
 # Generated and refined by the `cover-letter` skill. ≤ 350 words across paragraphs.
 cover_letter:
   company: Example Co            # defaults to top-level `company` if omitted
-  recipient_name: Hiring Team
-  salutation: "Dear Hiring Team"
+  recipient_name: Hiring Manager  # a named person if findable (research.md "Ad facts")
+  salutation: "Dear Hiring Manager"
   # date: 2 May 2026             # optional; defaults to today
   # recipient_address: |         # optional; omit for modern AU practice
   #   Street line 1
@@ -87,13 +92,13 @@ cover_letter:
     technical_match: >-
       The most important technical aspect of this role is <your read of the
       ad>. At <employer> I <narrative version of the technical evidence
-      bullet — outcome, not task>, which taught me <connection back to
+      bullet: outcome, not task>, which taught me <connection back to
       their need>.
     values_fit: >-
       Your ad emphasises <value/culture signal>. At <employer> I
       <behavioural story drawing on the values evidence bullet>, and that
       same instinct is what I'd bring on day one.
-    forward: >-
+    forward: >-        # optional; omit for a four-paragraph letter
       In my first 90 days I'd want to <specific concrete contribution
       anchored in the ad>, and longer-term I'm interested in <specific
       angle of their domain>.
@@ -112,14 +117,8 @@ cover_letter:
 #   GOOD: items: ["AWS (Lambda, EventBridge)"]  -> renders as clean comma
 skills:
   - category: Languages
-    items: [TypeScript, JavaScript, Python, Java]
-  - category: Backend
-    items: [Python (Flask/FastAPI), Node.js, system integration, threading and concurrency, cloud computing & solutions (AWS)]
-  - category: Frontend
-    items: [Vue.js/Nuxt.js, React, component-based UI frameworks, UI component design/development]
-  - category: Databases
-    items: [PostgreSQL, MySQL, InfluxDB, relational schema design]
-  - category: DevOps & Tools
-    items: [IaC (AWS CDK), Docker (Compose), Linux, Git/GitHub/Bitbucket, CI/CD basics, GitHub Actions, Jira/Confluence]
-  - category: AI-Assisted Development
-    items: [Experience leveraging AI-assisted development tools (LLM-based coding assistants and AI-enabled IDEs) to accelerate debugging, code exploration, and documentation]
+    items: [TypeScript, Python]
+  - category: Cloud & DevOps
+    items: [AWS (Lambda, EventBridge, SQS, Fargate), AWS CDK, Terraform, Docker, GitHub Actions]
+  - category: Backend & Data
+    items: [Node.js (NestJS), FastAPI, PostgreSQL, event-driven microservices]

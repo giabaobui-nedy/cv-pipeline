@@ -27,33 +27,37 @@ except ImportError:
 REPO = Path(__file__).resolve().parent.parent
 BANK = REPO / "bullet-bank"
 
+# Selection policy per role bank. Headings (title, dates, employer, location) come
+# from each bank file's role: block, so they are not repeated here.
 ROLE_META = {
-    "soniq": {
-        "title": "Junior Software Engineer",
-        "dates": "Feb 2026 -- Present",
-        "employer": "SONIQ Digital",
-        "location": "Richmond, VIC",
-        "mandatory": "soniq-stack",
-        "limit": 4,
-        "avoid_by_default": {"soniq-overview"},
-    },
-    "csiro": {
-        "title": "Software Engineering Intern / Casual Software Engineer",
-        "dates": "Mar 2024 -- Jun 2025",
-        "employer": "CSIRO",
-        "location": "Clayton, VIC",
-        "mandatory": "csiro-stack",
-        "limit": 3,
-        "avoid_by_default": {"csiro-overview"},
-    },
+    "canonical": {"mandatory": None, "limit": 1, "avoid_by_default": set()},
+    "soniq": {"mandatory": "soniq-stack", "limit": 4, "avoid_by_default": {"soniq-overview"}},
+    "csiro": {"mandatory": "csiro-stack", "limit": 3, "avoid_by_default": {"csiro-overview"}},
 }
 
-DEFAULT_SKILLS = r"""\textbf{Languages:} TypeScript, JavaScript, Python, Java \\
-\textbf{Backend}{: Python (Flask/FastAPI), Node.js, system integration, threading and concurrency, AWS} \\
-\textbf{Frontend}{: React, Vue.js/Nuxt, component-based UI development} \\
-\textbf{Databases}{: PostgreSQL, MySQL, InfluxDB, relational schema design} \\
-\textbf{DevOps \& Tools}{: AWS CDK, Terraform, Docker, Linux, Git/GitHub, CI/CD, GitHub Actions} \\
-\textbf{AI-Assisted Development:} Experience using LLM-based coding assistants for debugging, code exploration, and documentation."""
+
+def master_skills() -> list[dict[str, Any]]:
+    master = yaml.safe_load((REPO / "cv" / "master.yml").read_text()) or {}
+    return master.get("skills", [])
+
+
+def months_of_experience(today: dt.date) -> int:
+    total = 0
+    for bank in ROLE_META:
+        role = (yaml.safe_load((BANK / f"{bank}.yml").read_text()) or {}).get("role", {})
+        if not role.get("start"):
+            continue
+        sy, sm = map(int, str(role["start"]).split("-"))
+        ey, em = map(int, str(role["end"]).split("-")) if role.get("end") else (today.year, today.month)
+        if (ey, em) >= (sy, sm):
+            total += (ey - sy) * 12 + (em - sm) + 1
+    return total
+
+
+def yoe_phrase(months: int) -> str:
+    if months < 24:
+        return "nearly 2 years"
+    return f"{months // 12}+ years"
 
 EDUCATION_HIGHEST_ACHIEVING = (
     r"Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of "
@@ -143,22 +147,32 @@ def score_bullet(bullet: dict[str, Any], keywords: set[str], ad_tokens: set[str]
 def choose_role_bullets(bank_name: str, keywords: set[str], ad_tokens: set[str]) -> list[str]:
     meta = ROLE_META[bank_name]
     mandatory = meta["mandatory"]
+    bank = [b for b in load_role_bank(bank_name) if b.get("status") != "outdated"]
+    group_of = {b["id"]: b.get("variant_group") for b in bank}
     scored = [
         score_bullet(b, keywords, ad_tokens)
-        for b in load_role_bank(bank_name)
+        for b in bank
         if b.get("id") != mandatory and b.get("id") not in meta["avoid_by_default"]
     ]
-    picked = [
-        b.bullet_id
-        for b in sorted(scored, key=lambda b: (-b.score, b.bullet_id))
-        if b.score > 0
-    ][: meta["limit"]]
-    if mandatory not in picked:
+    picked: list[str] = []
+    used_groups: set[str] = set()
+    for b in sorted(scored, key=lambda b: (-b.score, b.bullet_id)):
+        group = group_of.get(b.bullet_id)
+        if b.score <= 0 or (group and group in used_groups):
+            continue
+        picked.append(b.bullet_id)
+        if group:
+            used_groups.add(group)
+        if len(picked) == meta["limit"]:
+            break
+    if bank_name == "canonical" and not picked:
+        picked = [b["id"] for b in bank if "overview" in b.get("tags", [])][:1]
+    if mandatory and mandatory not in picked:
         picked.append(mandatory)
     return picked
 
 
-def choose_projects(keywords: set[str], ad_tokens: set[str], limit: int = 2) -> list[dict[str, Any]]:
+def choose_projects(keywords: set[str], ad_tokens: set[str], limit: int = 1) -> list[dict[str, Any]]:
     candidates: list[tuple[int, str, list[str]]] = []
     for project in load_projects():
         project_tags = {str(t).lower() for t in project.get("tags", []) or []}
@@ -182,10 +196,12 @@ def choose_projects(keywords: set[str], ad_tokens: set[str], limit: int = 2) -> 
 
 def build_profile(role: str, keywords: list[str]) -> str:
     tech = ", ".join(keywords[:4]) if keywords else "production software engineering"
+    title = (yaml.safe_load((BANK / "canonical.yml").read_text()) or {}).get("role", {}).get("title", "Software Engineer")
+    yoe = yoe_phrase(months_of_experience(dt.date.today()))
     return (
-        "Software Engineer and Highest Achieving Graduate in Computer Science with "
-        "professional experience building production-grade systems. Brings hands-on "
-        f"experience across {tech}, with a focus on maintainable, user-facing engineering."
+        f"{title} and Highest Achieving Graduate in Computer Science with {yoe} of "
+        "commercial experience building and supporting production systems. Hands-on "
+        f"in {tech}."
     )
 
 
@@ -211,12 +227,13 @@ def build_spec(args: argparse.Namespace) -> dict[str, Any]:
         "section_order": ["profile", "experience", "projects", "skills", "education"],
         "education_bullets": [EDUCATION_HIGHEST_ACHIEVING],
         "profile": build_profile(args.role, keywords),
+        "page_mode": "one",
         "experience": [
-            {**{k: v for k, v in ROLE_META[bank].items() if k in {"title", "dates", "employer", "location"}}, "bank": bank, "bullets": choose_role_bullets(bank, keyword_set, ad_token_set)}
-            for bank in ("soniq", "csiro")
+            {"bank": bank, "bullets": choose_role_bullets(bank, keyword_set, ad_token_set)}
+            for bank in ROLE_META
         ],
         "projects": choose_projects(keyword_set, ad_token_set),
-        "skills": DEFAULT_SKILLS,
+        "skills": master_skills(),
     }
 
 

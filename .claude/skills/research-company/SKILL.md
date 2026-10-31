@@ -1,9 +1,10 @@
 ---
 name: research-company
 description: >-
-  Research a target employer in five concentric layers — company → division →
-  team → product/project → tech stack — and produce a structured, cited
-  research file the tailor-cv and write-cover-letter skills can both consume. Use
+  Check a target employer's eligibility gates (work rights, clearance,
+  sponsorship), capture the ad's facts, then research it in five concentric
+  layers — company → division → team → product/project → tech stack — and
+  produce a structured, cited research file the tailor-cv and write-cover-letter skills can both consume. Use
   when the user pastes a job ad and asks to research the company, says "tell
   me about [Company]", asks "what does [Company] actually do?", wants to go
   deeper before drafting, or explicitly asks for layer-by-layer research.
@@ -11,11 +12,13 @@ description: >-
 
 # Research Company
 
-Produce structured, cited research on a target employer **before** any tailoring or cover-letter drafting happens. The output is a markdown file at `job-ads/<slug>.research.md` that lives next to the job-ad spec and is read by the other skills.
+Produce structured, cited research on a target employer **before** any tailoring or cover-letter drafting happens. The output is a markdown file at `job-ads/<slug>/research.md` that lives next to the job-ad spec and is read by the other skills.
 
 The pattern is concentric: zoom in one layer at a time. Each layer answers a question the next layer depends on.
 
 ```
+Eligibility   — can the user apply at all (Layer 0)
+   ↓
 Company       — who they are
    ↓
 Division      — which arm of them is hiring
@@ -43,13 +46,15 @@ See `PRINCIPLES.md`. Specifically: only record what you can cite. **Never** inve
 
 ```
 - [ ] 1. Resolve the company (slug, domain, official site)
+- [ ] 1a. Layer 0 — Eligibility gates (stop and ask if one fails)
+- [ ] 1b. Ad facts block
 - [ ] 2. Layer 1 — Company
 - [ ] 3. Layer 2 — Division / department
 - [ ] 4. Layer 3 — Team
 - [ ] 5. Layer 4 — Project / product
 - [ ] 6. Layer 5 — Tech stack
 - [ ] 7. Synthesise 3–5 cover-letter / interview angles
-- [ ] 8. Write job-ads/<slug>.research.md
+- [ ] 8. Write job-ads/<slug>/research.md
 - [ ] 9. (optional) Hand off to write-cover-letter or tailor-cv
 ```
 
@@ -62,6 +67,33 @@ From the job ad, extract:
 
 If the company has multiple legal entities (e.g. "Atlassian" vs. "Atlassian Australia Pty Ltd"), use the brand name; mention legal entity only if relevant for visa or contract questions.
 
+### 1a. Layer 0 — Eligibility
+
+The user holds a Subclass 485 visa (full work rights, temporary). Check these gates before any other research. If one fails, stop and ask the user whether to continue (`PRINCIPLES.md` §3 rule 4).
+
+| Gate | Where to look | Record |
+|---|---|---|
+| Citizen or PR only | The ad, the careers page, the job information pack | quote the exact wording, or "none stated" |
+| Security clearance (Baseline, NV1, NV2) | The ad | level, or "none" |
+| Sponsorship stance | A written statement from the employer (ad, careers FAQ, recruiter email) | quote and link; this is the strongest signal |
+| Accredited sponsor | Home Affairs accredited sponsor list, released only under FOI (latest found: as at 15 Jan 2025, via righttoknow.org.au) | listed / not listed / not checked |
+| Sanctioned sponsor | ABF sponsor sanctions register (abf.gov.au) | listed / not listed |
+| Public-sector application format | APS and state jobs: a pitch or selection-criteria response replaces the cover letter | format and the stated word or page limit |
+
+Accredited status shows the employer can sponsor, not that it will for this role. Never guess the sponsorship stance; write "not stated" when nothing is published.
+
+### 1b. Ad facts
+
+Record these from the ad itself. tailor-cv reads this block for its coverage table.
+
+- Exact job title and seniority as written.
+- Salary band if stated.
+- Basic qualifications (required), each as the ad's exact phrase.
+- Preferred qualifications, same format.
+- Screening questions, if the portal shows them (SEEK allows up to eight, often including right to work).
+- ATS vendor from the apply URL: `myworkdayjobs.com` (Workday, may use HiredScore grading), `greenhouse.io`, `lever.co`, `pageuppeople.com` (PageUp), `smartrecruiters.com`, `jobadder.com`, or SEEK quick apply.
+- Who to address: a named hiring manager or recruiter, if the ad or LinkedIn shows one.
+
 ### 2. Layer 1 — Company
 
 Capture:
@@ -73,7 +105,7 @@ Capture:
 - **Recent strategic signals**: a release, partnership, funding round, or expansion in the last ~12 months. Pick the most concrete.
 - **Mission credibility**: does the website match the ad's tone, or do they diverge? Divergence is a tone signal.
 
-Cite at least 2 sources for this layer (typically homepage + LinkedIn or Crunchbase).
+Cite at least 2 sources for this layer (typically homepage + LinkedIn or Crunchbase). For AU employers also check: ABN Lookup (legal entity, location), SEEK company reviews and Glassdoor (culture signals, mark as rumoured), and leaders' LinkedIn profiles and recent posts (Hays AU recommends all of these for tone).
 
 ### 3. Layer 2 — Division / department
 
@@ -134,16 +166,37 @@ From the five layers, pull **3–5 angles** the cover letter or interview answer
 | e.g. PlantPRO is a digital twin | Project | Mirrors my Battery Digital Twin capstone | Cover letter P1 hook |
 | e.g. Edge ML on Niagara controllers | Project + Stack | Embedded+ML overlap, narrow industry | Cover letter P4 forward |
 
-Rank angles by *uniqueness* (how few other candidates would catch this) × *honesty* (how well it actually matches a real bullet you have).
+Rank angles by *uniqueness* (how few other candidates would catch this) × *honesty* (how well it actually matches a real bullet you have). Name the matching bullet ID for each angle. Prefer team-owned facts (the team's product, blog post, repo or stack) over company-wide praise such as awards or rankings; write-cover-letter uses at most two.
 
 ### 8. Write the research file
 
-Path: `job-ads/<slug>.research.md`. Schema:
+Path: `job-ads/<slug>/research.md`. Schema:
 
 ```markdown
 # <Company> — Research
 
 > Source ad: [link or "n/a"] · Researched: YYYY-MM-DD · Skill version: research-company
+
+## Layer 0 — Eligibility
+
+| Gate | Finding | Source |
+|---|---|---|
+| Citizen or PR only | none stated | ad |
+| Clearance | none | ad |
+| Sponsorship stance | not stated | — |
+| Accredited sponsor (FOI list, Jan 2025) | not checked | — |
+| ABF sanctions register | not listed | [link](…) |
+| Public-sector format | n/a | — |
+
+## Ad facts
+
+- **Title / seniority**: …
+- **Salary band**: …
+- **Basic qualifications**: …
+- **Preferred qualifications**: …
+- **Screening questions**: …
+- **ATS vendor**: …
+- **Address the letter to**: …
 
 ## Layer 1 — Company
 
@@ -183,10 +236,10 @@ Sources: …
 
 ## Synthesis — Cover-letter / interview angles
 
-| # | Angle | Layer source | Best use |
-|---|---|---|---|
-| 1 | … | Project | Cover letter P1 |
-| 2 | … | Stack | Interview question |
+| # | Angle | Layer source | Matching bullet ID | Best use |
+|---|---|---|---|---|
+| 1 | … | Project | soniq-… | Cover letter P1 |
+| 2 | … | Stack | — | Interview question |
 
 ## Open questions
 
@@ -207,8 +260,8 @@ Ordered shortest → deepest:
 
 When the user is ready to draft, the next skill should:
 
-- `write-cover-letter`: read `<slug>.research.md` instead of doing its own search. The "Synthesis" angles directly feed paragraph design.
-- `tailor-cv`: use the tech-stack table to refine the `keywords:` list in the spec when the ad's vocabulary is thin.
+- `write-cover-letter`: read `job-ads/<slug>/research.md` instead of doing its own search. The "Synthesis" angles directly feed paragraph design.
+- `tailor-cv`: use the "Ad facts" basic qualifications for its coverage table, and the tech-stack table to refine `keywords:` when the ad's vocabulary is thin.
 
 If the research file is missing when those skills run, they should invoke this skill first (or warn the user explicitly that they're proceeding without research).
 

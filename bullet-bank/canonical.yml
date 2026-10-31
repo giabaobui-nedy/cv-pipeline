@@ -1,0 +1,19 @@
+# Canonical bullet bank. Field reference: bullet-bank/README.md.
+# Started 3 Nov 2026. Add achievement bullets through add-bullet once real work exists.
+
+role:
+  title: Associate Software Engineer
+  employer: Canonical
+  dates: Nov 2026 -- Present
+  start: 2026-11
+  location: Melbourne, VIC (Remote)
+
+bullets:
+  - id: canonical-overview
+    tags: [overview, saas, linux, backend]
+    note: >-
+      Placement fact only (Snap Store team, SaaS Engineering), valid from 3 Nov 2026. Confirm the
+      team after starting. Replace with achievement bullets as soon as they exist.
+    text: >-
+      Work on the Snap Store, Canonical's app store for Linux software packaged as snaps, in the
+      SaaS Engineering organisation.

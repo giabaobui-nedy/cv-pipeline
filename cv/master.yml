@@ -1,0 +1,38 @@
+# Master CV: every current bullet in the bank, rendered by tools/compile.sh master.
+# Replaces the hand-edited cv/main.tex (archived in cv/archive/) so the master can't drift.
+# Edit bullets in bullet-bank/*.yml, not here. Tailored specs adapt this profile and skills block.
+
+company: Master
+role: Master CV
+page_mode: master
+profile: >-
+  Software Engineer and Highest Achieving Graduate in Computer Science with 2+ years of commercial
+  experience building production-grade, API-driven systems, from event-driven microservices on AWS
+  to software running in live laboratory environments. Hands-on across frontend and backend
+  services in TypeScript, Python and Go, with a focus on resilient, observable systems and strong
+  engineering practices in cloud-native environments.
+experience:
+  - bank: canonical
+    bullets: all
+  - bank: soniq
+    bullets: all
+  - bank: csiro
+    bullets: all
+projects: all
+skills:
+  - category: Languages
+    items: [TypeScript, JavaScript, Python, Go, Java, SQL]
+  - category: Backend
+    items: [Node.js (NestJS), Python (FastAPI, Flask), Go, REST and OpenAPI, event-driven microservices, threading and concurrency]
+  - category: Frontend
+    items: [React, Vue.js/Nuxt.js, Tailwind CSS, TanStack Query, component and design-system development]
+  - category: Cloud & DevOps
+    items: [AWS (Lambda, EventBridge, SQS, Fargate, Aurora), AWS CDK, Terraform, Docker, GitHub Actions CI/CD, Linux]
+  - category: Data & Testing
+    items: [PostgreSQL, MySQL, InfluxDB, relational schema design, Vitest, Playwright, JUnit]
+  - category: AI-Assisted Development
+    items: [Claude Code with MCP connectors, LLM coding assistants for debugging, test-case simulation and code exploration]
+education_bullets:
+  - Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.
+  - Received lecturer compliment on the best undergraduate paper in INF20010 - Database Systems.
+  - Achieved Swinburne Excellence International Scholarship (50\%).

@@ -1,16 +1,22 @@
-# CSIRO — Bullet Bank
-# Role: Software Engineering Intern / Casual Software Engineer, Mar 2024 – Jun 2025, Clayton VIC.
-# Format identical to soniq.yml.
+# CSIRO bullet bank. Field reference: bullet-bank/README.md.
+# Intern then casual (part-time) role: be ready to say so when YoE is probed.
+
+role:
+  title: Software Engineering Intern / Casual Software Engineer
+  employer: CSIRO
+  dates: Mar 2024 -- Jun 2025
+  start: 2024-03
+  end: 2025-06
+  location: Clayton, VIC
 
 bullets:
   - id: csiro-overview
-    tags: [architecture, fullstack, telemetry, auth, impact, overview]
+    tags: [architecture, fullstack, telemetry, auth, overview]
     text: >-
-      Architected and delivered a production-grade lab automation system integrating real-time
-      telemetry, firmware control, and secure user authentication, transforming a traditionally
-      manual experimental workflow into a safe, automated and traceable research platform, working
-      within a multi-disciplinary team of engineers to build the facility for a group of
-      research scientists.
+      Architected and delivered a production lab automation system for a group of research
+      scientists, combining real-time telemetry, firmware control and secure login, so experiments
+      once run by hand now run automated and logged. Built within a multi-disciplinary engineering
+      team.
 
   - id: csiro-fullstack-leadership
     tags: [fullstack, vue, nuxt, node, sql, influxdb, leadership]
@@ -20,13 +26,15 @@ bullets:
       interface, and SQL/InfluxDB databases.
 
   - id: csiro-firmware-abstraction
+    story: csiro-hardware-layer
     tags: [firmware, modbus, architecture, backend, hardware]
     text: >-
-      Designed a scalable firmware abstraction layer bridging UI $\rightarrow$ server $\rightarrow$
-      firmware $\rightarrow$ Modbus hardware, replacing rigid single hardware bindings with
-      configuration-driven patterns to support evolving multi-column setups without major refactors.
+      Designed a configuration-driven firmware abstraction layer (UI $\rightarrow$ server
+      $\rightarrow$ firmware $\rightarrow$ Modbus hardware) that replaced hard-wired single-device
+      bindings, so new multi-column hardware setups need a configuration change, not a refactor.
 
   - id: csiro-pragmatic-tradeoff
+    story: csiro-hardware-layer
     tags: [pragmatism, decision-making, architecture, hardware, tradeoff]
     text: >-
       Chose to invest in a reusable, configuration-driven hardware interface over a faster
@@ -35,6 +43,7 @@ bullets:
       box without repeat rework.
 
   - id: csiro-vue-refactor
+    variant_group: csiro-vue-refactor
     tags: [vue, frontend, refactoring, architecture, recognition]
     text: >-
       Refactored a large Vue.js frontend into a structure a fellow engineer commended for its
@@ -43,6 +52,7 @@ bullets:
       prop-driven.
 
   - id: csiro-vue-refactor-review
+    variant_group: csiro-vue-refactor
     tags: [vue, frontend, code-review, refactoring, architecture, code-quality, recognition]
     text: >-
       Reviewed the code of a large Vue.js frontend, then restructured it with a
@@ -53,18 +63,18 @@ bullets:
   - id: csiro-db-redesign
     tags: [database, sql, schema-design, audit]
     text: >-
-      Redesigned and normalised the relational database schema to accurately model experiment
-      lifecycles, user roles, and audit-ready comment versioning, improving data integrity,
-      traceability, and long-term extensibility.
+      Redesigned and normalised the relational schema to model experiment lifecycles, user roles
+      and versioned comments, giving the lab an audit trail of comment edits on every experiment.
 
   - id: csiro-influx-echarts
-    tags: [influxdb, websocket, realtime, frontend, telemetry, visualization]
+    tags: [influxdb, websockets, realtime, frontend, telemetry, visualisation]
     text: >-
       Integrated real-time InfluxDB telemetry with dynamic ECharts visualisations and WebSocket
       updates via custom SVG components, enabling efficient time-range filtering and accurate
       experiment monitoring without page reload.
 
   - id: csiro-oop-hardware
+    story: csiro-hardware-layer
     tags: [oop, backend, hardware, architecture]
     text: >-
       Applied OOP principles (inheritance and abstraction) to reuse hardware communication logic
@@ -72,6 +82,8 @@ bullets:
       across multiple control systems.
 
   - id: csiro-locks-deployment
+    metric:
+      source: unverified (the user's account of the three-month continuous run)
     tags: [concurrency, threading, firmware, reliability, impact-metric, hardware]
     text: >-
       Implemented safe, correct lock mechanisms to prevent concurrent access to the hardware
@@ -81,9 +93,8 @@ bullets:
   - id: csiro-api-logging
     tags: [api, logging, reliability, maintenance, backend]
     text: >-
-      Improved long-term system reliability through ongoing maintenance --- refining API design,
-      introducing structured logging, and adding defensive error handling --- sustaining stability
-      across iterative production usage in a live laboratory setting.
+      Kept the system stable through iterative production use in a live laboratory by refining the
+      API design, introducing structured logging and adding defensive error handling.
 
   - id: csiro-azure-sso
     tags: [auth, sso, azure, security, middleware]
@@ -99,7 +110,7 @@ bullets:
       via SSH, for reproducible builds and consistent runtime configuration.
 
   - id: csiro-refinery-rn
-    tags: [react-native, ui-ux, mobile, leadership, industrial]
+    tags: [react-native, ui, ux, mobile, leadership, industrial]
     text: >-
       Led the UI/UX redesign and domain analysis for a real-time refinery operations platform,
       translating operator requirements into a mobile-first React Native prototype to optimise
@@ -115,41 +126,43 @@ bullets:
   - id: csiro-sdlc
     tags: [sdlc, documentation, process, jira, git]
     text: >-
-      Applied end-to-end SDLC practices including requirements analysis, iterative prototyping,
-      Jira-based task tracking, Git version control, formal SRS/SDD documentation, commissioning
-      support, and knowledge transfer to ensure sustainable long-term maintenance.
+      Ran the project through the full SDLC (requirements analysis, iterative prototypes, Jira
+      tracking, Git, formal SRS/SDD documents, commissioning support and knowledge transfer) so the
+      lab could maintain the system after handover.
 
   - id: csiro-collaboration
     tags: [collaboration, stakeholders, communication, hardware]
     text: >-
-      Collaborated closely with researchers, electronics engineers, and external vendors to align
-      software behaviour with hardware capabilities, supporting commissioning activities, safe
-      laboratory handover, and strengthened industry partnerships.
+      Worked with researchers, electronics engineers and external vendors to match software
+      behaviour to hardware capabilities, supporting commissioning and a safe handover of the
+      laboratory.
 
   - id: csiro-demos
+    variant_group: csiro-demos
     tags: [communication, leadership, stakeholders]
     text: >-
-      Led technical demonstrations for internal leadership, visiting industry partners, and
-      national intern cohorts, effectively communicating architectural decisions and the strategic
-      value of applied software engineering within mineral processing research.
+      Led technical demonstrations for internal leadership, visiting industry partners and national
+      intern cohorts, explaining the system's architecture decisions and what applied software
+      engineering adds to mineral processing research.
 
   - id: csiro-onboarding-handover
+    variant_group: csiro-onboarding-handover
     tags: [documentation, onboarding, knowledge-transfer, leadership, communication]
     text: >-
-      Produced a structured handover suite at system completion --- maintained SRS/SDD documentation
-      spanning frontend to backend, built UML architecture diagrams used to brief a mechatronics
-      engineer with adjacent software experience as a relay for future onboarding, and co-recorded
-      a step-by-step deployment tutorial with the team lead to ensure the system was fully
-      reproducible end-to-end.
+      Produced a handover suite at system completion: SRS/SDD documentation from frontend to
+      backend, UML architecture diagrams used to brief a mechatronics engineer who will onboard
+      future developers, and a step-by-step deployment tutorial co-recorded with the team lead, so
+      the system can be rebuilt end to end.
 
   - id: csiro-accessibility-ux
     tags: [accessibility, ux, frontend, aria, css, mobile, ui]
     text: >-
-      Aligned web and mobile interfaces with web accessibility best practices and a consistent
-      UI, by introducing ARIA labels, enforcing colour-contrast standards, and standardising
-      typography, component styling, and interactive element patterns.
+      Made the web and mobile interfaces more accessible and consistent by adding ARIA labels,
+      enforcing colour-contrast standards, and standardising typography, component styles and
+      interactive patterns.
 
   - id: csiro-figma-prototype
+    variant_group: csiro-figma-prototype
     tags: [figma, prototyping, mobile, ux, stakeholders, requirements, ui]
     text: >-
       Designed a Figma prototype with variable-driven state management and dynamic view transitions
@@ -166,6 +179,7 @@ bullets:
       Azure Entra ID (SSO), ECharts, WebSockets.}
 
   - id: csiro-demos-fifteen-minutes
+    variant_group: csiro-demos
     tags: [communication, knowledge-sharing, stakeholders, presentation]
     note: >-
       Confirmed by user 2026-09-13. Specific variant of csiro-demos ("national intern cohorts").
@@ -173,3 +187,19 @@ bullets:
     text: >-
       Presented my placement contributions to two of the Electrical Connections team's projects
       at CSIRO's national ``15 Minutes of Fame'' event for summer students and interns.
+
+  - id: csiro-onboarding-handover-compact
+    variant_group: csiro-onboarding-handover
+    tags: [documentation, onboarding, knowledge-transfer]
+    text: >-
+      Produced the handover suite at system completion: SRS/SDD documents, UML architecture
+      diagrams and a deployment tutorial co-recorded with the team lead, so the system can be
+      rebuilt end to end.
+
+  - id: csiro-figma-prototype-compact
+    variant_group: csiro-figma-prototype
+    tags: [figma, prototyping, mobile, ux, stakeholders]
+    text: >-
+      Designed a Figma prototype that distilled a desktop system's most critical data into a
+      mobile-first interface for operators on a hazardous site, aligning the industry partner on
+      scope before React Native development.

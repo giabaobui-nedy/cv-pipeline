@@ -36,15 +36,20 @@ in the first 8-second skim**, not more keywords.
 
 ### ATS layer (already handled)
 
-Engine-agnostic LaTeX, plain-text PDF, `\pdfgentounicode` when available,
-`*-stack` bullets per role to anchor keywords, `keywords:` field in spec
-mirrors the ad's vocabulary. Don't break these.
+Engine-agnostic LaTeX, plain-text single-column A4 PDF, `\pdfgentounicode` when
+available, `*-stack` bullets per role to anchor keywords, `keywords:` field in spec
+mirrors the ad's vocabulary. `compile.sh` checks the PDF text layer with
+`pdftotext` (Greenhouse documents that parsing fails on columns, tables, contact
+details in headers or footers, and graphics). Workday HiredScore grades each
+basic qualification separately, so tailor-cv maps every basic qualification to a
+bullet in a coverage table. Don't break these.
 
 ### Manual screen layer (where we lose)
 
 The recruiter's 8-second skim path:
 
-1. Name + location + **work rights** (see Principle 3).
+1. Name + location. Work rights are asked in the application form (SEEK
+   screening questions, SEEK Pass), not read off the CV (Principle 3).
 2. Most recent employer + role title.
 3. First 1–2 bullets of that role.
 4. Profile paragraph (read only if the rest looks interesting).
@@ -65,7 +70,7 @@ Implications:
 
 ### Projects are gap-fillers, not a fixture (experience-first policy, Aug 2026)
 
-With nearly 2 years of paid production work on the CV, Experience carries the
+With 2+ years of paid production work on the CV, Experience carries the
 application; Projects exist only to cover ad requirements Experience can't.
 
 - **Default budget: 0–1 project, 1–2 bullets.** A CV with no Projects section
@@ -85,7 +90,8 @@ application; Projects exist only to cover ad requirements Experience can't.
   ("validate AI-generated code") was cut on review because
   `soniq-architectural-validation` already carried the AI-output-quality
   signal; the freed space went to `soniq-fallback-content`, a scheduling
-  bullet matching the ad's domain.
+  bullet matching the ad's domain. That bullet has since been marked
+  `status: outdated` and the renderer refuses it; the test still applies.
 
 ### Pivoting from SONIQ → big tech
 
@@ -119,10 +125,10 @@ hidden.
 
 ### Rules
 
-1. **CV does not carry the work-rights line.** Earlier policy was to put it on the contact line of the CV, but in practice it cost a wrap-line that pushed tailored CVs to two pages without buying meaningful signal — most AU recruiters assume work rights and ask in the application form anyway. Keep the CV's contact block tight: phone, email, LinkedIn, GitHub, Portfolio. Nothing else.
+1. **CV does not carry the work-rights line.** Earlier policy was to put it on the contact line of the CV, but in practice it cost a wrap-line that pushed tailored CVs to two pages without buying meaningful signal — most AU recruiters assume work rights and ask in the application form anyway. Keep the CV's contact block tight: location (Melbourne, VIC, which SEEK recommends for search), phone, email, LinkedIn, GitHub, Portfolio. Nothing else.
 2. **Cover letter contact block carries the canonical line.** That's where the visa statement lives by default:
    ```
-   Australian work rights --- Subclass 485 (valid to January 2028)
+   Australian work rights, Subclass 485 (valid to January 2028)
    ```
    Long form preferred. Short form (`AU work rights (Subclass 485)`) only inside ~6 months of expiry until renewal lands.
 3. **Frame positively, never apologetically.** "Australian work rights" first, "(Subclass 485…)" as supporting detail. Never write "looking for sponsorship" (untrue for 485) or "happy to discuss visa" (invites uncertainty).
@@ -177,11 +183,11 @@ strategy is a question for a registered migration agent, not this pipeline.
 
 ### When to renew the canonical phrasing
 
-Update `cv/cover-letter.tex.template` (and check `cv/main.tex` / `cv/tailored.tex.template` haven't drifted back to including it) if the visa is renewed or the expiry shifts. The CV templates should remain free of the work-rights line.
+Update `cv/cover-letter.tex.template` (and check `cv/tailored.tex.template` hasn't drifted back to including it) if the visa is renewed or the expiry shifts. The CV templates should remain free of the work-rights line.
 
 ## 4. CV is the contract; cover letter is the narrative
 
-Industry assumption: **most companies skip the cover letter**. Estimates vary, but a useful working number is *~70% never read it*. The CV must therefore be **self-sufficient** — every essential signal (work rights, top impact bullets, stack anchors, education credential, contact details) lives in the CV regardless of whether the cover letter is opened.
+Industry assumption: **many companies skip the cover letter**. No primary AU survey measures it (one AU site cites ~30% of hiring managers rarely reading them), yet Hays AU and Robert Half AU still recommend a tailored one. The CV must therefore be **self-sufficient**: every essential signal (top impact bullets, stack anchors, education credential, contact details) lives in the CV whether or not the cover letter is opened. Work rights are the exception: the application form and the cover letter carry them (Principle 3).
 
 This creates an apparent tension with the standard "don't repeat yourself between CV and cover letter" advice. Resolve it like this:
 
@@ -198,14 +204,14 @@ This creates an apparent tension with the standard "don't repeat yourself betwee
 | Where do new facts go? | Bullet bank (then optionally CV). Never cover-letter-only. If the cover letter would need to introduce a new claim to be effective, force-promote it into a bullet via `add-bullet`, then narrate it in the cover letter. |
 | Can two paragraphs (P2 technical, P3 values) reference bullets that are already on the CV? | Yes — preferred, in fact. The cover letter's job is to *deepen* the most relevant achievements, not to find different ones. |
 | What belongs ONLY in the cover letter? | Specificity (P1 hook tied to *this* company), the *story / lesson* layer of an achievement (P2), values fit narration (P3 — often net-new tone, but the underlying behaviour must be backed by a bullet), forward-looking intent (P4 — net-new). |
-| What belongs ONLY in the CV? | Hard credentials (work rights, GPA, degree, dates), the comprehensive list of impact bullets, the keyword-dense skills block, project links/demos. |
+| What belongs ONLY in the CV? | Hard credentials (GPA, degree, dates), the comprehensive list of impact bullets, the keyword-dense skills block, project links/demos. |
 | What goes in both? | The 1–2 load-bearing achievements that anchor the application — at different zoom levels. |
 
 ### Failure modes to avoid
 
 - **Cover letter restates the CV bullet text.** Solution: narrate the *story* (mechanism, why, lesson), don't paraphrase the outcome.
 - **Cover letter introduces a fact the CV doesn't support.** Solution: stop, run `add-bullet`, then continue.
-- **CV depends on the cover letter to land a critical signal** (e.g. work rights only mentioned in the cover letter). Solution: every must-land signal goes in the CV.
+- **CV depends on the cover letter to land a critical signal** (e.g. the strongest metric only in the letter). Solution: every must-land signal goes in the CV. Work rights are the one deliberate exception (§3 rule 1).
 
 ## 5. Workflow when a job ad arrives
 

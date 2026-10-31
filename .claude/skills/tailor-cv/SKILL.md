@@ -21,13 +21,14 @@ override anything below if they conflict:
    things the underlying achievement doesn't support. If the bank can't
    honestly cover an ad requirement, surface the gap to the user.
 2. **Optimise for ATS *and* the manual screen.** Big-tech AU recruiters skim
-   in ~8 seconds: name + work rights → most recent role → first 1–2 bullets
+   in ~8 seconds: name → most recent role → first 1–2 bullets
    → profile sentence one → education credential. Lead each role with the
    strongest matching `impact-metric` bullet. Profile sentence one must
    mirror the ad's primary technical signal.
-3. **Visa 485.** State Australian work rights explicitly in the contact
-   block. Detect PR-only gates and flag them before drafting. See
-   `PRINCIPLES.md` §3 for phrasing.
+3. **Visa 485.** The CV carries no work-rights line (`PRINCIPLES.md` §3.1).
+   The cover letter header and the application form carry it. Detect
+   PR-only gates and flag them before drafting. Answer work-rights form
+   questions truthfully, using the §3 "now or in the future" guidance.
 
 ### Pivot rule for big-tech tailoring (from Principle 2)
 
@@ -49,13 +50,14 @@ how good the bullet selection is.
 
 | # | Rule | Common failure mode |
 |---|---|---|
-| H1 | **`education_bullets` must be set explicitly — never omit, never leave `[]`.** Default: Highest Achieving Graduate only. Add the database-paper line only when `sql`/`database`/`schema` are ad keywords. Never include the scholarship line for engineering roles. | Auto-tools write `education_bullets: []`, silently dropping the credential. |
-| H2 | **Skills block must use structured `category`/`items` YAML.** Never use a raw LaTeX string (e.g. `\textbf{Languages:} ...`). | Some models copy the LaTeX form from `main.tex` directly. |
-| H3 | **Profile opening: preserve "Junior Software Engineer" as the first three words.** Never substitute a different title ("Full-stack Engineer", "Cloud Engineer", "Software Developer"). The actual current role title is the ceiling for self-description. | Models infer the target role title from the ad and use that instead. |
-| H4 | **`soniq-stack` and `csiro-stack` are mandatory** in their respective role sections. Never omit them — they are the primary ATS keyword anchors. | Dropped when trimming for page length. Stack lines must be the last to go. |
-| H5 | **Never invent bullet IDs.** Only IDs present in `bullet-bank/*.yml` may appear in `bullets:` lists. If a relevant bullet is missing, invoke `add-bullet` or flag the gap to the user. | Models hallucinate plausible-sounding IDs. |
-| H6 | **Output must compile to 1 page.** Always run the compile step and check. If > 1 page, enter the prune loop before declaring done. | Models write the spec but skip the compile verification. |
-| H7 | **YoE qualifier must describe duration only — never attach domain-specific claims to it.** Write "1+ year of commercial experience building and supporting production systems", not "1+ year of commercial experience in cloud-native infrastructure, CI/CD, and X". The domains differ between CSIRO (15 months) and SONIQ (3 months); claiming the full duration covered a specific domain is false. Domain-specific skills belong in the second profile sentence without a duration attached. | Models mirror the ad's language by writing "X years of experience in [ad keyword]", over-claiming scope. |
+| H1 | **`education_bullets` must be set explicitly — never omit, never leave `[]`.** Default (also the renderer's default if unset): Highest Achieving Graduate only. Add the database-paper line only when `sql`/`database`/`schema` are ad keywords. Never include the scholarship line for engineering roles. | Auto-tools write `education_bullets: []`, silently dropping the credential. |
+| H2 | **Skills block must use structured `category`/`items` YAML, and every item must be proved by a selected bullet or stack line.** Never use a raw LaTeX string. The renderer warns on any unbacked item; drop it or swap in a bullet that proves it. | Models copy skills from the master or the ad without evidence on the page. |
+| H3 | **Profile opening: start with the title of the most recent role on the CV (`experience[0].title`).** Never substitute a different title ("Full-stack Engineer", "Cloud Engineer", "Software Developer"). The actual current role title is the ceiling for self-description. | Models infer the target role title from the ad and use that instead. |
+| H4 | **`soniq-stack` and `csiro-stack` are mandatory** in their respective role sections. Never omit them — they are the primary ATS keyword anchors. A spec-level `stack:` string on an experience entry is rendered as an extra stack line; use it only when you also drop the bank's `*-stack` bullet. | Dropped when trimming for page length. Stack lines must be the last to go. |
+| H5 | **Never invent bullet IDs.** Only IDs present in `bullet-bank/*.yml` may appear in `bullets:` lists. If a relevant bullet is missing, invoke `add-bullet` or flag the gap to the user. The renderer refuses unknown IDs, `status: outdated` bullets, and two bullets from one `variant_group`. | Models hallucinate plausible-sounding IDs. |
+| H6 | **Output must compile within its `page_mode` (default one page) and pass the text-layer check.** Always run the compile step. If over the limit, enter the prune loop. If `compile.sh` reports a text-layer error, fix it before handing off, because ATS parsers read that text. | Models write the spec but skip the compile verification. |
+| H7 | **YoE qualifier must describe duration only — never attach domain-specific claims to it.** Write "<YoE> of commercial experience building and supporting production systems", not "<YoE> of commercial experience in cloud-native infrastructure, CI/CD, and X". The YoE spans several roles with different domains; claiming the full duration covered a specific domain is false. Domain-specific skills belong in the second profile sentence without a duration attached. | Models mirror the ad's language by writing "X years of experience in [ad keyword]", over-claiming scope. |
+| H9 | **Read every selected bullet's `note` and keep the CV inside it.** Notes carry honesty limits ("dev only, never production", "never write led"). The renderer prints each note as a `warn:` line; check each one before handing off. Respect `env` (no production claim unless `prod` is listed) and `ownership`. | Notes ignored, so a profile or skills line overclaims what the bullet allows. |
 | H8 | **Fill the page before declaring done.** After the first clean 1-page compile, check whether the CV is visibly sparse (roughly fewer than 11 `\resumeItem` content lines, excluding stack and education). If it is, enter the fill loop (see §5 below) and add bullets until the page is dense or the 13-item ceiling is approaching. A sparse 1-page CV wastes signal and looks unpolished. | First clean compile declared success without checking space usage. |
 
 ## Primary objective: one page, high signal
@@ -65,19 +67,24 @@ density of signal beats breadth — every bullet on the page should map to at
 least one keyword from the ad. Cut anything that doesn't. If the user
 explicitly overrides this and asks for two pages, comply, but default to one.
 
+### page_mode
+
+Set `page_mode:` in the spec. `one` (default) suits AU tech companies, startups and US-headquartered firms. `two` suits AU enterprise, banks, consulting and public-sector roles, where SEEK and recruiters expect two pages. Use `two` only when the ad or employer type fits, never to avoid pruning. `compile.sh` enforces the limit.
+
 Signal-density rules:
 
 - Prefer bullets tagged `impact-metric` (quantified outcomes).
 - Prefer bullets whose `tags` overlap with the ad's `keywords`.
 - Drop bullets that only restate context (`*-overview` bullets) unless the ad
   explicitly asks for the kind of breadth the overview describes.
-- Drop a project entirely before keeping a low-signal bullet from it. Two
-  strong projects beat three weak ones.
+- Drop a project entirely before keeping a low-signal bullet from it.
+- Pick at most one version per `variant_group`. Prefer the `-compact` version when space is tight.
+- Use at most 2 bullets from one `story` (for example the outbox or design-system work).
 - The `*-stack` bullets are mandatory — they're the keyword anchor for ATS.
 
 ## Section order
 
-Default for tailored CVs: **Profile → Experience → Projects → Skills → Education**. With 1+ year of paid SWE work already on the CV, Experience-first is the conventional order; Education is verification, not differentiation, and lives at the bottom (the section header still carries "Highest Achieving Graduate" and GPA so the credibility signal isn't lost).
+Default for tailored CVs: **Profile → Experience → Projects → Skills → Education**. With 2+ years of paid SWE work already on the CV, Experience-first is the conventional order; Education is verification, not differentiation, and lives at the bottom (the section header still carries "Highest Achieving Graduate" and GPA so the credibility signal isn't lost).
 
 Override per spec via the optional `section_order:` key — a list naming any subset/reordering of `[profile, experience, projects, skills, education]`. Use this when the ad explicitly screens on academics — e.g. `section_order: [profile, education, experience, projects, skills]`. Omitting a section drops it entirely, so be deliberate.
 
@@ -99,8 +106,8 @@ If none of those apply, keep the default order even when the title contains the 
 
 ## Repo invariants
 
-- **Master CV** lives at `cv/main.tex`. Never modify it from this skill.
-- **Bullet bank**: `bullet-bank/{soniq,csiro,projects}.yml`. Source of truth for selectable bullets. Never invent bullets that aren't in the bank — if a relevant bullet is missing, tell the user and offer to invoke the `add-bullet` skill instead.
+- **Master CV** is `cv/master.yml`, rendered from the whole bank by `tools/compile.sh master`. Never modify it from this skill. `cv/archive/` holds the retired hand-edited `main.tex`; never read it as a source.
+- **Bullet bank**: `bullet-bank/*.yml` (one file per employer, plus `projects.yml`). Field meanings are in `bullet-bank/README.md`; tag vocabulary and ad-phrase synonyms are in `bullet-bank/tags.yml`. Source of truth for selectable bullets. Never invent bullets that aren't in the bank — if a relevant bullet is missing, tell the user and offer to invoke the `add-bullet` skill instead.
 - **Confidentiality**: obey `BOUNDARIES.md`. No SONIQ source, no internal URLs, no confidential client names, no private metrics unless already in the bank.
 - **Generated files** (`outputs/<slug>/*.tex`, `outputs/<slug>/*.pdf`) are throwaway. Spec YAMLs in `job-ads/<slug>/spec.yml` are the editable artefact.
 
@@ -109,9 +116,9 @@ If none of those apply, keep the default order even when the title contains the 
 Track progress with this checklist:
 
 ```
-- [ ] 1. Load bullet bank + BOUNDARIES.md
-- [ ] 2. Parse the job ad
-- [ ] 3. Propose a shortlist (await user approval)
+- [ ] 1. Load bullet bank + BOUNDARIES.md; run tools/lint_bank.py
+- [ ] 2. Parse the job ad (basic vs preferred qualifications)
+- [ ] 3. Coverage table + shortlist (await user approval)
 - [ ] 4. Write job-ads/<slug>/spec.yml
 - [ ] 5. Run the renderer
 - [ ] 6. Compile to PDF if possible
@@ -125,10 +132,12 @@ Track progress with this checklist:
 Read these files (in this order):
 
 1. `BOUNDARIES.md`
-2. `bullet-bank/soniq.yml`
-3. `bullet-bank/csiro.yml`
-4. `bullet-bank/projects.yml`
+2. Every `bullet-bank/*.yml` file, including `tags.yml` and `bullet-bank/README.md`
+3. `job-ads/<slug>/research.md` if it exists. Use its "Ad facts" block (title, qualifications, screening questions, ATS vendor) and its eligibility result.
+4. `cv/master.yml` for the master profile and skills block
 5. `job-ads/_example/spec.yml` (only if you've never seen the spec format before)
+
+Run `python3 tools/lint_bank.py`. Stop and report any `error:` line. Mention `metric not verified` warnings when a shortlisted bullet carries one.
 
 ### 2. Parse the ad
 
@@ -136,35 +145,38 @@ Extract from the ad text:
 
 - `company` and `role` (best guess from the ad).
 - `seniority` (intern / junior / mid / senior).
-- `must_haves`: hard requirements (years of X, specific stacks).
-- `nice_to_haves`: preferred extras.
-- `keywords`: 8–15 short tokens that mirror the ad's vocabulary (e.g. `aws`, `event-driven`, `react`, `iac`, `observability`). Prefer tokens that already exist as `tags` in the bullet bank.
+- `basic_qualifications`: the ad's required items, each as the ad's exact noun phrase ("experience with AWS Lambda", "PostgreSQL"). Workday HiredScore grades each basic qualification separately, so one missing item lowers the whole grade.
+- `preferred_qualifications`: nice-to-haves, same format.
+- `keywords`: 8–15 short tokens that mirror the ad's vocabulary (e.g. `aws`, `event-driven`, `react`, `iac`, `observability`). Map each ad phrase to a bank tag through `tags.yml` `synonyms`, but write the ad's own phrase in the profile and skills block.
 - `culture_signals`: 1–3 phrases hinting at team style (e.g. "small team", "ownership", "scientific rigour"). Used to shape the `profile` paragraph.
 
-### 3. Propose a shortlist (REQUIRED before writing files)
+### 3. Coverage table, then shortlist (REQUIRED before writing files)
 
-Pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`impact-metric` tagged bullets win) and recency (SONIQ over CSIRO when both fit).
+First show a coverage table. Each basic qualification gets the bullet ID that proves it in its rendered text, or `gap`:
+
+```
+| Basic qualification (ad wording) | Proved by | Exact phrase on the CV? |
+|---|---|---|
+| Experience with AWS serverless | soniq-cost-optimisation | yes ("AWS Lambda") |
+| Kubernetes | gap | no |
+```
+
+Report every `gap` to the user before rendering (Principle 1: never paper over it). Then make sure each covered qualification's exact phrase appears once on the page, in a bullet, the profile or the skills block. Spell out an abbreviation once ("infrastructure as code (IaC)"). Use each keyword at most 3 times; the renderer warns past 4.
+
+Then pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`impact-metric` tagged bullets win) and recency (newest employer first). For AI-forward roles prefer `ai_framing: builder` bullets; for conservative employers use at most one `ai_framing: user` bullet.
 
 **For client-facing roles (FDE, consulting, professional services, solutions engineering):** when two CSIRO bullets score similarly on tag overlap, prefer the one that shows *delivery + communication* over *communication only*. A bullet showing multi-stakeholder collaboration on a real commissioned system (e.g. `csiro-collaboration`) is stronger evidence of client-facing capability than a bullet about presenting or demonstrating (e.g. `csiro-demos`). Recruiters for these roles want to see ownership and delivery alongside communication — one-way presentation bullets underdeliver on the ownership half.
 
 **Budget for one page** (start here, prune harder if compilation overflows):
 
+- Canonical (from 3 Nov 2026): the role heading plus `canonical-overview` until achievement bullets exist. It costs about 2 lines but puts the strongest employer name first. Once the user has been there a few months, move SONIQ to 3 bullets.
 - SONIQ: **4 bullets** + `soniq-stack` (mandatory). 5 is borderline.
 - CSIRO: **3–4 bullets** + `csiro-stack` (mandatory).
-- Projects: **0–1 project, 1–2 bullets** (experience-first policy, Aug 2026 — see `PRINCIPLES.md` §2). A project earns its place only if it hits an ad keyword that **zero** experience bullets cover; if every project bullet is redundant with experience, drop the Projects section entirely and spend the space on more SONIQ bullets. Uni-era projects (`weekly-planner`, `tbrgs`, `planner-diary`, `decentralised-trading`, `battery-digital-twin`) age out first — they read increasingly junior next to production work. `cv-pipeline` is the exception: current, self-owned, real engineering; it stays viable for AI-forward roles specifically. A second project is justified only when it covers a *second* uncovered ad requirement — apply the test strictly: for Unity Care (Aug 2026), `weekly-planner-orm-tests` ("validate AI-generated code") was cut because `soniq-architectural-validation` already carried that signal, and the space went to an extra SONIQ bullet instead.
-- Education bullets: **always explicitly set `education_bullets` in the spec** — never leave it unset (unset defaults to all 3, which wastes space on the scholarship and database-paper lines). Default for every engineering role: **Highest Achieving Graduate only** (1 bullet). Add the database-paper bullet only when `database`, `schema`, `sql`, or similar is a keyword in the ad. Always drop the scholarship line for engineering roles. Experience and projects always take priority over education lines.
+- Projects: **0–1 project, 1–2 bullets** (experience-first policy, Aug 2026 — see `PRINCIPLES.md` §2). A project earns its place only if it hits an ad keyword that **zero** experience bullets cover; if every project bullet is redundant with experience, drop the Projects section entirely and spend the space on more SONIQ bullets. Uni-era projects (`weekly-planner`, `tbrgs`, `planner-diary`, `decentralised-trading`, `battery-digital-twin`) age out first — they read increasingly junior next to production work. `cv-pipeline` is the exception: current, self-owned, real engineering; it stays viable for AI-forward roles specifically. A second project is justified only when it covers a *second* uncovered ad requirement — apply the test strictly: for Unity Care (Aug 2026), `weekly-planner-orm-tests` ("validate AI-generated code") was cut because `soniq-architectural-validation` already carried that signal, and the space went to an extra SONIQ bullet instead. (That bullet is now `status: outdated`; the test itself still applies.)
+- Education bullets: **always explicitly set `education_bullets` in the spec** — never leave it unset, so the choice is visible in the spec (the renderer falls back to Highest Achieving Graduate only). Default for every engineering role: **Highest Achieving Graduate only** (1 bullet). Add the database-paper bullet only when `database`, `schema`, `sql`, or similar is a keyword in the ad. Always drop the scholarship line for engineering roles. Experience and projects always take priority over education lines.
 - `*-overview` bullets: **default to omitting them**. Include only if the ad emphasises breadth the overview captures and there is page room left.
 
-Total `\resumeItem` count target: **≤ 13** (including stack lines, education, and project bullets). **Empirically, 14+ overflows to a second page** — and `\resumeItem` count alone is a misleading proxy: a single long bullet (~50 words like `csiro-overview` or `csiro-fullstack-leadership`) wraps to 3–4 visual lines and eats the budget of three short bullets. Track **visual lines**, not just bullet count.
-
-**Heavy bullets to handle with care** (each consumes 3–4 visual lines):
-
-- `csiro-overview` (the lab-automation overview)
-- `csiro-fullstack-leadership`
-- `soniq-shopify-eventbridge`
-- `tbrgs-dl-search`
-
-If you include one of these, drop one short bullet elsewhere to compensate. The `*-stack` bullets are also typically 2 visual lines — count them as such.
+Total `\resumeItem` count target: **≤ 13** (including stack lines, education, and project bullets). **Empirically, 14+ overflows to a second page**. Count is a weak proxy, so budget by **words**: the renderer prints the total bullet words after each render. Aim for about 280 bullet words on one page. Run `python3 tools/lint_bank.py --words` to see each bullet's length. Any bullet over 30 words wraps to 3 or more lines; when space is tight, swap it for the `-compact` version in its `variant_group`. The `*-stack` bullets are about 2 visual lines each.
 
 ### Bullet anti-patterns — default avoid list
 
@@ -193,27 +205,28 @@ Present the shortlist as a markdown table, then **wait for user approval or edit
 
 Also propose:
 
-- A **2–3 sentence `profile` paragraph** (≤ ~50 words) that mirrors the ad's vocabulary and culture signals. Adapt the master profile in `cv/main.tex` — do not rewrite from scratch. Cut filler ("Motivated by…") if it doesn't directly mirror the ad.
+- A **2–3 sentence `profile` paragraph** (≤ ~50 words) that mirrors the ad's vocabulary and culture signals. Adapt the master profile in `cv/master.yml` — do not rewrite from scratch. Cut filler ("Motivated by…") if it doesn't directly mirror the ad.
 
   **Profile YoE structure — follow this pattern exactly:**
 
   ```
-  Sentence 1: "Junior Software Engineer and Highest Achieving Graduate in Computer Science
-               with 1+ year of commercial experience [general description of work nature]."
+  Sentence 1: "<experience[0].title> and Highest Achieving Graduate in Computer Science
+               with <YoE> of commercial experience [general description of work nature]."
   Sentence 2: "Hands-on in [skill A], [skill B], and [skill C], with [outcome pattern]."
   ```
 
-  - Sentence 1 uses the YoE qualifier with a **general** work description only ("building and supporting production systems", "across fullstack and backend engineering"). Never attach a role-specific domain here — the 1+ year spans both CSIRO and SONIQ, which covered different things.
+  - **Compute `<YoE>` from role dates on every run.** Sum the whole months of every `experience[]` entry using each bank's `role.start` / `role.end` (no `end` = today). Under 24 months: "nearly 2 years". 24 to 35: "2+ years". 36 to 47: "3+ years". Never round up. Example: CSIRO Mar 2024 to Jun 2025 (16) + SONIQ Feb 2026 to Oct 2026 (9) = 25 months, so "2+ years". Canonical (from Nov 2026) adds to this.
+  - Sentence 1 uses the YoE qualifier with a **general** work description only ("building and supporting production systems", "across fullstack and backend engineering"). Never attach a role-specific domain here. The YoE spans several roles, which covered different things.
   - Sentence 2 carries the **role-specific** technical vocabulary without a duration claim. Skills named here must appear in at least one bullet from each role or both stack lines — not just one role.
-  - Bad: `"1+ year of commercial experience in cloud-native infrastructure and CI/CD"` (falsely implies both roles covered this)
-  - Good: `"1+ year of commercial experience building and supporting production systems. Hands-on in Python, Docker, and CI/CD automation…"`
+  - Bad: `"2+ years of commercial experience in cloud-native infrastructure and CI/CD"` (falsely implies every role covered this)
+  - Good: `"2+ years of commercial experience building and supporting production systems. Hands-on in Python, Docker, and CI/CD automation…"`
 - A **reordered, pruned `skills` block** (structured YAML): keep the master's structure, move ad-relevant categories to the top, and **drop categories that would be noise** for this role. Better to have 3 dense lines than 6 thin ones.
 
 ### 4. Write the spec
 
 Slugify the company: lowercase, dashes, ASCII only (e.g. `Conserve It` → `conserve-it`).
 
-Write to `job-ads/<slug>/spec.yml` using the schema from `job-ads/_example/spec.yml`. Required keys:
+Write to `job-ads/<slug>/spec.yml` using the schema from `job-ads/_example/spec.yml`. Role headings (title, employer, dates, location) come from each bank's `role:` block, so an experience entry needs only `bank` and `bullets`. Add a field only to override it. Required keys:
 
 ```yaml
 company: ...
@@ -223,30 +236,26 @@ date_saved: YYYY-MM-DD
 ad_raw: |
   <verbatim paste of the ad>
 keywords: [...]
+basic_qualifications: [...]   # the ad's exact phrases; used for the coverage table
+page_mode: one                # one | two (see "page_mode")
 section_order:         # optional; defaults to [profile, experience, projects, skills, education].
   - profile
   - experience
   - projects
   - skills
   - education
-education_bullets:     # ALWAYS set explicitly — never leave unset (unset defaults to all 3).
+education_bullets:     # ALWAYS set explicitly so the choice is visible in the spec.
   - Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.
   # Only add the database-paper line when database/schema/sql are ad keywords.
   # Never include the scholarship line for engineering roles.
 profile: >-
   <3-sentence tailored profile>
-experience:
+experience:             # newest first; headings come from bullet-bank/<bank>.yml role:
+  - bank: canonical
+    bullets: [canonical-overview]
   - bank: soniq
-    title: Junior Software Engineer
-    dates: Feb 2026 -- Present
-    employer: SONIQ Digital
-    location: Richmond, VIC
     bullets: [..., soniq-stack]
   - bank: csiro
-    title: Software Engineering Intern / Casual Software Engineer
-    dates: Mar 2024 -- Jun 2025
-    employer: CSIRO
-    location: Clayton, VIC
     bullets: [..., csiro-stack]
 projects:
   - id: <project-id>
@@ -254,7 +263,11 @@ projects:
 skills:
   - category: <Category>
     items: [<item1>, <item2>]
+referees:              # optional; only when the ad or portal asks for named referees
+  - { name: ..., title: ..., organisation: ..., email: ..., relationship: ... }
 ```
+
+**Referees.** Default: no Referees section (AU convention is "available on request"). Add `referees` and put `referees` in `section_order` only when the ad or portal asks for named referees (universities, public sector). Ask the user for the referee details; keep two ready, at least one based in Australia.
 
 If `job-ads/<slug>/spec.yml` already exists, **do not overwrite without confirmation** — show a diff summary first.
 
@@ -266,15 +279,17 @@ Prefer the one-shot script:
 tools/compile.sh job-ads/<slug>/spec.yml
 ```
 
-This renders `job-ads/<slug>/spec.yml` → `outputs/<slug>/cv.tex`, compiles to
-`outputs/<slug>/cv.pdf` via Tectonic, and prints a page-count warning if
-> 1 page. Surface any `warn:` lines from stderr to the user (typically: a
-referenced bullet ID is missing).
+This lints the bank, renders `job-ads/<slug>/spec.yml` → `outputs/<slug>/cv.tex`,
+compiles to `outputs/<slug>/cv.pdf` (A4) via Tectonic, warns if the page count
+exceeds `page_mode`, and checks the PDF text layer with `pdftotext`. Surface
+every `warn:` and `error:` line to the user. Renderer warnings cover notes on
+selected bullets, unbacked skills items, overused keywords, repeated opening
+verbs, more than 2 bullets from one story, and em dashes.
 
 If `tools/compile.sh` isn't available or fails, fall back to:
 
 ```bash
-.venv/bin/python tools/render_tailored.py job-ads/<slug>/spec.yml
+python3 tools/render_tailored.py job-ads/<slug>/spec.yml
 tectonic outputs/<slug>/cv.tex --outdir outputs
 # or, if Tectonic isn't installed:
 latexmk -pdf -outdir=outputs outputs/<slug>/cv.tex
@@ -284,7 +299,7 @@ If no LaTeX toolchain is on PATH, tell the user to `brew install tectonic` but d
 
 When you cannot compile, apply a **conservative heuristic** to estimate one-page fit before handing off:
 
-- Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 13** (14+ has been observed to overflow). Beware: long bullets count as multiple visual lines — see the "Heavy bullets" list above.
+- Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 13** (14+ has been observed to overflow). Long bullets count as multiple visual lines; use the word totals the renderer prints.
 - Sum of words across all `text` fields in the spec should be **≤ ~280**.
 - `profile` paragraph should be **≤ 50 words**.
 - `skills` block should have **≤ 5 category lines**.
@@ -324,7 +339,7 @@ Each tweak should be a small edit to `job-ads/<slug>/spec.yml` followed by a re-
 ## Constraints
 
 - Never invent bullets. Only IDs that exist in the bank may appear in `experience[*].bullets` or `projects[*].bullets`.
-- Never modify `cv/main.tex` from this skill. If the user wants a master-CV change, switch to the `add-bullet` skill.
+- Never modify `cv/master.yml` from this skill. If the user wants a master-CV change, switch to the `add-bullet` skill.
 - Never include confidential content (see `BOUNDARIES.md`).
 - The renderer normalises whitespace inside `text` automatically — multi-line YAML scalars are fine.
 

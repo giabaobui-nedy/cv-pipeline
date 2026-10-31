@@ -7,11 +7,13 @@
 #   tools/compile.sh job-ads/<slug>/spec.yml --cv   # CV only
 #   tools/compile.sh job-ads/<slug>/spec.yml --cover # cover letter only
 #   tools/compile.sh outputs/<slug>/cv.tex          # compile-only
-#   tools/compile.sh master                         # compile cv/main.tex
+#   tools/compile.sh master                         # render + compile cv/master.yml (whole bank)
 #
 # Outputs land in outputs/<slug>/{cv,cover}.{tex,pdf}.
+# Page limit comes from the spec's page_mode: one (default), two, or master (no limit).
 #
-# Requires: .venv/ with PyYAML, and `tectonic` on PATH.
+# Requires: PyYAML + pypdf (.venv/ if present, else python3), `tectonic`, and
+# `pdftotext` (poppler) for the text-layer check.
 
 set -euo pipefail
 
@@ -31,6 +33,40 @@ fi
 target="$1"
 mode="${2:-both}"   # both | cv-only | cover-only
 
+PY=python3
+[[ -x .venv/bin/python ]] && PY=.venv/bin/python
+
+# Page limit for the CV being compiled; set from the spec before compile_tex runs.
+max_pages=1
+
+page_limit() {
+  "$PY" -c "import sys,yaml; m=(yaml.safe_load(open(sys.argv[1])) or {}).get('page_mode','one'); print({'one':1,'two':2,'master':0}.get(m,1))" "$1"
+}
+
+# ATS parsers read the PDF text layer, so check it the way they see it.
+check_text_layer() {
+  local pdf="$1"
+  if ! command -v pdftotext >/dev/null 2>&1; then
+    echo "  note: pdftotext not found (brew install poppler); text-layer check skipped" >&2
+    return 0
+  fi
+  local txt
+  txt="$(pdftotext -enc UTF-8 "$pdf" - 2>/dev/null)"
+  local problems=()
+  printf '%s' "$txt" | grep -qi "gia bao bui" || problems+=("name not found in extracted text")
+  if [[ "$(basename "$pdf")" == cv.pdf ]]; then
+    [[ "$txt" == *"Experience"* || "$txt" == *"EXPERIENCE"* ]] || problems+=("Experience heading not extractable")
+  fi
+  if printf '%s' "$txt" | LC_ALL=C grep -q $'\xef\xac[\x80-\x86]'; then problems+=("ligature glyphs (fi/fl) in text layer"); fi
+  if printf '%s' "$txt" | grep -q '(cid:'; then problems+=("unmapped glyphs (cid:) in text layer"); fi
+  if (( ${#problems[@]} )); then
+    printf '  error: text layer check failed for %s:\n' "$(basename "$pdf")" >&2
+    printf '    - %s\n' "${problems[@]}" >&2
+    return 1
+  fi
+  echo "  text layer ok ($(printf '%s' "$txt" | wc -w | tr -d ' ') words extractable)"
+}
+
 compile_tex() {
   local tex="$1"
   local outdir
@@ -40,24 +76,24 @@ compile_tex() {
   local pdf="${tex%.tex}.pdf"
   local log="${tex%.tex}.log"
   if [[ -f "$pdf" ]]; then
-    local pages="?"
-    if [[ -x .venv/bin/python ]]; then
-      pages=$(.venv/bin/python -c "import sys; from pypdf import PdfReader; print(len(PdfReader(sys.argv[1]).pages))" "$pdf" 2>/dev/null || echo "?")
-    fi
+    local pages
+    pages=$("$PY" -c "import sys; from pypdf import PdfReader; print(len(PdfReader(sys.argv[1]).pages))" "$pdf" 2>/dev/null || echo "?")
     local size
     size=$(du -h "$pdf" | cut -f1)
     echo "wrote $pdf (${pages} pages, ${size})"
-    if [[ "$pages" != "?" && "$pages" -gt 1 \
-          && "$tex" != *_master* ]]; then
-      echo "  warning: $(basename "$pdf") is ${pages} pages — target is 1 page." >&2
+    if [[ "$pages" != "?" && "$max_pages" -gt 0 && "$pages" -gt "$max_pages" ]]; then
+      echo "  warning: $(basename "$pdf") is ${pages} pages; target is ${max_pages}." >&2
       echo "  edit the spec in job-ads/<slug>/ to trim, then re-run." >&2
     fi
+    check_text_layer "$pdf"
   fi
 }
 
+"$PY" tools/lint_bank.py >/dev/null || { "$PY" tools/lint_bank.py | grep '^error' >&2; exit 65; }
+
 if [[ "$target" == "master" ]]; then
-  mkdir -p outputs/_master
-  cp cv/main.tex outputs/_master/cv.tex
+  max_pages=0
+  "$PY" tools/render_tailored.py cv/master.yml -o outputs/_master/cv.tex
   compile_tex "outputs/_master/cv.tex"
   exit 0
 fi
@@ -92,12 +128,14 @@ case "$mode" in
 esac
 
 if [[ "$do_cv" == 1 ]]; then
-  .venv/bin/python tools/render_tailored.py "$target"
+  max_pages="$(page_limit "$target")"
+  "$PY" tools/render_tailored.py "$target"
   compile_tex "outputs/${slug}/cv.tex"
 fi
 
 if [[ "$do_cover" == 1 ]]; then
-  if .venv/bin/python tools/render_cover_letter.py "$target" 2>/tmp/cover_render.err; then
+  if "$PY" tools/render_cover_letter.py "$target" 2>/tmp/cover_render.err; then
+    max_pages=1
     compile_tex "outputs/${slug}/cover.tex"
   else
     rc=$?

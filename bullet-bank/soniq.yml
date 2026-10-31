@@ -1,10 +1,12 @@
-# SONIQ Digital — Bullet Bank
-# Role: Junior Software Engineer, Feb 2026 – Present, Richmond VIC.
-#
-# Each entry has:
-#   id    — stable identifier referenced from job-ad specs
-#   tags  — free-form theme tags, used to grep relevant bullets per ad
-#   text  — LaTeX-ready content (goes inside \resumeItem{...})
+# SONIQ Digital bullet bank. Field reference: bullet-bank/README.md.
+
+role:
+  title: Junior Software Engineer
+  employer: SONIQ Digital
+  dates: Feb 2026 -- Oct 2026
+  start: 2026-02
+  end: 2026-10
+  location: Richmond, VIC
 
 bullets:
   - id: soniq-overview
@@ -29,7 +31,7 @@ bullets:
       from one shared spec.
 
   - id: soniq-media-transcoding
-    tags: [backend, media, pipeline, optimization, legacy]
+    tags: [backend, media, data-pipeline, optimisation, legacy]
     text: >-
       Automated 4K-to-Full-HD transcoding for a legacy CMS by building a media pipeline, so client
       uploads play back correctly and less video data ships to each site.
@@ -41,6 +43,7 @@ bullets:
       size and no longer carry duplicated CSS.
 
   - id: soniq-aws-analysis-ts-migration
+    story: ts-migration
     tags: [aws, typescript, migration, architecture, analysis]
     text: >-
       Unblocked a large TypeScript migration (.js $\rightarrow$ .ts, .jsx $\rightarrow$ .tsx) that
@@ -109,14 +112,23 @@ bullets:
       Lambda service, taking manual handling out of the customer feedback loop.
 
   - id: soniq-cost-optimisation
+    story: env-scheduler
+    env: [dev, staging]
+    metric:
+      source: AWS Cost Explorer monthly CSVs (dev, staging, 2026-09-11) and daily audit 2026-10-04; Jira CBE-134, CBE-151, CBE-415
+      baseline: daily spend before the scheduler (staging Mar 2026; dev Mar to 11 Apr 2026)
+      window: staging from 1 Apr 2026; dev weeknights from 12 Apr, weekends from 15 Aug 2026
+      note: dev ~15% adds two audited savings (weeknights -7%, weekend fix); staging 30% is per-day, Apr vs Mar
     tags: [aws, lambda, eventbridge, serverless, cost, impact-metric]
     text: >-
-      Cut development costs by \textbf{$\sim$20\%} and staging costs by \textbf{33\%}, by building
+      Cut staging costs by \textbf{30\%} and development costs by \textbf{$\sim$15\%}, by building
       an event-driven scheduling service (AWS Lambda + EventBridge) that shuts non-production
-      environments down overnight and at weekends, and by fixing a cron bug that had left weekends
-      running around the clock.
+      environments down overnight and at weekends, and by fixing a cron bug that had left dev
+      running every weekend.
 
   - id: soniq-ts-frontend-architecture
+    variant_group: ts-frontend-architecture
+    story: ts-migration
     tags:
       [
         typescript,
@@ -136,8 +148,9 @@ bullets:
       $\rightarrow$ state hook).
 
   - id: soniq-architectural-validation
+    ai_framing: user
     status: outdated
-    tags: [tooling, architecture, quality, ai-assisted, tradeoff]
+    tags: [tooling, architecture, code-quality, ai-assisted, tradeoff]
     note: >-
       Superseded by the move to centralise enforcement in ESLint. Do not select for new specs
       unless the role specifically rewards judgement about when NOT to enforce a rule.
@@ -147,6 +160,7 @@ bullets:
       moving, rather than freezing rules that would have churned every refactor.
 
   - id: soniq-shopify-eventbridge
+    story: shopify-trial
     tags: [aws, eventbridge, sqs, event-driven, integration, saas, onboarding]
     text: >-
       Wired Shopify webhooks into internal microservices (EventBridge + SQS) so a hardware
@@ -154,6 +168,7 @@ bullets:
       and using the software.
 
   - id: soniq-shopify-trial-requirements
+    story: shopify-trial
     tags:
       [
         requirements,
@@ -171,6 +186,7 @@ bullets:
       the scope and the UX limits of a Shopify-to-CMS trial activation system.
 
   - id: soniq-stripe-trial-activation
+    story: shopify-trial
     tags:
       [stripe, backend, billing, saas, entitlement, integration, reliability]
     text: >-
@@ -179,6 +195,8 @@ bullets:
       stop a duplicate Stripe customer being created between signup and activation.
 
   - id: soniq-activation-claim-page
+    story: shopify-trial
+    env: [dev]
     tags: [frontend, react, ux, ui, fullstack, saas, onboarding]
     text: >-
       Turned a Shopify hardware purchase into an active CMS Business Tier trial in one email-driven
@@ -187,13 +205,16 @@ bullets:
       development environment.
 
   - id: soniq-claude-code-jira
-    tags: [ai-assisted, agentic, tooling, jira, coordination, planning]
+    ai_framing: user
+    tags: [ai-assisted, tooling, jira, coordination, planning]
     text: >-
       Translated decisions from engineering discussions into PR-ready plans with ordered Jira tasks
       and delivery dates, using Claude Code with Jira MCP connectors, so the reasoning behind each
       decision stayed attached to the work.
 
   - id: soniq-event-propagation-debug
+    variant_group: event-propagation-debug
+    env: [dev]
     note: >-
       Corrected by user 2026-09-16: the break was caught in the development environment and never
       reached production. Never describe it as a production incident.
@@ -208,6 +229,8 @@ bullets:
       consumer with no old event shape left behind.
 
   - id: soniq-event-propagation-debug-compact
+    variant_group: event-propagation-debug
+    env: [dev]
     note: >-
       Corrected by user 2026-09-16: the break was caught in the development environment and never
       reached production. Never describe it as a production incident.
@@ -228,6 +251,8 @@ bullets:
       was checked against every consumer.
 
   - id: soniq-event-propagation-debug-versioning
+    variant_group: event-propagation-debug
+    env: [dev]
     note: >-
       Corrected by user 2026-09-16: the break was caught in the development environment and never
       reached production. Never describe it as a production incident.
@@ -250,6 +275,8 @@ bullets:
       that needs explicit versioning.
 
   - id: soniq-device-grouping
+    variant_group: device-grouping
+    ai_framing: user
     tags:
       [
         fullstack,
@@ -268,6 +295,7 @@ bullets:
       contextual action bars, multi-select, and a React Table device grid.
 
   - id: soniq-fallback-content
+    variant_group: fallback-content
     tags: [backend, frontend, react, fastapi, scheduling, saas, reliability]
     text: >-
       Kept screens from going blank when schedules overlap or run out, by replacing server-side
@@ -276,6 +304,7 @@ bullets:
       with an explanatory banner, and a soft warning on overlapping events.
 
   - id: soniq-frontend-design-system
+    story: design-system
     tags:
       [
         frontend,
@@ -301,6 +330,13 @@ bullets:
       rounds of client and management feedback.
 
   - id: soniq-outbox-pipeline-migration
+    variant_group: outbox-pipeline-migration
+    story: outbox
+    env: [dev, staging, prod]
+    metric:
+      source: AWS Cost Explorer monthly CSVs (dev, staging, prod, 2026-09-11)
+      baseline: prod daily spend Jun 2026; combined bill May 2026 for the 40% share
+      window: Jul 2026 (cutover dev 24 Jun, staging 2 Jul, prod 3 Jul)
     tags:
       [
         aws,
@@ -316,14 +352,26 @@ bullets:
       Re-architected the transactional-outbox pipeline across three environments, replacing a
       managed DMS $\rightarrow$ Kinesis $\rightarrow$ Lambda fan-out with a small poller running
       on each microservice's already-underused Fargate task that publishes straight to EventBridge.
-      This removed the recurring DMS and Kinesis spend entirely and cut total cloud cost by
-      \textbf{$\sim$26\%} month-over-month (trending to $\sim$40\% once the teardown finished).
+      This removed the DMS and Kinesis spend entirely (about \textbf{40\%} of the combined bill
+      across three environments) and cut production cost by \textbf{26\%} in the first full month.
 
   - id: soniq-outbox-index-tuning
+    variant_group: outbox-index
+    story: outbox
+    env: [dev]
+    note: >-
+      Dev regression ran 19 Jun to 31 Jul 2026. A teammate's pagination-index PR landed on dev
+      first and ended it; the user diagnosed the cause (CBE-399), shipped the outbox index to the
+      other services and ran VACUUM FULL (CBE-403). Wording "found the cause and implemented an
+      index to solve it" is user-approved; be ready to explain the teammate's PR in interview.
+    metric:
+      source: AWS Cost Explorer dev RDS daily spend; Jira CBE-399, CBE-403
+      baseline: dev RDS daily spend before 19 Jun 2026 (1.97x during the regression)
+      window: 19 Jun to 31 Jul 2026
     tags:
       [
         database,
-        postgres,
+        postgresql,
         aurora,
         query-optimisation,
         data-modelling,
@@ -339,10 +387,22 @@ bullets:
       table from 1.7\,GB to 24\,kB.
 
   - id: soniq-outbox-index-tuning-compact
+    variant_group: outbox-index
+    story: outbox
+    env: [dev]
+    note: >-
+      Dev regression ran 19 Jun to 31 Jul 2026. A teammate's pagination-index PR landed on dev
+      first and ended it; the user diagnosed the cause (CBE-399), shipped the outbox index to the
+      other services and ran VACUUM FULL (CBE-403). Wording "found the cause and implemented an
+      index to solve it" is user-approved; be ready to explain the teammate's PR in interview.
+    metric:
+      source: AWS Cost Explorer dev RDS daily spend; Jira CBE-399
+      baseline: dev RDS daily spend before 19 Jun 2026
+      window: 19 Jun to 31 Jul 2026
     tags:
       [
         database,
-        postgres,
+        postgresql,
         aurora,
         query-optimisation,
         performance,
@@ -355,6 +415,7 @@ bullets:
       to solve it.
 
   - id: soniq-outbox-shared-library-rollout
+    story: outbox
     tags:
       [
         aws,
@@ -373,6 +434,12 @@ bullets:
       size while production kept its capacity.
 
   - id: soniq-styling-migration
+    variant_group: styling-migration
+    story: design-system
+    note: >-
+      History is accurate as written. Another engineer later replaced check-styling with one
+      ESLint colour rule plus a suppressions file (CCF-460, Jul 2026). The page-by-page burn-down
+      of those suppressions is soniq-page-ui-standardisation.
     tags:
       [
         frontend,
@@ -393,6 +460,8 @@ bullets:
       the friction for the next.
 
   - id: soniq-component-consolidation
+    variant_group: component-consolidation
+    story: design-system
     tags:
       [frontend, react, architecture, refactoring, design-system, code-quality]
     text: >-
@@ -442,6 +511,9 @@ bullets:
       the calendar grid instead of only through the event dialog.
 
   - id: soniq-media-library-rebuild
+    variant_group: media-library-rebuild
+    metric:
+      source: unverified (confirm the 75s / 28-request end-to-end test run)
     tags: [frontend, react, performance, debugging, ux, impact-metric]
     text: >-
       Diagnosed an N+1 request pattern on the media root and dashboard: 14 folders triggered 15
@@ -452,6 +524,11 @@ bullets:
       browsing by content type as an explicit opt-in mode instead of the old first-load fan-out.
 
   - id: soniq-ui-consistency-cleanup
+    story: design-system
+    status: outdated
+    note: >-
+      Superseded 2026-10-16 by soniq-page-ui-standardisation, which covers the same effort at
+      page scale. Do not select for new specs.
     tags: [frontend, react, ui, design-system, refactoring]
     text: >-
       Continued the design-system consistency effort past the styling-token migration:
@@ -460,6 +537,13 @@ bullets:
       with consistent copy.
 
   - id: soniq-legacy-migration-cli
+    variant_group: legacy-migration-cli
+    ownership: owned
+    env: [staging]
+    ai_framing: user
+    metric:
+      source: Jira CGI-27; the user's staging runs; Vitest suite count
+      baseline: none (no manual baseline exists; never claim time saved)
     tags:
       [
         typescript,
@@ -467,8 +551,6 @@ bullets:
         migration,
         automation,
         testing,
-        api,
-        integration,
         data-pipeline,
         ai-assisted,
         impact-metric,
@@ -486,6 +568,13 @@ bullets:
       hour each, and \textbf{189} Vitest tests cover it.
 
   - id: soniq-legacy-migration-cli-compact
+    variant_group: legacy-migration-cli
+    ownership: owned
+    env: [staging]
+    ai_framing: user
+    metric:
+      source: Jira CGI-27; the user's staging runs; Vitest suite count
+      baseline: none (no manual baseline exists; never claim time saved)
     tags:
       [
         typescript,
@@ -502,6 +591,11 @@ bullets:
       10\,GB} enterprise accounts in about an hour each.
 
   - id: soniq-migration-throttling-diagnosis
+    variant_group: migration-throttling-diagnosis
+    ownership: contributed
+    env: [staging]
+    metric:
+      source: Jira CBE-429 (30 of 1,153 videos stuck)
     tags:
       [
         debugging,
@@ -511,6 +605,7 @@ bullets:
         incident-response,
         event-driven,
         reliability,
+        impact-metric,
       ]
     note: >-
       CBE-429. Another engineer shipped the media-worker fix; the user diagnosed, filed, and added
@@ -530,18 +625,25 @@ bullets:
         nestjs,
         python,
         fastapi,
+        go,
         aws,
         docker,
         ci-cd,
         tailwind,
         vite,
+        postgresql,
+        cdk,
+        terraform,
+        playwright,
+        testing,
       ]
     text: >-
-      \textbf{Stack:} \emph{TypeScript, React, Tailwind CSS, Vite, NestJS, Python (FastAPI), AWS,
-      Docker, Git/GitHub, CI/CD, GitHub Actions.}
+      \textbf{Stack:} \emph{TypeScript, React, Tailwind CSS, Vite, NestJS, Python (FastAPI), Go,
+      PostgreSQL (Aurora), AWS, AWS CDK, Terraform, Docker, Playwright, Vitest, Git, CI/CD (GitHub
+      Actions).}
 
   - id: soniq-iac-cdk-terraform
-    tags: [aws, iac, cdk, terraform, eventbridge, infrastructure-as-code]
+    tags: [aws, iac, cdk, terraform, eventbridge]
     note: >-
       Confirmed by user 2026-09-13: wrote the scheduler CDK stack and the Shopify EventBridge
       Terraform, and tore down the DMS/Kinesis CDK stacks during the outbox re-architecture.
@@ -551,3 +653,183 @@ bullets:
       scheduler (Lambda + EventBridge) as its own CDK stack, wrote the Terraform for the Shopify
       integration's EventBridge resources, and tore down the CDK stacks behind a retired
       DMS $\rightarrow$ Kinesis pipeline.
+
+  - id: soniq-go-migration
+    variant_group: go-migration
+    ownership: co-built
+    ai_framing: user
+    metric:
+      source: OpenAPI operation counts in the device and media specs (CBE-431, CBE-437)
+    note: >-
+      CBE-431 epic. Another engineer initiated the project and set its direction, then delegated
+      execution to the user; they collaborate on it. Never write "led" or "initiated". Device
+      (CBE-437) is Done but the prod cutover is not verified, so never claim it runs in production.
+      IAM and billing are assigned to the other engineer.
+    tags:
+      [
+        go,
+        migration,
+        microservices,
+        architecture,
+        openapi,
+        ai-assisted,
+        collaboration,
+        impact-metric,
+      ]
+    text: >-
+      Carried out the step-by-step migration of four backend microservices to Go against one shared
+      OpenAPI contract, with the engineer who initiated it: mapped each service's architecture onto
+      Go layers in written plans, a v1-to-v2 route map and agent context for AI-assisted
+      development, then completed the device service (\textbf{28} operations) as the template the
+      other three copy, with media (\textbf{42} operations) in progress.
+
+  - id: soniq-go-codegen-guardrails
+    variant_group: go-codegen-guardrails
+    ownership: co-built
+    note: >-
+      User wrote the ogen, sqlc and buf configs and most of tools/archcheck (CBE-437, CBE-455).
+      The other engineer built the sqlc repositories and unit of work on top.
+    tags: [go, openapi, codegen, testing, ci-cd, architecture, code-quality]
+    text: >-
+      Made the API contract a compile-time check in the Go migration by generating server
+      interfaces and a typed test client from the OpenAPI spec (ogen) and the data layer from SQL
+      (sqlc), so a missing handler fails the build, and wrote an architecture checker that rejects
+      any handler shipped without a test.
+
+  - id: soniq-page-ui-standardisation
+    variant_group: page-ui-standardisation
+    story: design-system
+    metric:
+      source: Jira CCF-352 ticket counts plus the suppressions file on main (see note)
+    note: >-
+      CCF-352. User authored the page PRs for dashboard, account-settings, billing, accounts,
+      devices, media, workspaces, auth, the small-pages bundle, schedules list and schedule editor
+      (11). Schedules list and editor were still in Testing on 2026-10-16, so the text says 10+.
+      1,000+ = 707 pruned by the first five pages (ticket counts) plus 1,147 to 825 on main since.
+    tags:
+      [frontend, react, design-system, refactoring, code-quality, ui, impact-metric]
+    text: >-
+      Moved \textbf{10+} pages of a production React app (billing, devices, media, schedule editor
+      and others) onto shared base components one page per PR, replacing ad-hoc definitions and
+      pruning over \textbf{1,000} raw-colour lint suppressions, and extracted a new shared component
+      only when a page showed a third call site.
+
+  - id: soniq-media-library-rebuild-compact
+    variant_group: media-library-rebuild
+    metric:
+      source: unverified (confirm the 75s / 28-request end-to-end test run)
+    tags: [frontend, react, performance, debugging, ux, impact-metric]
+    text: >-
+      Fixed an N+1 request pattern that made one media-library test spend \textbf{75s} on 28
+      requests, by switching to per-directory and per-ID reads, then rebuilt the page as a
+      Drive-style file browser.
+
+  - id: soniq-styling-migration-compact
+    variant_group: styling-migration
+    story: design-system
+    tags: [frontend, react, design-system, refactoring, tooling, code-quality, ci-cd]
+    text: >-
+      Led a production React app's move from ad-hoc styling to a central token system, writing a
+      custom lint guard that shipped advisory-first so CI stayed green during the feature-by-feature
+      cleanup.
+
+  - id: soniq-go-migration-compact
+    variant_group: go-migration
+    ownership: co-built
+    ai_framing: user
+    note: >-
+      CBE-431 epic. Another engineer initiated the project and set its direction, then delegated
+      execution to the user; they collaborate on it. Never write "led" or "initiated". Device
+      (CBE-437) is Done but the prod cutover is not verified, so never claim it runs in production.
+      IAM and billing are assigned to the other engineer.
+    metric:
+      source: OpenAPI operation counts in the device spec (CBE-437)
+    tags: [go, migration, microservices, openapi, collaboration, impact-metric]
+    text: >-
+      Migrated backend microservices to Go against a shared OpenAPI contract with the engineer who
+      initiated the project, completing the device service (\textbf{28} operations) as the template
+      for the other three.
+
+  - id: soniq-outbox-pipeline-migration-compact
+    variant_group: outbox-pipeline-migration
+    story: outbox
+    env: [dev, staging, prod]
+    metric:
+      source: AWS Cost Explorer monthly CSVs (dev, staging, prod, 2026-09-11)
+      baseline: prod daily spend Jun 2026; combined bill May 2026 for the 40% share
+      window: Jul 2026
+    tags: [aws, eventbridge, fargate, event-driven, cost, impact-metric]
+    text: >-
+      Replaced a DMS $\rightarrow$ Kinesis $\rightarrow$ Lambda outbox pipeline with a poller on
+      existing Fargate tasks publishing to EventBridge, which removed DMS and Kinesis spend (about
+      \textbf{40\%} of the combined bill) and cut production cost by \textbf{26\%}.
+
+  - id: soniq-device-grouping-compact
+    variant_group: device-grouping
+    ai_framing: user
+    tags: [fullstack, react, fastapi, typescript, feature-delivery]
+    text: >-
+      Shipped device grouping end to end, from a FastAPI group field and bulk assign APIs to the
+      React filter rail, multi-select and device grid, so users manage devices in bulk.
+
+  - id: soniq-migration-throttling-diagnosis-compact
+    variant_group: migration-throttling-diagnosis
+    ownership: contributed
+    env: [staging]
+    note: >-
+      CBE-429. Another engineer shipped the media-worker fix; the user diagnosed, filed, and added
+      the pacing workaround in the migration CLI. Staging, not production.
+    metric:
+      source: Jira CBE-429 (30 of 1,153 videos stuck)
+    tags: [debugging, aws, sqs, observability, reliability, impact-metric]
+    text: >-
+      Traced why 30 of \textbf{1,153} videos stuck in processing during a staging migration to an
+      uncached endpoint lookup throttled by upload bursts, filed the fix, and paced uploads so the
+      migration could continue.
+
+  - id: soniq-go-codegen-guardrails-compact
+    variant_group: go-codegen-guardrails
+    ownership: co-built
+    note: >-
+      User wrote the ogen, sqlc and buf configs and most of tools/archcheck (CBE-437, CBE-455).
+      The other engineer built the sqlc repositories and unit of work on top.
+    tags: [go, openapi, codegen, ci-cd, code-quality]
+    text: >-
+      Made the Go migration's API contract a compile-time check by generating server interfaces and
+      a typed client from OpenAPI (ogen) and data access from SQL (sqlc).
+
+  - id: soniq-component-consolidation-compact
+    variant_group: component-consolidation
+    story: design-system
+    tags: [frontend, react, architecture, refactoring, design-system]
+    text: >-
+      Merged two parallel React component libraries into one layered hierarchy, retiring six
+      duplicated components across $\sim$80 files without behaviour changes, then enforced the
+      layering as ESLint errors.
+
+  - id: soniq-page-ui-standardisation-compact
+    variant_group: page-ui-standardisation
+    story: design-system
+    note: >-
+      CCF-352. Schedules list and editor were still in Testing on 2026-10-16, so the text says 10+.
+    metric:
+      source: Jira CCF-352 ticket counts plus the suppressions file on main
+    tags: [frontend, react, design-system, refactoring, code-quality, impact-metric]
+    text: >-
+      Moved \textbf{10+} pages of a production React app onto shared base components, one page per
+      PR, pruning over \textbf{1,000} raw-colour lint suppressions.
+
+  - id: soniq-fallback-content-compact
+    variant_group: fallback-content
+    tags: [backend, frontend, react, fastapi, scheduling, reliability]
+    text: >-
+      Kept screens from going blank when schedules overlap or run out, by building priority-based
+      playback resolution and a per-schedule fallback (FastAPI) plus the schedule editor UI.
+
+  - id: soniq-ts-frontend-architecture-compact
+    variant_group: ts-frontend-architecture
+    story: ts-migration
+    tags: [typescript, frontend, react, architecture, refactoring, state-management]
+    text: >-
+      Led a TypeScript migration of a React frontend, standardising Context providers for shared
+      state and a layered data flow from DTOs to TanStack hooks with strict type boundaries.

@@ -4,7 +4,14 @@
   "title": "CV Pipeline Job-Ad Spec",
   "type": "object",
   "additionalProperties": true,
-  "required": ["company", "role", "date_saved", "profile", "experience", "skills"],
+  "required": [
+    "company",
+    "role",
+    "date_saved",
+    "profile",
+    "experience",
+    "skills"
+  ],
   "properties": {
     "schema_version": {
       "type": "integer",
@@ -24,7 +31,12 @@
     },
     "review_status": {
       "type": "string",
-      "enum": ["draft", "reviewed", "submitted", "archived"]
+      "enum": [
+        "draft",
+        "reviewed",
+        "submitted",
+        "archived"
+      ]
     },
     "company": {
       "type": "string",
@@ -69,7 +81,14 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": ["profile", "experience", "projects", "skills", "education"]
+        "enum": [
+          "profile",
+          "experience",
+          "projects",
+          "skills",
+          "education",
+          "referees"
+        ]
       },
       "uniqueItems": true
     },
@@ -91,10 +110,17 @@
       }
     },
     "projects": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/project_selection"
-      }
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/project_selection"
+          }
+        },
+        {
+          "const": "all"
+        }
+      ]
     },
     "skills": {
       "oneOf": [
@@ -112,17 +138,76 @@
     "cover_letter": {
       "type": "object",
       "additionalProperties": true
+    },
+    "page_mode": {
+      "type": "string",
+      "enum": [
+        "one",
+        "two",
+        "master"
+      ],
+      "default": "one"
+    },
+    "basic_qualifications": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The ad's required items, as its exact phrases."
+    },
+    "preferred_qualifications": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "referees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "organisation": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "$defs": {
     "experience_role": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["bank", "title", "dates", "employer", "location", "bullets"],
+      "required": [
+        "bank",
+        "bullets"
+      ],
       "properties": {
         "bank": {
           "type": "string",
-          "enum": ["soniq", "csiro"]
+          "enum": [
+            "canonical",
+            "soniq",
+            "csiro"
+          ],
+          "description": "Role bank file stem in bullet-bank/. Title, dates, employer and location default to its role: block."
         },
         "title": {
           "type": "string"
@@ -137,17 +222,31 @@
           "type": "string"
         },
         "bullets": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "const": "all"
+            }
+          ]
+        },
+        "stack": {
+          "type": "string",
+          "description": "Extra stack line; use only when dropping the bank *-stack bullet."
         }
       }
     },
     "project_selection": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "bullets"],
+      "required": [
+        "id",
+        "bullets"
+      ],
       "properties": {
         "id": {
           "type": "string"
@@ -163,7 +262,10 @@
     "skill_category": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["category", "items"],
+      "required": [
+        "category",
+        "items"
+      ],
       "properties": {
         "category": {
           "type": "string",

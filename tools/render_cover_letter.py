@@ -10,6 +10,7 @@ If the spec has no `cover_letter` block, exits with code 2 (skipped, not an erro
 from __future__ import annotations
 
 import argparse
+import re
 import datetime as dt
 import sys
 from pathlib import Path
@@ -47,6 +48,33 @@ def render_recipient(cl: dict) -> str:
     return " \\\\\n".join(lines)
 
 
+PLACEHOLDER = re.compile(r"<[^>\n]{1,40}>|\[(?:company|role|name|team|product)[^\]]*\]|\{\{|\bTODO\b|\bTBD\b|lorem ipsum", re.I)
+CHATBOT = re.compile(r"\b(here is|here's (?:a|your)|certainly[,!]|as an ai|i hope this (?:helps|letter finds)|feel free to)\b", re.I)
+HIDDEN = re.compile(r"\\color\{white\}|\\textcolor\{white\}|\\phantom|\\tiny|\\scriptsize")
+
+
+def presend_problems(cl: dict, paragraphs: dict, used: list[str], company: str) -> list[str]:
+    """Blocking checks before a letter can be compiled."""
+    problems = []
+    body = " ".join(_normalise(paragraphs[k]) for k in used)
+    salutation = str(cl.get("salutation", ""))
+    if "whom it may concern" in salutation.lower():
+        problems.append("salutation 'To whom it may concern'; use a name or 'Dear Hiring Manager'")
+    for k in used:
+        text = str(paragraphs[k])
+        if PLACEHOLDER.search(text):
+            problems.append(f"{k}: unfilled placeholder '{PLACEHOLDER.search(text).group(0)}'")
+        if CHATBOT.search(text):
+            problems.append(f"{k}: chatbot phrasing '{CHATBOT.search(text).group(0)}'")
+        if HIDDEN.search(text):
+            problems.append(f"{k}: hidden or tiny text command")
+        if "---" in text or "\u2014" in text:
+            problems.append(f"{k}: em dash; rewrite with a comma or a full stop")
+    if company and company.lower() not in body.lower():
+        problems.append(f"the letter body never names '{company}'; check the company name")
+    return problems
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("spec", type=Path)
@@ -62,13 +90,18 @@ def main() -> None:
     template = TEMPLATE.read_text()
 
     paragraphs = cl.get("paragraphs", {})
-    required = ["hook", "technical_match", "values_fit", "forward", "close"]
+    required = ["hook", "technical_match", "values_fit", "close"]
     missing = [k for k in required if not paragraphs.get(k)]
     if missing:
         sys.exit(f"missing paragraphs: {missing}")
+    # `forward` is optional: Robert Half AU recommends four paragraphs, Hays AU caps at five.
+    used = [k for k in ("hook", "technical_match", "values_fit", "forward", "close") if paragraphs.get(k)]
 
     company = spec.get("company", "")
     cl_company = cl.get("company") or company
+    problems = presend_problems(cl, paragraphs, used, cl_company)
+    if problems:
+        sys.exit("pre-send check failed:\n  - " + "\n  - ".join(problems))
     cl_for_recipient = {**cl, "company": cl_company}
 
     letter_date = cl.get("date") or dt.date.today().strftime("%d %B %Y")
@@ -82,7 +115,8 @@ def main() -> None:
         .replace("{{PARAGRAPH_HOOK}}", _normalise(paragraphs["hook"]))
         .replace("{{PARAGRAPH_TECHNICAL}}", _normalise(paragraphs["technical_match"]))
         .replace("{{PARAGRAPH_VALUES}}", _normalise(paragraphs["values_fit"]))
-        .replace("{{PARAGRAPH_FORWARD}}", _normalise(paragraphs["forward"]))
+        .replace("{{PARAGRAPH_FORWARD}}\n\n", "")
+        .replace("{{PARAGRAPH_FORWARD}}", _normalise(paragraphs.get("forward", "")))
         .replace("{{PARAGRAPH_CLOSE}}", _normalise(paragraphs["close"]))
     )
 
@@ -93,7 +127,7 @@ def main() -> None:
     print(f"wrote {out_path}")
 
     # Word count guard: ≤ 350 across paragraphs (one-page hard limit).
-    total_words = sum(len(_normalise(paragraphs[k]).split()) for k in required)
+    total_words = sum(len(_normalise(paragraphs[k]).split()) for k in used)
     if total_words > 350:
         print(f"warn: cover letter is {total_words} words; trim to ≤ 350 for one page", file=sys.stderr)
 

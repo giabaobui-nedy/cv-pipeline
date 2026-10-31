@@ -55,11 +55,14 @@ default:
 
 | # | Rule | Common failure mode |
 |---|---|---|
-| C1 | **All six structural fields are required:** `recipient_name`, `salutation`, `tone`, `evidence.technical`, `evidence.values`, and all five `paragraphs` keys. | Models omit `tone` and `evidence`, making the output untraceable and the evidence anchor missing. |
+| C1 | **Required fields:** `recipient_name`, `salutation`, `tone`, `evidence.technical`, `evidence.values`, and the `hook`, `technical_match`, `values_fit` and `close` paragraphs. `forward` (P4) is optional: drop it for a four-paragraph letter. | Models omit `tone` and `evidence`, making the output untraceable and the evidence anchor missing. |
 | C2 | **`tone` must be one of the five named modes** (or `hybrid_warm_professional`). Never leave it blank — it is the traceability marker for future edits. | Left unset when models skip the tone-detection step. |
 | C3 | **Hook must not open with any banned phrase.** Run the hook self-check (see §5 P1) before writing. | "I'm excited by…", "I am writing to…", "I would like to apply…" still appear despite the ban list. |
 | C4 | **`evidence.technical` and `evidence.values` must be real bullet IDs from the bank.** The cover letter narrates these bullets — if the IDs are wrong the paragraphs will be incoherent. | Models use plausible-sounding but non-existent IDs. |
 | C5 | **Never copy a CV bullet verbatim into a paragraph.** The cover letter zooms into the story behind the bullet; it does not restate the bullet text. | P2 often just paraphrases the bullet text, adding no new depth. |
+| C6 | **Read each evidence bullet's `note`, `env` and `ownership` before drafting P2 and P3, and keep every claim inside them.** A note such as "dev only, never production" or "never write led" binds the letter as tightly as the CV. | The letter's story layer adds scope the bullet never claimed. |
+| C7 | **No em dashes.** Use commas or full stops. The renderer refuses a letter with one. (32% of US hiring managers name em dashes as an AI tell.) | Model drafts reach for em-dash asides. |
+| C8 | **Salutation order:** a named hiring manager, then a named recruiter, then "Dear Hiring Manager". Never "To whom it may concern" (the renderer refuses it). Take the name from the research file's "Ad facts" block. | Defaulting to a generic greeting when a name was findable. |
 
 ## Why this skill matters
 
@@ -94,7 +97,7 @@ candidate could have written it.
 
 - `BOUNDARIES.md`
 - `bullet-bank/{soniq,csiro,projects}.yml`
-- `cv/main.tex` (for the master profile paragraph as voice reference)
+- `cv/master.yml` (for the master profile paragraph as voice reference)
 - Existing `job-ads/<slug>/spec.yml` if present (so the cover letter mirrors any
   emphasis already chosen for the CV).
 
@@ -102,7 +105,7 @@ candidate could have written it.
 
 Cover letters live or die on specificity. The ad alone is rarely enough.
 
-**Preferred path: defer to the `research-company` skill.** If `job-ads/<slug>.research.md` already exists, read it and skip to step 3 — its "Synthesis — angles" table directly feeds paragraph design, and the "Tech stack" + "Project" layers anchor P1/P2/P4. Trust only findings marked *(confirmed)* or *(likely)*.
+**Preferred path: defer to the `research-company` skill.** If `job-ads/<slug>/research.md` already exists, read it and skip to step 3 — its "Synthesis — angles" table directly feeds paragraph design, and the "Tech stack" + "Project" layers anchor P1/P2/P4. Trust only findings marked *(confirmed)* or *(likely)*.
 
 If the file is missing, **invoke `research-company` first** rather than doing ad-hoc research inside this skill. The layered output is reusable across CV, cover letter, and interview prep — duplicating it inside write-cover-letter alone wastes context.
 
@@ -122,6 +125,8 @@ signals drove the choice:
 | `research_scientific` | `.gov.au`, `.edu.au`, university, CSIRO/Defence Science/CRC, words like "research", "rigour", "publication", "evidence" | Hedged claims, precise verbs, no hype language, evidence chain matters |
 | `consultancy_clientfacing` | "client", "engagement", "delivery", "stakeholders", "consulting", "advisory", "professional services" | Confident, outcome-language ("delivered", "shaped"), business-impact framing |
 | `mission_driven` | "mission", "impact", "for-purpose", climate/health/education/social, B-Corp, NFP | Connect personal motivation to mission, but always back with action not feeling |
+| `agency_recruiter` | The ad is posted by a recruitment agency (Hays, Robert Walters, Hudson, Talent, Michael Page) and the client is unnamed | 120–180 words, 3 paragraphs: the role match in one line, two evidence points with bullet IDs, availability. Written so the recruiter can forward it unchanged. No company hook, since the client is unknown. |
+| `public_sector_pitch` | APS or state government role asking for a "pitch" or selection-criteria response | Replaces the letter. Use the research file's public-sector format and its stated limit (often 1–2 pages or 750–1000 words). One STAR example per criterion, each tied to a bullet ID. The job information pack overrides these defaults. |
 
 If signals are mixed or the ad is too short to classify, default to **`hybrid_warm_professional`** — a polite-but-not-stiff register, no contractions, light sentence variation. Always state the chosen mode to the user before drafting so they can override.
 
@@ -130,6 +135,7 @@ If signals are mixed or the ad is too short to classify, default to **`hybrid_wa
 For paragraphs 2 (technical) and 3 (values), pick **one bullet ID each** from `bullet-bank/`:
 
 - **P2 — technical_match**: Must match the ad's #1 must-have. Prefer bullets with `impact-metric` tags. Try to differ from the bullet IDs already chosen for the CV's most prominent role (otherwise the cover letter just restates the CV).
+- Read each chosen bullet's `note`, `env` and `ownership` now (rule C6) and carry those limits into the story angle.
 - **P3 — values_fit**: Must reflect the ad's culture/values signal (ownership, collaboration, scientific rigour, customer focus, etc.). Different *theme* from P2. Prefer `meta`-tagged bullets (cross-cutting) or bullets with collaboration / leadership / debugging / ownership tags.
 
 Show the user a small table:
@@ -143,7 +149,9 @@ Wait for approval before drafting.
 
 ### 5. Draft all 5 paragraphs
 
-**Word budget**: ≤ 350 words total. Per paragraph: 50–80 (P5: 30–50).
+**Word budget**: 250–350 words total. Per paragraph: 50–80 (P5: 30–50). Four paragraphs (no P4) is a valid shape: Robert Half AU recommends four, Hays AU caps at five.
+
+**Research facts**: use at most two facts from the research file, and tie each to a matching bullet ID (the research file's synthesis table names one). Prefer a team-owned fact (their product, blog post, repo or stack) over company-wide praise.
 
 #### P1 — Hook
 
@@ -151,7 +159,7 @@ Wait for approval before drafting.
 
 Strong opener templates (adapt, don't copy):
 
-- "Reading [Company]'s ad, [specific phrase or detail] reminded me of [specific work I did] — and that's why this role caught me."
+- "Reading [Company]'s ad, [specific phrase or detail] reminded me of [specific work I did]. That link is why this role caught me."
 - "Your platform sits exactly at the boundary I find most interesting: [X meeting Y], which is where I spent [time period] at [employer]."
 - "[Specific product/blog post/initiative of theirs] is the kind of problem I've been deliberately steering toward."
 
@@ -194,7 +202,7 @@ Avoid: "I'm passionate about", "I would love to grow", "I see myself contributin
 
 #### P5 — Close
 
-Thanks for considering, signal availability for a conversation, sign off. ≤ 50 words. No new content. No "looking forward to hearing from you" filler if you can avoid it.
+Thank them, state availability for a conversation (and start date if the ad asks), sign off. ≤ 50 words. No new content. No "looking forward to hearing from you" filler if you can avoid it.
 
 ### 5a. Humanise the draft (REQUIRED)
 
@@ -223,7 +231,7 @@ to check the bullet bank, not to soften the wording until it sounds safe.
 |---|---|
 | Three-item lists everywhere ("fast, reliable, and maintainable") | Cut to the one item that carries meaning |
 | "Not just X, but Y" framing | State Y directly |
-| Em-dash asides stacked two or three to a paragraph | Keep at most one per paragraph |
+| Em-dash asides | Remove them all (rule C7); use a comma or a new sentence |
 | Every paragraph opening on the same rhythm | Vary the first four words |
 | Abstract nouns doing the work ("a strong sense of ownership") | Replace with the behaviour that showed it |
 
@@ -262,13 +270,26 @@ cover_letter:
 
 If the file already has a `cover_letter:` block, **show a diff** before overwriting and ask for confirmation.
 
+### 6a. Pre-send check
+
+The cover-letter renderer blocks compilation when it finds any of these. Fix them in the spec, never by editing the .tex:
+
+- Unfilled placeholders (`<...>`, `[Company]`, `{{`, TODO, TBD).
+- Chatbot phrasing ("Here is", "Certainly,", "As an AI", "I hope this letter finds").
+- Hidden or tiny text (`\color{white}`, `\phantom`, `\tiny`). Greenhouse reports that hiring managers now look for hidden-text prompt injection.
+- Em dashes.
+- "To whom it may concern".
+- A body that never names the company (a sign the letter was written for another employer).
+
+Also check by eye: the role title matches the ad exactly, and no paragraph names a different company.
+
 ### 7. Render + compile
 
 ```bash
 tools/compile.sh job-ads/<slug>/spec.yml --cover
 ```
 
-Output: `outputs/<slug>/cover.pdf`. The renderer warns if word count > 350. The compile script warns if pages > 1.
+Output: `outputs/<slug>/cover.pdf`. The renderer runs the pre-send check, warns if word count > 350, and the compile script warns if pages > 1.
 
 ### 8. Enforce one page; iterate
 

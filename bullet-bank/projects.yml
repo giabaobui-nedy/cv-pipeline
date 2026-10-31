@@ -1,7 +1,5 @@
-# Projects — Bullet Bank
-#
-# Each project has metadata (title/stack/links) plus a list of bullets.
-# Tailored CVs select a subset of projects, then a subset of bullets per project.
+# Projects bullet bank. Each project has metadata (title/stack/links) plus bullets.
+# Field reference: bullet-bank/README.md.
 
 projects:
   - id: weekly-planner
@@ -15,8 +13,8 @@ projects:
         tags: [clean-architecture, oop, architecture, testing]
         text: >-
           Designed and implemented a layered system using Clean Architecture (Ports \& Adapters),
-          separating domain logic from infrastructure to ensure testability, extensibility, and
-          maintainability.
+          keeping domain logic separate from infrastructure so it can be tested without the
+          database or UI.
       - id: weekly-planner-algorithm
         tags: [algorithms, scheduling, backend]
         text: >-
@@ -24,6 +22,7 @@ projects:
           constraints, and user-defined working hours, supporting deterministic and scalable
           planning behaviour.
       - id: weekly-planner-orm-tests
+        ai_framing: user
         tags: [orm, testing, junit, repository, tdd, ai-assisted]
         text: >-
           Practised test-driven development by writing JUnit integration and unit tests first, then
@@ -96,8 +95,8 @@ projects:
       - id: battery-team-lead
         tags: [leadership, communication, stakeholders]
         text: >-
-          Acted as team lead to manage internal team communication styles and external client relations,
-          delivering a modular backend system.
+          Led a six-person capstone team, running weekly client updates and milestone check-ins every
+          three weeks, and delivered a modular backend system.
       - id: battery-api-contracts
         tags: [api, integration, collaboration]
         text: >-
@@ -120,11 +119,11 @@ projects:
       - id: tbrgs-dl-search
         tags: [ml, deep-learning, algorithms, gui]
         text: >-
-          Integrated TensorFlow DL models with graph search algorithms to deliver intelligent route
-          planning with ETA estimation, connecting pre-trained model outputs end-to-end through to
+          Integrated TensorFlow DL models with graph search algorithms to deliver route planning with
+          ETA estimates, connecting pre-trained model outputs end-to-end through to
           a live GUI.
       - id: tbrgs-networkx
-        tags: [visualization, graph, python]
+        tags: [visualisation, graph, python]
         text: >-
           Visualised map routing data and coordinate traversal algorithms using networkx, simulating
           real-world network topographies akin to lat/long mapping systems.
@@ -153,6 +152,8 @@ projects:
           tasks and a clear separation of concerns by applying the Repository pattern with Android
           Room, ViewModel, and LiveData.
       - id: planner-diary-perf
+        metric:
+          source: Macrobenchmark runs in the uni project (no CI record)
         tags: [android, performance, baseline-profiles, impact-metric, mobile]
         text: >-
           Achieved faster app startup and responsiveness, reduced startup timing and frame timing by
@@ -179,9 +180,9 @@ projects:
       - id: decentralised-trading-fastapi
         tags: [fastapi, api, integration, backend]
         text: >-
-          Integrated both databases behind a FastAPI service layer, enabling core bidding UI flows ---
-          list, bid, settle assets --- by exposing validated REST endpoints that coordinate the business
-          logic on on- or off-chain data.
+          Integrated both databases behind a FastAPI service layer, enabling the core bidding flows
+          (list, bid, settle assets) through validated REST endpoints that coordinate business logic
+          across on-chain and off-chain data.
 
   - id: cv-pipeline
     title: \textbf{Automated CV Tailoring Pipeline}
@@ -199,11 +200,33 @@ projects:
       - id: cv-pipeline-renderers
         tags: [python, latex, automation, tooling, devtools]
         text: >-
-          Built Python renderers and a one-command Bash compile pipeline transforming YAML specs
-          and a reusable bullet bank into submission-ready PDF CVs and cover letters via Tectonic.
+          Built Python renderers and a one-command Bash compile pipeline that turns YAML specs and
+          a reusable bullet bank into submission-ready PDF CVs and cover letters via Tectonic.
       - id: cv-pipeline-agent-skills
+        ai_framing: builder
         tags: [ai-agents, python, automation, tooling]
         text: >-
           Implemented four LLM agent skills (research, tailor-cv, cover-letter, add-bullet) that
           constrain model output to canonical evidence records, preventing overclaim while
           standardising application artefacts across models.
+
+  - id: logistics-platform
+    title: \textbf{Logistics Company Platform (Cloud-Native Full Stack)}
+    stack: Next.js, Terraform, AWS, Docker, GitHub Actions
+    links:
+      - { label: GitHub, url: https://github.com/giabaobui-nedy/Dad-Project }
+    tags: [nextjs, terraform, iac, aws, docker, ci-cd]
+    note: >-
+      Moved from cv/main.tex on 2026-11-01 (it was the only master-CV content missing from the
+      bank). Wording is unchanged; review scope before selecting.
+    bullets:
+      - id: logistics-platform-terraform
+        tags: [iac, terraform, aws, fargate, docker, fullstack]
+        text: >-
+          Designed and implemented a containerised full-stack platform with infrastructure
+          provisioned using Terraform (ECR, ECS Fargate, ALB, IAM, CloudWatch).
+      - id: logistics-platform-ci-cd
+        tags: [ci-cd, github-actions, docker, aws, security, automation]
+        text: >-
+          Built CI/CD pipelines using GitHub Actions to automate linting, type checking, Docker
+          image builds, and conditional production deployments with OIDC-based AWS authentication.

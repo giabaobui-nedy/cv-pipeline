@@ -1,0 +1,216 @@
+# Tag vocabulary for bullet-bank/*.yml. tools/lint_bank.py warns on any tag not listed here.
+# Add a new tag here first, then use it in a bullet. Use British spelling (optimisation).
+#
+# synonyms: ad phrase -> bank tag. tailor-cv maps the ad's wording through this table, then
+# writes the ad's exact phrase (not the tag) in the profile and skills block.
+
+tags:
+  - accessibility
+  - agile
+  - ai-agents
+  - ai-assisted
+  - algorithms
+  - analysis
+  - android
+  - api
+  - architecture
+  - aria
+  - audit
+  - aurora
+  - auth
+  - automation
+  - aws
+  - azure
+  - backend
+  - baseline-profiles
+  - billing
+  - blockchain
+  - capstone
+  - cdk
+  - ci-cd
+  - clean-architecture
+  - client-delivery
+  - cloud
+  - code-quality
+  - code-review
+  - codegen
+  - collaboration
+  - communication
+  - concurrency
+  - coordination
+  - cost
+  - crm
+  - css
+  - data-modelling
+  - data-pipeline
+  - database
+  - debugging
+  - decision-making
+  - deep-learning
+  - delivery
+  - deployment
+  - design-system
+  - devops
+  - devtools
+  - docker
+  - documentation
+  - entitlement
+  - evaluation
+  - event-driven
+  - eventbridge
+  - fargate
+  - fastapi
+  - feature-delivery
+  - figma
+  - firmware
+  - flask
+  - frontend
+  - fullstack
+  - git
+  - github-actions
+  - go
+  - graph
+  - gui
+  - hardware
+  - iac
+  - impact-metric
+  - incident-response
+  - industrial
+  - influxdb
+  - integration
+  - iot
+  - java
+  - jetpack
+  - jira
+  - junit
+  - kanban
+  - knowledge-sharing
+  - knowledge-transfer
+  - kotlin
+  - lambda
+  - latex
+  - leadership
+  - legacy
+  - linux
+  - logging
+  - maintenance
+  - media
+  - meta
+  - microservices
+  - middleware
+  - migration
+  - ml
+  - mobile
+  - modbus
+  - multi-tenancy
+  - mvvm
+  - mysql
+  - nestjs
+  - nextjs
+  - node
+  - nuxt
+  - observability
+  - onboarding
+  - oop
+  - openapi
+  - optimisation
+  - orm
+  - overview
+  - performance
+  - planning
+  - playwright
+  - postgresql
+  - pragmatism
+  - presentation
+  - process
+  - production
+  - prototyping
+  - python
+  - qa
+  - query-optimisation
+  - react
+  - react-native
+  - realtime
+  - recognition
+  - refactoring
+  - reliability
+  - repository
+  - requirements
+  - research
+  - responsive
+  - room
+  - saas
+  - scheduling
+  - schema-design
+  - sdlc
+  - security
+  - serverless
+  - shared-library
+  - sql
+  - sqs
+  - sso
+  - stack
+  - stakeholders
+  - state-management
+  - stripe
+  - tailwind
+  - tanstack
+  - tdd
+  - team
+  - telemetry
+  - tensorflow
+  - terraform
+  - testing
+  - threading
+  - timezone
+  - tooling
+  - tradeoff
+  - typescript
+  - ui
+  - ux
+  - visualisation
+  - vite
+  - vue
+  - websockets
+  - yaml
+
+synonyms:
+  accessibility: [wcag, a11y]
+  ai-agents: [llm agents, agent development, building ai agents, ai engineering]
+  ai-assisted: [agentic, agentic ai, ai coding assistants, claude code, copilot, cursor, llm-assisted development]
+  aws: [amazon web services, 'cloud (aws)']
+  cdk: [aws cdk, cloud development kit]
+  ci-cd: ['ci/cd', continuous integration, continuous delivery, continuous deployment]
+  cost: [cost optimisation, cost optimization, finops, cloud cost]
+  data-modelling: [data modeling, domain modelling]
+  debugging: [troubleshooting, root cause analysis, production support]
+  design-system: [component library, ui library]
+  docker: [containers, containerisation, containerization]
+  event-driven: [event driven architecture, eda, 'pub/sub', messaging]
+  fastapi: [python api frameworks]
+  github-actions: [gh actions]
+  go: [golang]
+  iac: [infrastructure as code, infrastructure-as-code, 'iac (aws cdk)']
+  incident-response: [on-call, incident management]
+  linux: [unix, ubuntu]
+  microservices: [microservice architecture, distributed systems, service-oriented architecture]
+  ml: [machine learning]
+  nextjs: [next.js]
+  node: [node.js, nodejs]
+  nuxt: [nuxt.js]
+  observability: [monitoring, logging and monitoring, cloudwatch]
+  openapi: [swagger, api-first, contract-first]
+  optimisation: [optimization]
+  playwright: [end-to-end testing, e2e testing]
+  postgresql: [postgres, psql, aurora postgresql, relational database]
+  query-optimisation: [query optimization, sql performance tuning, database performance]
+  react: [react.js, reactjs]
+  requirements: [requirements gathering, business analysis]
+  security: [secure coding, application security]
+  serverless: [aws lambda, faas]
+  sso: [single sign-on, entra id, azure ad]
+  stakeholders: [stakeholder management, stakeholder engagement]
+  testing: [automated testing, unit testing, integration testing, test automation]
+  typescript: [ts]
+  visualisation: [visualization, data visualisation, data visualization]
+  vue: [vue.js, vuejs]

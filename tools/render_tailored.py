@@ -11,7 +11,9 @@ fills `cv/tailored.tex.template` and writes a ready-to-compile .tex file.
 from __future__ import annotations
 
 import argparse
+import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 try:
@@ -24,23 +26,35 @@ TEMPLATE = REPO / "cv" / "tailored.tex.template"
 BANK = REPO / "bullet-bank"
 
 
-def load_role_bank(path: Path) -> dict[str, dict]:
-    data = yaml.safe_load(path.read_text()) or {}
-    return {b["id"]: b for b in data.get("bullets", [])}
+NON_ROLE_FILES = {"projects.yml", "tags.yml"}
 
 
-def load_projects_bank(path: Path) -> dict[str, dict]:
-    data = yaml.safe_load(path.read_text()) or {}
-    return {p["id"]: p for p in data.get("projects", [])}
+def load_banks() -> tuple[dict[str, dict], dict[str, dict], dict[str, dict]]:
+    """Return (role bullets by bank, role meta by bank, projects by id).
+
+    Every bullet-bank/*.yml except projects.yml and tags.yml is a role bank,
+    keyed by file stem, so a new employer only needs a new file.
+    """
+    role_banks: dict[str, dict] = {}
+    role_meta: dict[str, dict] = {}
+    for path in sorted(BANK.glob("*.yml")):
+        if path.name in NON_ROLE_FILES:
+            continue
+        data = yaml.safe_load(path.read_text()) or {}
+        role_banks[path.stem] = {b["id"]: b for b in data.get("bullets") or []}
+        role_meta[path.stem] = data.get("role") or {}
+    data = yaml.safe_load((BANK / "projects.yml").read_text()) or {}
+    projects = {p["id"]: p for p in data.get("projects", [])}
+    return role_banks, role_meta, projects
 
 
-def load_banks() -> tuple[dict[str, dict[str, dict]], dict[str, dict]]:
-    role_banks = {
-        "soniq": load_role_bank(BANK / "soniq.yml"),
-        "csiro": load_role_bank(BANK / "csiro.yml"),
-    }
-    projects = load_projects_bank(BANK / "projects.yml")
-    return role_banks, projects
+def plain_text(latex: str) -> str:
+    """Rough LaTeX-to-text for word counts and keyword checks."""
+    s = re.sub(r"\\(textbf|emph|texttt|textit)\{([^}]*)\}", r"\2", latex)
+    s = s.replace("$\\rightarrow$", "->").replace("$\\sim$", "~").replace("$\\times$", "x")
+    s = re.sub(r"\\[,;]", " ", s)
+    s = re.sub(r"\\([%&$#_])", r"\1", s)
+    return " ".join(s.split())
 
 
 def _normalise(text: str) -> str:
@@ -152,44 +166,36 @@ def render_referees(referees: object) -> str:
     return " \\\\[2pt]\n".join(lines)
 
 
-def render_role(role_meta: dict, bullet_ids: list[str], bank: dict[str, dict]) -> str:
-    items = []
-    for bid in bullet_ids:
-        if bid not in bank:
-            print(f"warn: missing bullet id {bid}", file=sys.stderr)
-            continue
-        items.append(f"            \\resumeItem{{{_normalise(bank[bid]['text'])}}}")
+def render_role(role_meta: dict, bullets: list[dict]) -> str:
+    """`role_meta` is the bank's role block overlaid with the spec's fields."""
+    items = [f"            \\resumeItem{{{_normalise(b['text'])}}}" for b in bullets]
     stack = role_meta.get("stack")
     if stack:
         items.append(
             f"            \\resumeItem{{\\textbf{{Stack:}} \\emph{{{_latex_escape(stack.strip())}}}}}"
         )
-    items_block = "\n".join(items)
-    return (
+    head = (
         f"      \\resumeSubheading\n"
         f"          {{{role_meta['title']}}}{{{role_meta['dates']}}}\n"
-        f"          {{{role_meta['employer']}}}{{{role_meta['location']}}}\n"
+        f"          {{{role_meta['employer']}}}{{{role_meta['location']}}}"
+    )
+    if not items:
+        # A new role can be listed before it has achievements; an empty itemize breaks LaTeX.
+        return head
+    items_block = "\n".join(items)
+    return (
+        f"{head}\n"
         f"            \\resumeItemListStart\n"
         f"{items_block}\n"
         f"            \\resumeItemListEnd"
     )
 
 
-def render_project(project_id: str, bullet_ids: list[str], projects: dict[str, dict]) -> str:
-    proj = projects.get(project_id)
-    if not proj:
-        print(f"warn: missing project {project_id}", file=sys.stderr)
-        return ""
+def render_project(proj: dict, bullets: list[dict]) -> str:
     links = " $|$ ".join(
         f"\\href{{{l['url']}}}{{{l['label']}}}" for l in proj.get("links", [])
     )
-    bullet_map = {b["id"]: b for b in proj.get("bullets", [])}
-    items = []
-    for bid in bullet_ids:
-        if bid not in bullet_map:
-            print(f"warn: missing project bullet {bid} (in {project_id})", file=sys.stderr)
-            continue
-        items.append(f"                \\resumeItem{{{_normalise(bullet_map[bid]['text'])}}}")
+    items = [f"                \\resumeItem{{{_normalise(b['text'])}}}" for b in bullets]
     return (
         f"        \\resumeProjectHeading\n"
         f"            {{{proj['title']} $|$ \\emph{{{proj['stack']}}}}}{{{links}}}\n"
@@ -199,6 +205,57 @@ def render_project(project_id: str, bullet_ids: list[str], projects: dict[str, d
     )
 
 
+def expand_all(pool: dict[str, dict]) -> list[str]:
+    """`bullets: all` (used by cv/master.yml): every current bullet, one per
+    variant_group (the first listed, which is the long version), stack line last."""
+    seen: set[str] = set()
+    body, stack = [], []
+    for bid, b in pool.items():
+        group = b.get("variant_group")
+        if b.get("status") == "outdated" or (group and group in seen):
+            continue
+        if group:
+            seen.add(group)
+        (stack if "stack" in b.get("tags", []) else body).append(bid)
+    return body + stack
+
+
+def selection_warnings(spec: dict, selected: list[dict]) -> list[str]:
+    """Non-blocking checks on the chosen bullets. See tailor-cv for the rules."""
+    warns = []
+    stories = Counter(b["story"] for b in selected if b.get("story"))
+    warns += [f"{n} bullets from story '{s}'; more than 2 reads as padding" for s, n in stories.items() if n > 2]
+
+    body = [b for b in selected if "stack" not in b.get("tags", [])]
+    verbs = Counter(plain_text(b["text"]).split()[0].lower() for b in body if b["text"].strip())
+    warns += [f"{n} bullets open with '{v}'; vary the opening verbs" for v, n in verbs.items() if n > 2]
+
+    for b in selected:
+        if "---" in b["text"] or "\u2014" in b["text"]:
+            warns.append(f"{b['id']} contains an em dash")
+        if b.get("note"):
+            warns.append(f"{b['id']} has a note; confirm the CV respects it: {' '.join(b['note'].split())[:100]}")
+
+    evidence = " ".join(plain_text(b["text"]) for b in selected).lower()
+    for role in spec.get("experience", []):
+        evidence += " " + str(role.get("stack", "")).lower()
+    skills = spec.get("skills") if isinstance(spec.get("skills"), list) else []
+    for entry in skills:
+        for item in entry.get("items", []):
+            item_text = str(item).lower().replace(".js", "")
+            tokens = [t for t in re.split(r"[\s(),/&]+", item_text) if len(t) > 1]
+            if tokens and not any(t in evidence for t in tokens):
+                warns.append(f"skills item '{item}' is not backed by any selected bullet or stack line")
+
+    # Stack lines list tools by design, so only prose counts toward keyword stuffing.
+    text = " ".join([plain_text(spec.get("profile", ""))] + [plain_text(b["text"]) for b in body]).lower()
+    for kw in spec.get("keywords", []):
+        n = len(re.findall(rf"(?<![a-z]){re.escape(str(kw).lower())}(?![a-z])", text))
+        if n > 4:
+            warns.append(f"keyword '{kw}' appears {n} times; more than 3 or 4 reads as stuffing")
+    return warns
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("spec", type=Path)
@@ -206,13 +263,24 @@ def main() -> None:
     args = ap.parse_args()
 
     spec = yaml.safe_load(args.spec.read_text()) or {}
-    role_banks, projects = load_banks()
+    role_banks, role_metas, projects = load_banks()
     template = TEMPLATE.read_text()
+    errors: list[str] = []
+    selected: list[dict] = []
 
+    def pick(bid: str, pool: dict[str, dict], where: str) -> dict | None:
+        b = pool.get(bid)
+        if b is None:
+            errors.append(f"unknown bullet id {bid} ({where})")
+        elif b.get("status") == "outdated":
+            errors.append(f"{bid} is marked status: outdated ({where}); pick its replacement")
+        else:
+            selected.append(b)
+        return b
+
+    # Matches tailor-cv H1: Highest Achieving Graduate only, unless the spec says otherwise.
     default_education_bullets = [
         r"Recognised as \textbf{Highest Achieving Graduate} in the Bachelor of Computer Science (Professional) cohort.",
-        r"Received lecturer compliment on the best undergraduate paper in INF20010 - Database Systems.",
-        r"Achieved Swinburne Excellence International Scholarship (50\%);",
     ]
     education_bullets = spec.get("education_bullets", default_education_bullets)
     if education_bullets:
@@ -232,13 +300,42 @@ def main() -> None:
         bank = role_banks.get(role["bank"])
         if bank is None:
             sys.exit(f"unknown bank '{role['bank']}' (known: {list(role_banks)})")
-        experience_blocks.append(render_role(role, role.get("bullets", []), bank))
+        meta = {**role_metas[role["bank"]], **{k: v for k, v in role.items() if k != "bullets"}}
+        missing = [k for k in ("title", "dates", "employer", "location") if not meta.get(k)]
+        if missing:
+            errors.append(f"role {role['bank']} has no {missing} in the spec or the bank's role block")
+            continue
+        ids = expand_all(bank) if role.get("bullets") == "all" else role.get("bullets", [])
+        bullets = [b for bid in ids if (b := pick(bid, bank, role["bank"]))]
+        bullets = [b for b in bullets if b.get("status") != "outdated"]
+        experience_blocks.append(render_role(meta, bullets))
 
     project_blocks = []
-    for proj in spec.get("projects", []):
-        block = render_project(proj["id"], proj.get("bullets", []), projects)
-        if block:
-            project_blocks.append(block)
+    proj_specs = spec.get("projects", [])
+    if proj_specs == "all":
+        proj_specs = [{"id": pid, "bullets": "all"} for pid in projects]
+    for proj_spec in proj_specs:
+        proj = projects.get(proj_spec["id"])
+        if proj is None:
+            errors.append(f"unknown project {proj_spec['id']}")
+            continue
+        pool = {b["id"]: b for b in proj.get("bullets", [])}
+        ids = expand_all(pool) if proj_spec.get("bullets") == "all" else proj_spec.get("bullets", [])
+        bullets = [b for bid in ids if (b := pick(bid, pool, proj["id"]))]
+        bullets = [b for b in bullets if b.get("status") != "outdated"]
+        project_blocks.append(render_project(proj, bullets))
+
+    groups = Counter(b["variant_group"] for b in selected if b.get("variant_group"))
+    for group, n in groups.items():
+        if n > 1:
+            errors.append(f"{n} bullets from variant_group '{group}'; keep one version of a story")
+
+    if errors:
+        sys.exit("error: " + "\nerror: ".join(errors))
+
+    # The master lists everything on purpose, so selection warnings are noise there.
+    for w in ([] if spec.get("page_mode") == "master" else selection_warnings(spec, selected)):
+        print(f"warn: {w}", file=sys.stderr)
 
     sections = {
         "profile": (
@@ -299,7 +396,10 @@ def main() -> None:
     out_path = args.output or (REPO / "outputs" / slug / "cv.tex")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(out)
-    print(f"wrote {out_path}")
+    body = [b for b in selected if "stack" not in b.get("tags", [])]
+    words = sum(len(plain_text(b["text"]).split()) for b in body)
+    print(f"wrote {out_path} ({len(body)} bullets, {words} bullet words, "
+          f"{len(spec.get('profile', '').split())} profile words)")
 
 
 if __name__ == "__main__":
