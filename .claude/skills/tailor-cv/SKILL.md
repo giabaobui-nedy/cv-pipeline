@@ -176,10 +176,12 @@ Report every `gap` to the user before rendering (Principle 1: never paper over i
 
 Compare the ad's `seniority` with the user's level (2+ years, most recent title Junior Software Engineer, Associate Software Engineer at Canonical from 3 Nov 2026). Tell the user the result in one line before the shortlist.
 
-- **Ad is graduate or associate (below the user):** `page_mode: one`. Keep the YoE honest; never cut it to look junior. Profile sentence two leads with the ad's learning and build-and-own signals (testing, Git, full-stack range) rather than seniority words like "led" or "architected". Prefer bullets that show learning fast and shipping with a team. Warn the user that recruiters may ask why they want an entry-level role, and that a signed start elsewhere makes that harder.
+- **Ad is graduate or associate (below the user):** `page_mode: one`. Keep the YoE honest; never cut it to look junior. Profile sentence two leads with the ad's learning and build-and-own signals (testing, Git, full-stack range) rather than seniority words like "led" or "architected". Prefer bullets that show learning fast and shipping with a team. Warn the user that recruiters may ask why they want an entry-level role.
 - **Ad is junior:** no change.
 - **Ad is mid or senior ("experienced", 3+ years, on-call ownership):** flag the gap in years to the user and let them decide whether to apply. Never stretch the YoE wording.
-- **Ad is a graduate *program*:** see "Graduate role vs Graduate program" below. Spell out an abbreviation once ("infrastructure as code (IaC)"). Use each keyword at most 3 times; the renderer warns past 4.
+- **Ad is a graduate *program*:** see "Graduate role vs Graduate program" above.
+
+**Wording.** Spell out an abbreviation once ("infrastructure as code (IaC)"). Use each keyword at most 3 times; the renderer warns past 4.
 
 Then pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`impact-metric` tagged bullets win) and recency (newest employer first). For AI-forward roles prefer `ai_framing: builder` bullets; for conservative employers use at most one `ai_framing: user` bullet.
 
@@ -187,14 +189,14 @@ Then pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`
 
 **Budget for one page** (start here, prune harder if compilation overflows):
 
-- Canonical (from 3 Nov 2026): the role heading plus `canonical-overview` until achievement bullets exist. It costs about 2 lines but puts the strongest employer name first. Once the user has been there a few months, move SONIQ to 3 bullets.
+- Canonical: **leave it off unless the user asks for it** (user preference, Nov 2026). When asked, add the role heading plus `canonical-overview` (about 2 lines); the renderer refuses it before its 3 Nov 2026 start.
 - SONIQ: **4 bullets** + `soniq-stack` (mandatory). 5 is borderline.
 - CSIRO: **3–4 bullets** + `csiro-stack` (mandatory).
 - Projects: **0–1 project, 1–2 bullets** (experience-first policy, Aug 2026 — see `PRINCIPLES.md` §2). A project earns its place only if it hits an ad keyword that **zero** experience bullets cover; if every project bullet is redundant with experience, drop the Projects section entirely and spend the space on more SONIQ bullets. Uni-era projects (`weekly-planner`, `tbrgs`, `planner-diary`, `decentralised-trading`, `battery-digital-twin`) age out first — they read increasingly junior next to production work. `cv-pipeline` is the exception: current, self-owned, real engineering; it stays viable for AI-forward roles specifically. A second project is justified only when it covers a *second* uncovered ad requirement — apply the test strictly: for Unity Care (Aug 2026), `weekly-planner-orm-tests` ("validate AI-generated code") was cut because `soniq-architectural-validation` already carried that signal, and the space went to an extra SONIQ bullet instead. (That bullet is now `status: outdated`; the test itself still applies.)
 - Education bullets: **always explicitly set `education_bullets` in the spec** — never leave it unset, so the choice is visible in the spec (the renderer falls back to Highest Achieving Graduate only). Default for every engineering role: **Highest Achieving Graduate only** (1 bullet). Add the database-paper bullet only when `database`, `schema`, `sql`, or similar is a keyword in the ad. Always drop the scholarship line for engineering roles. Experience and projects always take priority over education lines.
 - `*-overview` bullets: **default to omitting them**. Include only if the ad emphasises breadth the overview captures and there is page room left.
 
-Total `\resumeItem` count target for one page: **≤ 14** (including stack lines, education, and project bullets). Count is a weak proxy, so budget by **words**: the renderer prints the total bullet words after each render. On the A4 STIX Two template, 320 to 380 bullet words fits one page (Nov 2026 tests: Metro 14 items / 321 words, Kmart 14 items / 384 words, both one page). Treat both numbers as starting points; the compile result decides. Run `python3 tools/lint_bank.py --words` to see each bullet's length. Any bullet over 30 words wraps to 3 or more lines; when space is tight, swap it for the `-compact` version in its `variant_group`. The `*-stack` bullets are about 2 visual lines each.
+Total `\resumeItem` count target for one page: **≤ 14** (including stack lines, education, and project bullets). Count is a weak proxy, so budget by **words**: the renderer prints the total bullet words after each render. On the A4 STIX Two template, 320 to 385 bullet words fits one page (Nov 2026 tests: Metro 14 items / 321 words, Kmart 14 items / 384 words, both one page). Treat both numbers as starting points; the compile result decides. Run `python3 tools/lint_bank.py --words` to see each bullet's length. Any bullet over 30 words wraps to 3 or more lines; when space is tight, swap it for the `-compact` version in its `variant_group`. The `*-stack` bullets are about 2 visual lines each.
 
 ### Bullet anti-patterns — default avoid list
 
@@ -322,7 +324,7 @@ If no LaTeX toolchain is on PATH, tell the user to `brew install tectonic` but d
 When you cannot compile, apply a **conservative heuristic** to estimate one-page fit before handing off:
 
 - Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 14**. Long bullets count as multiple visual lines; use the word totals the renderer prints.
-- Bullet words (as printed by the renderer) should be **≤ ~380** for one page.
+- Bullet words (as printed by the renderer) should be **≤ ~385** for one page.
 - `profile` paragraph should be **≤ 50 words**.
 - `skills` block should have **≤ 5 category lines**.
 
@@ -348,10 +350,7 @@ If compiled, report the PDF page count and **enforce the `page_mode` limit** (th
 
 ### 7. Send-date check, then offer iteration
 
-Before handing off, check every bank role's `role.start`:
-
-- If a role was left out because it starts after today, say so, give the start date, and tell the user to re-render after that date before sending.
-- If the user has signed with an employer whose start is within 30 days, say once that applying elsewhere now is the user's call, and that the CV will not show that role until it starts.
+Only when the user says they are about to send the application: check every role the spec includes or the user asked for. If one starts after the send date, say so in one line and give its start date. Otherwise say nothing about roles that are not on the CV.
 
 Then ask the user for one of:
 

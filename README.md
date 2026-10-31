@@ -9,8 +9,9 @@ subset of bullets from `bullet-bank/` against a job-ad spec in `job-ads/`.
 The whole pipeline is shaped by five principles. Read these once — they
 explain every other design choice in the repo.
 
-1. **One page, high signal.** Density beats breadth.
-   The tailored CV must compile to **exactly one page**, and every bullet on
+1. **Fit the page budget, high signal.** Density beats breadth.
+   The tailored CV must fit its `page_mode` (one page by default; two for some
+   AU enterprise roles, see `tailor-cv`), and every bullet on
    it must map to at least one keyword from the job ad. If a bullet doesn't
    earn its line, drop it.
 2. **Master CV is generated, never trimmed.** `cv/master.yml` renders every
@@ -680,7 +681,7 @@ If you'd rather drive it by hand:
 1. **Save the ad.** Create `job-ads/<slug>/` and copy `job-ads/_example/spec.yml`
    into it. Paste the raw description into `ad_raw`. Fill in `keywords`.
 2. **Pick bullets.** For each role, list bullet `id`s from the bank.
-   Budget for one page: 4 SONIQ + `soniq-stack`, 3 CSIRO + `csiro-stack`,
+   Budget for one page: 4 SONIQ + `soniq-stack`, 3–4 CSIRO + `csiro-stack`,
    0–1 project with 1–2 bullets. Total `\resumeItem` lines ≤ 14 (see
    `tailor-cv` skill for the empirically-validated budget).
 3. **Render + compile.**
@@ -691,7 +692,7 @@ If you'd rather drive it by hand:
    Or in two steps:
    ```bash
    python3 tools/render_tailored.py job-ads/<slug>/spec.yml
-   tectonic outputs/<slug>/cv.tex --outdir outputs/<slug>
+   tectonic -X compile outputs/<slug>/cv.tex --outdir outputs/<slug>
    ```
 4. **Iterate.** If > 1 page, drop overview bullets first, then the database
    education line if "database" isn't an ad keyword, then weak project bullets,

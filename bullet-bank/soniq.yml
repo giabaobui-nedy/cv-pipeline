@@ -781,9 +781,8 @@ bullets:
       source: Jira CBE-429 (30 of 1,153 videos stuck)
     tags: [debugging, aws, sqs, observability, reliability, impact-metric]
     text: >-
-      Traced why 30 of \textbf{1,153} videos stuck in processing during a staging migration to an
-      uncached endpoint lookup throttled by upload bursts, filed the fix, and paced uploads so the
-      migration could continue.
+      Traced why 30 of \textbf{1,153} videos stuck during a staging migration to an uncached lookup
+      throttled by upload bursts, filed the cause with a proposed fix, and paced uploads to continue.
 
   - id: soniq-go-codegen-guardrails-compact
     variant_group: go-codegen-guardrails

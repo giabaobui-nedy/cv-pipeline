@@ -82,8 +82,17 @@ compile_tex() {
     size=$(du -h "$pdf" | cut -f1)
     echo "wrote $pdf (${pages} pages, ${size})"
     if [[ "$pages" != "?" && "$max_pages" -gt 0 && "$pages" -gt "$max_pages" ]]; then
-      echo "  warning: $(basename "$pdf") is ${pages} pages; target is ${max_pages}." >&2
+      echo "  warn: $(basename "$pdf") is ${pages} pages; target is ${max_pages}." >&2
       echo "  edit the spec in job-ads/<slug>/ to trim, then re-run." >&2
+    fi
+    # A two-page CV should fill at least half of page two (tailor-cv page_mode test).
+    if [[ "$max_pages" == 2 && "$pages" == 2 ]] && command -v pdftotext >/dev/null 2>&1; then
+      local p1 p2
+      p1=$(pdftotext -f 1 -l 1 "$pdf" - | grep -c .)
+      p2=$(pdftotext -f 2 -l 2 "$pdf" - | grep -c .)
+      if (( p2 * 2 < p1 )); then
+        echo "  warn: page 2 is under half full (${p2} vs ${p1} lines); fill it or switch to page_mode: one" >&2
+      fi
     fi
     check_text_layer "$pdf"
   fi

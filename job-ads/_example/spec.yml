@@ -37,7 +37,7 @@ education_bullets:
 # Profile paragraph for the tailored CV (replaces the master profile).
 # Keep it ~3 sentences and mirror the ad's language.
 profile: >-
-  Associate Software Engineer and Highest Achieving Graduate in Computer Science with 2+ years of
+  Junior Software Engineer and Highest Achieving Graduate in Computer Science with 2+ years of
   commercial experience building production-grade, API-driven systems. Strong
   foundation in TypeScript, distributed services, and event-driven architectures, with
   hands-on experience shipping features into live SaaS environments.
@@ -46,10 +46,6 @@ profile: >-
 # (title, dates, employer, location) comes from that file's role: block. Add any of
 # those keys here only to override it. `bullets` is an ordered list of bullet IDs.
 experience:
-  - bank: canonical
-    bullets:
-      - canonical-overview
-
   - bank: soniq
     bullets:
       - soniq-cost-optimisation

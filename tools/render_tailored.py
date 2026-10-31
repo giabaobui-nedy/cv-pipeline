@@ -276,8 +276,11 @@ def selection_warnings(spec: dict, selected: list[dict], extra_evidence: list[st
             tokens = [t for t in re.split(r"[\s(),/&]+", item_text) if t]
             if len(tokens) > 1:
                 tokens = [t for t in tokens if len(t) > 1 and t not in SKILL_STOPWORDS]
-            if tokens and not any(_has_token(t, evidence) for t in tokens):
+            missing = [t for t in tokens if not _has_token(t, evidence)]
+            if tokens and len(missing) == len(tokens):
                 warns.append(f"skills item '{item}' is not backed by any selected bullet, stack line or project stack")
+            elif missing:
+                warns.append(f"skills item '{item}': {', '.join(missing)} not backed by any selected bullet or stack line")
 
     # Stack lines list tools by design, so only prose counts toward keyword stuffing.
     text = " ".join([plain_text(spec.get("profile", ""))] + [plain_text(b["text"]) for b in body]).lower()
@@ -441,7 +444,8 @@ def main() -> None:
     out_path.write_text(out)
     body = [b for b in selected if "stack" not in b.get("tags", [])]
     words = sum(len(plain_text(b["text"]).split()) for b in body)
-    print(f"wrote {out_path} ({len(body)} bullets, {words} bullet words, "
+    items = len(selected) + (len(education_bullets) if "education" in order else 0)
+    print(f"wrote {out_path} ({len(body)} bullets, {items} items incl. stack and education, {words} bullet words, "
           f"{len(spec.get('profile', '').split())} profile words)")
 
 
