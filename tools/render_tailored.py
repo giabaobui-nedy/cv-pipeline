@@ -62,6 +62,14 @@ def _normalise(text: str) -> str:
     return " ".join(text.split())
 
 
+def prose_escape(text: str) -> str:
+    """Hand-written prose (profile, letter paragraphs): escape bare %, & and #,
+    and turn straight double quotes into LaTeX quotes. Existing LaTeX is kept."""
+    s = re.sub(r"(?<!\\)([%&#])", r"\\\1", " ".join((text or "").split()))
+    s = re.sub(r'(^|[\s(\[])"', r"\1``", s)
+    return s.replace('"', "''")
+
+
 def _latex_escape(text: object) -> str:
     """Escape plain-text spec values for LaTeX.
 
@@ -159,7 +167,7 @@ def render_referees(referees: object) -> str:
 
         head = f"\\textbf{{{_latex_escape(name)}}}"
         if role_line:
-            head += f" --- {role_line}"
+            head += f", {role_line}"
         if contacts:
             head += " \\newline " + " $|$ ".join(contacts)
         lines.append(head)
@@ -230,6 +238,15 @@ def parse_start(value: object) -> dt.date | None:
     return dt.date(int(parts[0]), int(parts[1]), day)
 
 
+# Words too generic to prove a skill on their own ("Kubernetes and Helm" must not pass on "and").
+SKILL_STOPWORDS = {
+    "and", "or", "with", "of", "the", "for", "in", "on", "to", "a", "an", "via", "using",
+    "basics", "experience", "development", "design", "framework", "frameworks", "tools",
+    "tooling", "systems", "services", "programming", "language", "languages", "practices",
+    "based", "modern", "web", "data", "cloud",
+}
+
+
 def _has_token(token: str, text: str) -> bool:
     # Whole-token match, so "java" does not match inside "javascript".
     return re.search(rf"(?<![a-z0-9+#]){re.escape(token)}(?![a-z0-9+#])", text) is not None
@@ -258,7 +275,7 @@ def selection_warnings(spec: dict, selected: list[dict], extra_evidence: list[st
             item_text = str(item).lower().replace(".js", "")
             tokens = [t for t in re.split(r"[\s(),/&]+", item_text) if t]
             if len(tokens) > 1:
-                tokens = [t for t in tokens if len(t) > 1]
+                tokens = [t for t in tokens if len(t) > 1 and t not in SKILL_STOPWORDS]
             if tokens and not any(_has_token(t, evidence) for t in tokens):
                 warns.append(f"skills item '{item}' is not backed by any selected bullet, stack line or project stack")
 
@@ -366,7 +383,7 @@ def main() -> None:
     sections = {
         "profile": (
             "\\section{Profile}\n"
-            f"\\small{{ {spec.get('profile', '').strip()} }}\\justifying"
+            f"\\small{{ {prose_escape(spec.get('profile', ''))} }}\\justifying"
         ),
         "experience": (
             "\\section{Experience}\n"

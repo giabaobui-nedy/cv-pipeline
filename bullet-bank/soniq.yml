@@ -245,10 +245,8 @@ bullets:
         incident-response,
       ]
     text: >-
-      Caught a silently broken customer activation flow in the development environment before it
-      reached production, by tracing CloudWatch logs across the billing and IAM microservices to a
-      renamed event topic that had cut a service's subscription, then raising it so the new event
-      was checked against every consumer.
+      Caught a silently broken activation flow in development before it reached production, by
+      tracing CloudWatch logs across the billing and IAM services to a renamed event topic.
 
   - id: soniq-event-propagation-debug-versioning
     variant_group: event-propagation-debug
@@ -586,9 +584,9 @@ bullets:
         impact-metric,
       ]
     text: >-
-      Built a TypeScript and Playwright CLI to migrate customers' media, campaigns and schedules off
-      a legacy CMS, with dry runs, verification and rollback. On staging it moved \textbf{8 to
-      10\,GB} enterprise accounts in about an hour each.
+      Built a TypeScript and Playwright CLI that migrates customers off a legacy CMS with dry runs,
+      verification and rollback, moving \textbf{8 to 10\,GB} enterprise accounts in about an hour
+      each on staging.
 
   - id: soniq-migration-throttling-diagnosis
     variant_group: migration-throttling-diagnosis
@@ -761,8 +759,8 @@ bullets:
     tags: [aws, eventbridge, fargate, event-driven, cost, impact-metric]
     text: >-
       Replaced a DMS $\rightarrow$ Kinesis $\rightarrow$ Lambda outbox pipeline with a poller on
-      existing Fargate tasks publishing to EventBridge, which removed DMS and Kinesis spend (about
-      \textbf{40\%} of the combined bill) and cut production cost by \textbf{26\%}.
+      existing Fargate tasks, removing DMS and Kinesis spend (about \textbf{40\%} of the combined
+      bill) and cutting production cost by \textbf{26\%}.
 
   - id: soniq-device-grouping-compact
     variant_group: device-grouping

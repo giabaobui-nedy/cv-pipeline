@@ -163,7 +163,7 @@ Strong opener templates (adapt, don't copy):
 - "Your platform sits exactly at the boundary I find most interesting: [X meeting Y], which is where I spent [time period] at [employer]."
 - "[Specific product/blog post/initiative of theirs] is the kind of problem I've been deliberately steering toward."
 
-The paragraph should: name the role + company, prove you read the ad with one specific reference, signal the angle of fit. ~50–60 words.
+The paragraph should: name the role + company, prove you read the ad with one specific reference, signal the angle of fit. 40–80 words (about 50–60 is typical).
 
 **Hook self-check — run before finalising P1:**
 
@@ -178,7 +178,7 @@ If none of these are present, the hook is generic and will not differentiate.
 
 Open with a thesis sentence about what the role's most important technical aspect is (your read of the ad). Then narrate the evidence bullet's *story* — not the bullet text itself. Explain the **why** and the **outcome** in your own words; mention the metric if there is one. Land on a sentence that connects the lesson back to what they need.
 
-~70–80 words. Never copy the CV bullet verbatim — the CV already says it.
+50–85 words. Never copy the CV bullet verbatim — the CV already says it.
 
 #### P3 — Values fit
 
@@ -186,7 +186,7 @@ Open with an observation about the company/team's values (drawn from the ad — 
 
 Avoid generic culture phrases. Concrete behaviour beats vibes.
 
-~70–80 words.
+50–85 words.
 
 #### P4 — Forward-looking
 
@@ -298,7 +298,7 @@ If > 1 page or > 350 words: **trim**, prioritising in this order:
 1. P4 first (most cuttable; can drop to ~40 words or merge into P1).
 2. P3 second (tighten the narrative around the bullet).
 3. P2 last (it's the load-bearing paragraph).
-4. Never trim P1 below 50 words — the hook needs room.
+4. Never trim P1 below 40 words — the hook needs room.
 
 If < 250 words and < 1 page: probably under-developed; suggest expanding P4 or sharpening P2's outcome detail.
 

@@ -15,6 +15,9 @@ import datetime as dt
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from render_tailored import load_banks, prose_escape  # noqa: E402
+
 try:
     import yaml
 except ImportError:
@@ -29,8 +32,14 @@ def _normalise(text: str) -> str:
 
 
 def _body(text: str) -> str:
-    """Paragraph text: escape bare %, & and # so "40%" can't comment out the rest of a line."""
-    return re.sub(r"(?<!\\)([%&#])", r"\\\1", _normalise(text))
+    """Paragraph text: escape bare %, & and #, and use proper LaTeX quotes."""
+    return prose_escape(text)
+
+
+TONES = {
+    "startup_scrappy", "corporate_formal", "research_scientific", "consultancy_clientfacing",
+    "mission_driven", "agency_recruiter", "public_sector_pitch", "hybrid_warm_professional",
+}
 
 
 def render_recipient(cl: dict) -> str:
@@ -60,6 +69,22 @@ HIDDEN = re.compile(r"\\color\{white\}|\\textcolor\{white\}|\\phantom|\\tiny|\\s
 def presend_problems(cl: dict, paragraphs: dict, used: list[str], company: str) -> list[str]:
     """Blocking checks before a letter can be compiled."""
     problems = []
+    # write-cover-letter rules C1, C2 and C4.
+    for field in ("recipient_name", "salutation", "tone"):
+        if not cl.get(field):
+            problems.append(f"missing cover_letter.{field} (rule C1)")
+    if cl.get("tone") and cl["tone"] not in TONES:
+        problems.append(f"tone '{cl['tone']}' is not one of {sorted(TONES)} (rule C2)")
+    role_banks, _, projects = load_banks()
+    known = {bid for bank in role_banks.values() for bid in bank}
+    known |= {b["id"] for p in projects.values() for b in p.get("bullets", [])}
+    evidence = cl.get("evidence") or {}
+    for kind in ("technical", "values"):
+        bid = evidence.get(kind)
+        if not bid:
+            problems.append(f"missing cover_letter.evidence.{kind} (rule C1)")
+        elif bid not in known:
+            problems.append(f"evidence.{kind} '{bid}' is not a bullet ID in the bank (rule C4)")
     body = " ".join(_normalise(paragraphs[k]) for k in used)
     salutation = str(cl.get("salutation", ""))
     if "whom it may concern" in salutation.lower():

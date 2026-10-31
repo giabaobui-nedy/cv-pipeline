@@ -33,6 +33,7 @@ BANNED = [
     "transforming", "holistic", "ecosystem", "delve",
 ]
 LONG_WORDS = 45
+COMPACT_MAX_WORDS = 35
 MAX_TAGS = 8
 YM = re.compile(r"^\d{4}-\d{2}(-\d{2})?$")
 
@@ -121,6 +122,8 @@ def main() -> None:
         hits = [w for w in BANNED if re.search(rf"\b{re.escape(w)}\b", lowered)]
         if hits:
             warns.append(f"{where}: banned or AI-sounding words {hits}")
+        if bid.endswith("-compact") and words > COMPACT_MAX_WORDS:
+            warns.append(f"{where}: compact variant is {words} words (aim for 25 to 30, max {COMPACT_MAX_WORDS})")
         if b.get("variant_group"):
             groups[b["variant_group"]].append(bid)
         elif words > LONG_WORDS and not is_stack and b.get("status") != "outdated":

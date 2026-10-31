@@ -1,4 +1,5 @@
-# Example job-ad spec. Copy this file to <company>.yml and edit.
+# Example job-ad spec. Copy this file to job-ads/<slug>/spec.yml and edit
+# (slug = company plus role, e.g. metro-trains-software-engineer).
 #
 # How tailoring works:
 # 1. Paste the raw ad into `ad_raw` (kept for grep, not rendered).
@@ -71,7 +72,7 @@ projects:
       - logistics-platform-terraform
 
 # Cover letter (optional). Omit this entire block to skip cover-letter rendering.
-# Generated and refined by the `cover-letter` skill. ≤ 350 words across paragraphs.
+# Generated and refined by the `write-cover-letter` skill. ≤ 350 words across paragraphs.
 cover_letter:
   company: Example Co            # defaults to top-level `company` if omitted
   recipient_name: Hiring Manager  # a named person if findable (research.md "Ad facts")

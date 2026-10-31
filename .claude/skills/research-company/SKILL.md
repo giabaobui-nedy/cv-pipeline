@@ -63,7 +63,7 @@ See `PRINCIPLES.md`. Specifically: only record what you can cite. **Never** inve
 From the job ad, extract:
 - Canonical company name (avoid the parent group unless the ad uses it).
 - Official domain (do a quick search if unsure — wrong domain = wrong research).
-- Slug to match the job-ad spec (`Conserve It` → `conserve-it`).
+- Slug = company plus role, lowercase and dashed (Metro Trains, Software Engineer → `metro-trains-software-engineer`). tailor-cv and write-cover-letter reuse it.
 
 If the company has multiple legal entities (e.g. "Atlassian" vs. "Atlassian Australia Pty Ltd"), use the brand name; mention legal entity only if relevant for visa or contract questions.
 
@@ -86,12 +86,12 @@ Accredited status shows the employer can sponsor, not that it will for this role
 
 Record these from the ad itself. tailor-cv reads this block for its coverage table.
 
-- Exact job title and seniority as written.
+- Exact job title, plus seniority classified as graduate / associate / junior / mid / senior from the title and wording ("build your foundations", "onboarding buddy" = associate; "experienced", "lead", on-call ownership = mid or above). tailor-cv's "Seniority fit" step reads it.
 - Salary band if stated.
 - Basic qualifications (required), each as the ad's exact phrase.
 - Preferred qualifications, same format.
 - Screening questions, if the portal shows them (SEEK allows up to eight, often including right to work).
-- ATS vendor from the apply URL: `myworkdayjobs.com` (Workday, may use HiredScore grading), `greenhouse.io`, `lever.co`, `pageuppeople.com` (PageUp), `smartrecruiters.com`, `jobadder.com`, `successfactors.com` or `jobs.sap.com` (SAP SuccessFactors, common at AU enterprises and transport operators), `taleo.net` (Oracle Taleo), or SEEK quick apply.
+- ATS vendor from the apply URL: `myworkdayjobs.com` (Workday, may use HiredScore grading), `greenhouse.io`, `lever.co`, `pageuppeople.com` (PageUp), `smartrecruiters.com`, `jobadder.com`, `successfactors.com` or `jobs.sap.com` (SAP SuccessFactors, common at AU enterprises and transport operators), `taleo.net` (Oracle Taleo), or SEEK quick apply. Many employers use a custom careers domain (e.g. jobs.kmart.com.au). Then look at the apply button's link or the page source for the vendor's host (`rmkcdn.successfactors.com`, `myworkdayjobs.com`, a Greenhouse embed). Write "unknown" if neither shows it.
 - Who to address: a named hiring manager or recruiter, if the ad or LinkedIn shows one.
 
 ### 2. Layer 1 — Company

@@ -23,7 +23,9 @@ override anything below if they conflict:
 2. **Optimise for ATS *and* the manual screen.** Big-tech AU recruiters skim
    in ~8 seconds: name → most recent role → first 1–2 bullets
    → profile sentence one → education credential. Lead each role with the
-   strongest matching `impact-metric` bullet. Profile sentence one is the
+   strongest matching `impact-metric` bullet that has a verified
+   `metric.source`. If the role has none (CSIRO today), lead with its
+   strongest keyword-matching bullet instead. Profile sentence one is the
    title plus YoE (H3, H7); sentence two must mirror the ad's primary
    technical signal.
 3. **Visa 485.** The CV carries no work-rights line (`PRINCIPLES.md` §3.1).
@@ -58,8 +60,8 @@ how good the bullet selection is.
 | H5 | **Never invent bullet IDs.** Only IDs present in `bullet-bank/*.yml` may appear in `bullets:` lists. If a relevant bullet is missing, invoke `add-bullet` or flag the gap to the user. The renderer refuses unknown IDs, `status: outdated` bullets, and two bullets from one `variant_group`. | Models hallucinate plausible-sounding IDs. |
 | H6 | **Output must compile within its `page_mode` (default one page) and pass the text-layer check.** Always run the compile step. If over the limit, enter the prune loop. If `compile.sh` reports a text-layer error, fix it before handing off, because ATS parsers read that text. | Models write the spec but skip the compile verification. |
 | H7 | **YoE qualifier must describe duration only — never attach domain-specific claims to it.** Write "<YoE> of commercial experience building and supporting production systems", not "<YoE> of commercial experience in cloud-native infrastructure, CI/CD, and X". The YoE spans several roles with different domains; claiming the full duration covered a specific domain is false. Domain-specific skills belong in the second profile sentence without a duration attached. | Models mirror the ad's language by writing "X years of experience in [ad keyword]", over-claiming scope. |
+| H8 | **Fill the page before declaring done.** After the first clean 1-page compile, check whether the CV is visibly sparse (roughly fewer than 11 `\resumeItem` content lines, excluding stack and education). If it is, enter the fill loop (step 5 below) and add bullets until the page is dense or the ~14-item ceiling is approaching. A sparse 1-page CV wastes signal and looks unpolished. | First clean compile declared success without checking space usage. |
 | H9 | **Read every selected bullet's `note` and keep the CV inside it.** Notes carry honesty limits ("dev only, never production", "never write led"). The renderer prints each note as a `warn:` line; check each one before handing off. Respect `env` (no production claim unless `prod` is listed) and `ownership`. | Notes ignored, so a profile or skills line overclaims what the bullet allows. |
-| H8 | **Fill the page before declaring done.** After the first clean 1-page compile, check whether the CV is visibly sparse (roughly fewer than 11 `\resumeItem` content lines, excluding stack and education). If it is, enter the fill loop (see §5 below) and add bullets until the page is dense or the ~14-item ceiling is approaching. A sparse 1-page CV wastes signal and looks unpolished. | First clean compile declared success without checking space usage. |
 
 ## Primary objective: fit the page_mode, high signal
 
@@ -71,6 +73,7 @@ should map to at least one keyword from the ad. Cut anything that doesn't.
 
 Set `page_mode:` in the spec. Decide with this test, and state the choice in the shortlist:
 
+0. Graduate, associate, entry-level or junior ad (see "Seniority fit"): `one`, whatever the employer type.
 1. AU tech company, startup, or US-headquartered firm: `one`.
 2. AU enterprise, bank, government-owned operator, consulting or public sector: `two`, **if** the coverage table maps at least 8 ad keywords or qualifications to distinct bullets. Otherwise `one`, because a thin second page looks worse than a full first page.
 3. The user's explicit request overrides both.
@@ -150,7 +153,7 @@ Run `python3 tools/lint_bank.py`. Stop and report any `error:` line. Mention `me
 Extract from the ad text:
 
 - `company` and `role` (best guess from the ad).
-- `seniority` (intern / junior / mid / senior).
+- `seniority`: graduate / associate / junior / mid / senior, from the title and the ad's wording ("build your foundations", "onboarding buddy" = associate; "experienced", "lead" = mid or above). research-company records it in "Ad facts".
 - `basic_qualifications`: the ad's required items, each as the ad's exact noun phrase ("experience with AWS Lambda", "PostgreSQL"). Workday HiredScore grades each basic qualification separately, so one missing item lowers the whole grade.
 - `preferred_qualifications`: nice-to-haves, same format.
 - `keywords`: 8–15 short tokens that mirror the ad's vocabulary (e.g. `aws`, `event-driven`, `react`, `iac`, `observability`). Map each ad phrase to a bank tag through `tags.yml` `synonyms`, but write the ad's own phrase in the profile and skills block.
@@ -167,7 +170,16 @@ First show a coverage table. Each basic qualification gets the bullet ID that pr
 | Kubernetes | gap | no |
 ```
 
-Report every `gap` to the user before rendering (Principle 1: never paper over it). Then make sure each covered qualification's exact phrase appears once on the page, in a bullet, the profile or the skills block. Spell out an abbreviation once ("infrastructure as code (IaC)"). Use each keyword at most 3 times; the renderer warns past 4.
+Report every `gap` to the user before rendering (Principle 1: never paper over it). Then make sure each covered **technical** qualification's exact phrase appears once on the page, in a bullet, the profile or the skills block. **Soft skills** (communication, curiosity, attention to detail) can't go in the skills block (H2 needs proof); show them through a bullet's behaviour, and use the ad's word in the profile only when a selected bullet backs it.
+
+### Seniority fit
+
+Compare the ad's `seniority` with the user's level (2+ years, most recent title Junior Software Engineer, Associate Software Engineer at Canonical from 3 Nov 2026). Tell the user the result in one line before the shortlist.
+
+- **Ad is graduate or associate (below the user):** `page_mode: one`. Keep the YoE honest; never cut it to look junior. Profile sentence two leads with the ad's learning and build-and-own signals (testing, Git, full-stack range) rather than seniority words like "led" or "architected". Prefer bullets that show learning fast and shipping with a team. Warn the user that recruiters may ask why they want an entry-level role, and that a signed start elsewhere makes that harder.
+- **Ad is junior:** no change.
+- **Ad is mid or senior ("experienced", 3+ years, on-call ownership):** flag the gap in years to the user and let them decide whether to apply. Never stretch the YoE wording.
+- **Ad is a graduate *program*:** see "Graduate role vs Graduate program" below. Spell out an abbreviation once ("infrastructure as code (IaC)"). Use each keyword at most 3 times; the renderer warns past 4.
 
 Then pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`impact-metric` tagged bullets win) and recency (newest employer first). For AI-forward roles prefer `ai_framing: builder` bullets; for conservative employers use at most one `ai_framing: user` bullet.
 
@@ -182,7 +194,7 @@ Then pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`
 - Education bullets: **always explicitly set `education_bullets` in the spec** — never leave it unset, so the choice is visible in the spec (the renderer falls back to Highest Achieving Graduate only). Default for every engineering role: **Highest Achieving Graduate only** (1 bullet). Add the database-paper bullet only when `database`, `schema`, `sql`, or similar is a keyword in the ad. Always drop the scholarship line for engineering roles. Experience and projects always take priority over education lines.
 - `*-overview` bullets: **default to omitting them**. Include only if the ad emphasises breadth the overview captures and there is page room left.
 
-Total `\resumeItem` count target for one page: **≤ 14** (including stack lines, education, and project bullets). Count is a weak proxy, so budget by **words**: the renderer prints the total bullet words after each render. On the A4 STIX Two template, about 320 bullet words fits one page (Metro test, Nov 2026: 14 items, 321 words, one page). Treat both numbers as starting points; the compile result decides. Run `python3 tools/lint_bank.py --words` to see each bullet's length. Any bullet over 30 words wraps to 3 or more lines; when space is tight, swap it for the `-compact` version in its `variant_group`. The `*-stack` bullets are about 2 visual lines each.
+Total `\resumeItem` count target for one page: **≤ 14** (including stack lines, education, and project bullets). Count is a weak proxy, so budget by **words**: the renderer prints the total bullet words after each render. On the A4 STIX Two template, 320 to 380 bullet words fits one page (Nov 2026 tests: Metro 14 items / 321 words, Kmart 14 items / 384 words, both one page). Treat both numbers as starting points; the compile result decides. Run `python3 tools/lint_bank.py --words` to see each bullet's length. Any bullet over 30 words wraps to 3 or more lines; when space is tight, swap it for the `-compact` version in its `variant_group`. The `*-stack` bullets are about 2 visual lines each.
 
 ### Bullet anti-patterns — default avoid list
 
@@ -211,7 +223,7 @@ Present the shortlist as a markdown table, then **wait for user approval or edit
 
 Also propose:
 
-- A **2–3 sentence `profile` paragraph** (≤ ~50 words) that mirrors the ad's vocabulary and culture signals. Adapt the master profile in `cv/master.yml` — do not rewrite from scratch. Cut filler ("Motivated by…") if it doesn't directly mirror the ad.
+- A **2–3 sentence `profile` paragraph** (≤ ~55 words) that mirrors the ad's vocabulary and culture signals. Adapt the master profile in `cv/master.yml` — do not rewrite from scratch. Cut filler ("Motivated by…") if it doesn't directly mirror the ad.
 
   **Profile YoE structure — follow this pattern exactly:**
 
@@ -230,7 +242,7 @@ Also propose:
 
 ### 4. Write the spec
 
-Slugify the company: lowercase, dashes, ASCII only (e.g. `Conserve It` → `conserve-it`).
+Slug = company plus role: lowercase, dashes, ASCII only (e.g. Metro Trains, Software Engineer → `metro-trains-software-engineer`). Reuse the slug research-company already chose if `job-ads/<slug>/research.md` exists.
 
 Write to `job-ads/<slug>/spec.yml` using the schema from `job-ads/_example/spec.yml`. Role headings (title, employer, dates, location) come from each bank's `role:` block, so an experience entry needs only `bank` and `bullets`. Add a field only to override it. Required keys:
 
@@ -255,7 +267,7 @@ education_bullets:     # ALWAYS set explicitly so the choice is visible in the s
   # Only add the database-paper line when database/schema/sql are ad keywords.
   # Never include the scholarship line for engineering roles.
 profile: >-
-  <3-sentence tailored profile>
+  <2–3 sentence tailored profile>
 experience:             # newest first; headings come from bullet-bank/<bank>.yml role:
   - bank: canonical
     bullets: [canonical-overview]
@@ -281,7 +293,7 @@ Optional advisory fields (`role_intent`, `narrative_mode`, `gap_framing`, `signa
 
 If `job-ads/<slug>/spec.yml` already exists, **do not overwrite without confirmation** — show a diff summary first.
 
-### 5. Render + compile
+### 5–6. Render + compile
 
 Prefer the one-shot script:
 
@@ -300,9 +312,9 @@ If `tools/compile.sh` isn't available or fails, fall back to:
 
 ```bash
 python3 tools/render_tailored.py job-ads/<slug>/spec.yml
-tectonic outputs/<slug>/cv.tex --outdir outputs
-# or, if Tectonic isn't installed:
-latexmk -pdf -outdir=outputs outputs/<slug>/cv.tex
+tectonic -X compile outputs/<slug>/cv.tex --outdir outputs/<slug>
+# or, if Tectonic isn't installed (the template needs XeLaTeX for fontspec):
+latexmk -xelatex -outdir=outputs/<slug> outputs/<slug>/cv.tex
 ```
 
 If no LaTeX toolchain is on PATH, tell the user to `brew install tectonic` but do not fail the flow — the .tex output is still useful.
@@ -310,7 +322,7 @@ If no LaTeX toolchain is on PATH, tell the user to `brew install tectonic` but d
 When you cannot compile, apply a **conservative heuristic** to estimate one-page fit before handing off:
 
 - Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 14**. Long bullets count as multiple visual lines; use the word totals the renderer prints.
-- Bullet words (as printed by the renderer) should be **≤ ~320** for one page.
+- Bullet words (as printed by the renderer) should be **≤ ~380** for one page.
 - `profile` paragraph should be **≤ 50 words**.
 - `skills` block should have **≤ 5 category lines**.
 
@@ -334,9 +346,14 @@ If compiled, report the PDF page count and **enforce the `page_mode` limit** (th
   4. `*-overview` bullets only if all stronger options are exhausted and the page still has room.
   Re-compile after each addition. Stop when the page looks visually dense (few obvious gaps) or the ~14-item ceiling is within 1–2 items. **Never pad with zero-signal bullets** — if the only remaining options don't hit any ad keyword, stop and report that the page is as full as the bank can honestly fill.
 
-### 7. Offer iteration
+### 7. Send-date check, then offer iteration
 
-Ask the user for one of:
+Before handing off, check every bank role's `role.start`:
+
+- If a role was left out because it starts after today, say so, give the start date, and tell the user to re-render after that date before sending.
+- If the user has signed with an employer whose start is within 30 days, say once that applying elsewhere now is the user's call, and that the CV will not show that role until it starts.
+
+Then ask the user for one of:
 
 - "Swap bullet X for Y."
 - "Shorten the profile."

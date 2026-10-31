@@ -58,8 +58,9 @@ The recruiter's 8-second skim path:
 Implications:
 
 - The first non-overview bullet of each role **must be the strongest
-  `impact-metric` bullet that matches the ad**. Never lead a role with a
-  generic responsibility bullet.
+  `impact-metric` bullet that matches the ad**, when the role has one with a
+  verified metric source. Otherwise lead with the strongest keyword-matching
+  bullet. Never lead a role with a generic responsibility bullet.
 - The Profile paragraph must mirror the ad's *primary* technical signal by
   its second sentence. Sentence one is the current title, the credential and
   YoE (tailor-cv H3, H7), which recruiters also scan for.
@@ -91,8 +92,9 @@ application; Projects exist only to cover ad requirements Experience can't.
   ("validate AI-generated code") was cut on review because
   `soniq-architectural-validation` already carried the AI-output-quality
   signal; the freed space went to `soniq-fallback-content`, a scheduling
-  bullet matching the ad's domain. That bullet has since been marked
-  `status: outdated` and the renderer refuses it; the test still applies.
+  bullet matching the ad's domain. `soniq-architectural-validation` has
+  since been marked `status: outdated` and the renderer refuses it; the test
+  still applies.
 
 ### Pivoting from SONIQ → big tech
 
@@ -256,7 +258,7 @@ outputs/<slug>/
   cover.tex / cover.pdf
 ```
 
-`<slug>` is kebab-case ASCII (e.g. `Conserve It` → `conserve-it`). One folder per application; the folder name *is* the slug.
+`<slug>` is kebab-case ASCII, company plus role (e.g. `metro-trains-software-engineer`). One folder per application; the folder name *is* the slug.
 
 ---
 
