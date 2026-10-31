@@ -10,12 +10,14 @@
 \usepackage[a4paper, left=2.2cm, right=2.2cm, top=1.8cm, bottom=2cm]{geometry}
 \usepackage[normalem]{ulem}
 \usepackage[hidelinks]{hyperref}
+\usepackage[none]{hyphenat}
 \hypersetup{pdftitle={Cover letter - {{COMPANY}}}, pdfauthor={Gia Bao Bui}}
 
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.8em}
 \urlstyle{same}
+\raggedright
 
 \begin{document}
 

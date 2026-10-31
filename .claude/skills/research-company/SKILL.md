@@ -30,7 +30,7 @@ Project       — what the team ships
 Tech stack    — how the team ships it
 ```
 
-Skipping layers produces generic cover letters. Doing all five produces references no other candidate has.
+Skipping layers produces generic cover letters. Doing Layer 0 plus all five research layers produces references no other candidate has.
 
 ## Cross-cutting principles
 
@@ -77,7 +77,7 @@ The user holds a Subclass 485 visa (full work rights, temporary). Check these ga
 | Security clearance (Baseline, NV1, NV2) | The ad | level, or "none" |
 | Sponsorship stance | A written statement from the employer (ad, careers FAQ, recruiter email) | quote and link; this is the strongest signal |
 | Accredited sponsor | Home Affairs accredited sponsor list, released only under FOI (latest found: as at 15 Jan 2025, via righttoknow.org.au) | listed / not listed / not checked |
-| Sanctioned sponsor | ABF sponsor sanctions register (abf.gov.au) | listed / not listed |
+| Sanctioned sponsor | The register of sanctioned sponsors (search that phrase; it has moved between abf.gov.au and immi.homeaffairs.gov.au and may block automated fetches) | listed / not listed / not reachable |
 | Public-sector application format | APS and state jobs: a pitch or selection-criteria response replaces the cover letter | format and the stated word or page limit |
 
 Accredited status shows the employer can sponsor, not that it will for this role. Never guess the sponsorship stance; write "not stated" when nothing is published.
@@ -91,7 +91,7 @@ Record these from the ad itself. tailor-cv reads this block for its coverage tab
 - Basic qualifications (required), each as the ad's exact phrase.
 - Preferred qualifications, same format.
 - Screening questions, if the portal shows them (SEEK allows up to eight, often including right to work).
-- ATS vendor from the apply URL: `myworkdayjobs.com` (Workday, may use HiredScore grading), `greenhouse.io`, `lever.co`, `pageuppeople.com` (PageUp), `smartrecruiters.com`, `jobadder.com`, or SEEK quick apply.
+- ATS vendor from the apply URL: `myworkdayjobs.com` (Workday, may use HiredScore grading), `greenhouse.io`, `lever.co`, `pageuppeople.com` (PageUp), `smartrecruiters.com`, `jobadder.com`, `successfactors.com` or `jobs.sap.com` (SAP SuccessFactors, common at AU enterprises and transport operators), `taleo.net` (Oracle Taleo), or SEEK quick apply.
 - Who to address: a named hiring manager or recruiter, if the ad or LinkedIn shows one.
 
 ### 2. Layer 1 — Company
@@ -185,7 +185,7 @@ Path: `job-ads/<slug>/research.md`. Schema:
 | Clearance | none | ad |
 | Sponsorship stance | not stated | — |
 | Accredited sponsor (FOI list, Jan 2025) | not checked | — |
-| ABF sanctions register | not listed | [link](…) |
+| Sanctioned sponsors register | not listed | [link](…) |
 | Public-sector format | n/a | — |
 
 ## Ad facts

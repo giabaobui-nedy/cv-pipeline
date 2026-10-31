@@ -23,8 +23,9 @@ override anything below if they conflict:
 2. **Optimise for ATS *and* the manual screen.** Big-tech AU recruiters skim
    in ~8 seconds: name → most recent role → first 1–2 bullets
    → profile sentence one → education credential. Lead each role with the
-   strongest matching `impact-metric` bullet. Profile sentence one must
-   mirror the ad's primary technical signal.
+   strongest matching `impact-metric` bullet. Profile sentence one is the
+   title plus YoE (H3, H7); sentence two must mirror the ad's primary
+   technical signal.
 3. **Visa 485.** The CV carries no work-rights line (`PRINCIPLES.md` §3.1).
    The cover letter header and the application form carry it. Detect
    PR-only gates and flag them before drafting. Answer work-rights form
@@ -58,18 +59,23 @@ how good the bullet selection is.
 | H6 | **Output must compile within its `page_mode` (default one page) and pass the text-layer check.** Always run the compile step. If over the limit, enter the prune loop. If `compile.sh` reports a text-layer error, fix it before handing off, because ATS parsers read that text. | Models write the spec but skip the compile verification. |
 | H7 | **YoE qualifier must describe duration only — never attach domain-specific claims to it.** Write "<YoE> of commercial experience building and supporting production systems", not "<YoE> of commercial experience in cloud-native infrastructure, CI/CD, and X". The YoE spans several roles with different domains; claiming the full duration covered a specific domain is false. Domain-specific skills belong in the second profile sentence without a duration attached. | Models mirror the ad's language by writing "X years of experience in [ad keyword]", over-claiming scope. |
 | H9 | **Read every selected bullet's `note` and keep the CV inside it.** Notes carry honesty limits ("dev only, never production", "never write led"). The renderer prints each note as a `warn:` line; check each one before handing off. Respect `env` (no production claim unless `prod` is listed) and `ownership`. | Notes ignored, so a profile or skills line overclaims what the bullet allows. |
-| H8 | **Fill the page before declaring done.** After the first clean 1-page compile, check whether the CV is visibly sparse (roughly fewer than 11 `\resumeItem` content lines, excluding stack and education). If it is, enter the fill loop (see §5 below) and add bullets until the page is dense or the 13-item ceiling is approaching. A sparse 1-page CV wastes signal and looks unpolished. | First clean compile declared success without checking space usage. |
+| H8 | **Fill the page before declaring done.** After the first clean 1-page compile, check whether the CV is visibly sparse (roughly fewer than 11 `\resumeItem` content lines, excluding stack and education). If it is, enter the fill loop (see §5 below) and add bullets until the page is dense or the ~14-item ceiling is approaching. A sparse 1-page CV wastes signal and looks unpolished. | First clean compile declared success without checking space usage. |
 
-## Primary objective: one page, high signal
+## Primary objective: fit the page_mode, high signal
 
-The tailored CV **must compile to exactly one page**. At early-career stage,
-density of signal beats breadth — every bullet on the page should map to at
-least one keyword from the ad. Cut anything that doesn't. If the user
-explicitly overrides this and asks for two pages, comply, but default to one.
+The tailored CV **must compile within its `page_mode`** (see below). At
+early-career stage, density of signal beats breadth: every bullet on the page
+should map to at least one keyword from the ad. Cut anything that doesn't.
 
 ### page_mode
 
-Set `page_mode:` in the spec. `one` (default) suits AU tech companies, startups and US-headquartered firms. `two` suits AU enterprise, banks, consulting and public-sector roles, where SEEK and recruiters expect two pages. Use `two` only when the ad or employer type fits, never to avoid pruning. `compile.sh` enforces the limit.
+Set `page_mode:` in the spec. Decide with this test, and state the choice in the shortlist:
+
+1. AU tech company, startup, or US-headquartered firm: `one`.
+2. AU enterprise, bank, government-owned operator, consulting or public sector: `two`, **if** the coverage table maps at least 8 ad keywords or qualifications to distinct bullets. Otherwise `one`, because a thin second page looks worse than a full first page.
+3. The user's explicit request overrides both.
+
+`compile.sh` enforces the limit. A `two` CV should fill at least half of page two; if it doesn't, switch to `one` and prune.
 
 Signal-density rules:
 
@@ -176,7 +182,7 @@ Then pick bullets by **tag overlap** with `keywords`, breaking ties by impact (`
 - Education bullets: **always explicitly set `education_bullets` in the spec** — never leave it unset, so the choice is visible in the spec (the renderer falls back to Highest Achieving Graduate only). Default for every engineering role: **Highest Achieving Graduate only** (1 bullet). Add the database-paper bullet only when `database`, `schema`, `sql`, or similar is a keyword in the ad. Always drop the scholarship line for engineering roles. Experience and projects always take priority over education lines.
 - `*-overview` bullets: **default to omitting them**. Include only if the ad emphasises breadth the overview captures and there is page room left.
 
-Total `\resumeItem` count target: **≤ 13** (including stack lines, education, and project bullets). **Empirically, 14+ overflows to a second page**. Count is a weak proxy, so budget by **words**: the renderer prints the total bullet words after each render. Aim for about 280 bullet words on one page. Run `python3 tools/lint_bank.py --words` to see each bullet's length. Any bullet over 30 words wraps to 3 or more lines; when space is tight, swap it for the `-compact` version in its `variant_group`. The `*-stack` bullets are about 2 visual lines each.
+Total `\resumeItem` count target for one page: **≤ 14** (including stack lines, education, and project bullets). Count is a weak proxy, so budget by **words**: the renderer prints the total bullet words after each render. On the A4 STIX Two template, about 320 bullet words fits one page (Metro test, Nov 2026: 14 items, 321 words, one page). Treat both numbers as starting points; the compile result decides. Run `python3 tools/lint_bank.py --words` to see each bullet's length. Any bullet over 30 words wraps to 3 or more lines; when space is tight, swap it for the `-compact` version in its `variant_group`. The `*-stack` bullets are about 2 visual lines each.
 
 ### Bullet anti-patterns — default avoid list
 
@@ -217,7 +223,7 @@ Also propose:
 
   - **Compute `<YoE>` from role dates on every run.** Sum the whole months of every `experience[]` entry using each bank's `role.start` / `role.end` (no `end` = today). Under 24 months: "nearly 2 years". 24 to 35: "2+ years". 36 to 47: "3+ years". Never round up. Example: CSIRO Mar 2024 to Jun 2025 (16) + SONIQ Feb 2026 to Oct 2026 (9) = 25 months, so "2+ years". Canonical (from Nov 2026) adds to this.
   - Sentence 1 uses the YoE qualifier with a **general** work description only ("building and supporting production systems", "across fullstack and backend engineering"). Never attach a role-specific domain here. The YoE spans several roles, which covered different things.
-  - Sentence 2 carries the **role-specific** technical vocabulary without a duration claim. Skills named here must appear in at least one bullet from each role or both stack lines — not just one role.
+  - Sentence 2 carries the ad's primary technical signal, as role-specific vocabulary without a duration claim. Every skill named here must be proved by at least one selected bullet or stack line. Never word it so a skill seems to span every role.
   - Bad: `"2+ years of commercial experience in cloud-native infrastructure and CI/CD"` (falsely implies every role covered this)
   - Good: `"2+ years of commercial experience building and supporting production systems. Hands-on in Python, Docker, and CI/CD automation…"`
 - A **reordered, pruned `skills` block** (structured YAML): keep the master's structure, move ad-relevant categories to the top, and **drop categories that would be noise** for this role. Better to have 3 dense lines than 6 thin ones.
@@ -269,6 +275,10 @@ referees:              # optional; only when the ad or portal asks for named ref
 
 **Referees.** Default: no Referees section (AU convention is "available on request"). Add `referees` and put `referees` in `section_order` only when the ad or portal asks for named referees (universities, public sector). Ask the user for the referee details; keep two ready, at least one based in Australia.
 
+Optional advisory fields (`role_intent`, `narrative_mode`, `gap_framing`, `signal_density`) are described in the README. Fill them when they help a later reader understand the choices; the renderer ignores them.
+
+**Roles that have not started.** The renderer refuses a role whose bank `role.start` is after today. Leave it out of the spec until then. Set `allow_future_roles: true` only for a draft the user will not send before that date, and say so in the hand-off.
+
 If `job-ads/<slug>/spec.yml` already exists, **do not overwrite without confirmation** — show a diff summary first.
 
 ### 5. Render + compile
@@ -299,14 +309,14 @@ If no LaTeX toolchain is on PATH, tell the user to `brew install tectonic` but d
 
 When you cannot compile, apply a **conservative heuristic** to estimate one-page fit before handing off:
 
-- Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 13** (14+ has been observed to overflow). Long bullets count as multiple visual lines; use the word totals the renderer prints.
-- Sum of words across all `text` fields in the spec should be **≤ ~280**.
+- Total `\resumeItem{...}` lines in the rendered .tex should be **≤ 14**. Long bullets count as multiple visual lines; use the word totals the renderer prints.
+- Bullet words (as printed by the renderer) should be **≤ ~320** for one page.
 - `profile` paragraph should be **≤ 50 words**.
 - `skills` block should have **≤ 5 category lines**.
 
 If any threshold is exceeded, prune (using the priority order in the next step) and re-render before declaring done.
 
-If compiled, report the PDF page count and **enforce one page**:
+If compiled, report the PDF page count and **enforce the `page_mode` limit** (the steps below are written for `one`; for `two`, read "1 page" as "2 pages"):
 
 - **= 1 page**: report success, show the chosen shortlist, hand off to step 7.
 - **> 1 page**: enter a prune loop. Drop bullets in this priority order until the PDF fits. **Education is the lowest-priority section** — cut it before touching projects or experience. **Within experience and projects, projects are less important than experience bullets** — projects exist to colour gaps experience doesn't fill.
@@ -322,7 +332,7 @@ If compiled, report the PDF page count and **enforce one page**:
   2. Add a second bullet to an existing project before adding a new project.
   3. Add a new project from the bank if the project section is sparse and a strong candidate exists.
   4. `*-overview` bullets only if all stronger options are exhausted and the page still has room.
-  Re-compile after each addition. Stop when the page looks visually dense (few obvious gaps) or the 13-item ceiling is within 1–2 items. **Never pad with zero-signal bullets** — if the only remaining options don't hit any ad keyword, stop and report that the page is as full as the bank can honestly fill.
+  Re-compile after each addition. Stop when the page looks visually dense (few obvious gaps) or the ~14-item ceiling is within 1–2 items. **Never pad with zero-signal bullets** — if the only remaining options don't hit any ad keyword, stop and report that the page is as full as the bank can honestly fill.
 
 ### 7. Offer iteration
 

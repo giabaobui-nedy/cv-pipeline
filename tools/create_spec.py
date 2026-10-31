@@ -47,8 +47,8 @@ def months_of_experience(today: dt.date) -> int:
         role = (yaml.safe_load((BANK / f"{bank}.yml").read_text()) or {}).get("role", {})
         if not role.get("start"):
             continue
-        sy, sm = map(int, str(role["start"]).split("-"))
-        ey, em = map(int, str(role["end"]).split("-")) if role.get("end") else (today.year, today.month)
+        sy, sm = map(int, str(role["start"]).split("-")[:2])
+        ey, em = map(int, str(role["end"]).split("-")[:2]) if role.get("end") else (today.year, today.month)
         if (ey, em) >= (sy, sm):
             total += (ey - sy) * 12 + (em - sm) + 1
     return total

@@ -134,18 +134,18 @@ if [[ "$do_cv" == 1 ]]; then
 fi
 
 if [[ "$do_cover" == 1 ]]; then
-  if "$PY" tools/render_cover_letter.py "$target" 2>/tmp/cover_render.err; then
+  # Capture output so warnings (e.g. over 350 words) always show, without a temp file.
+  rc=0
+  cover_out="$("$PY" tools/render_cover_letter.py "$target" 2>&1)" || rc=$?
+  if [[ "$rc" == 0 ]]; then
+    printf '%s\n' "$cover_out"
     max_pages=1
     compile_tex "outputs/${slug}/cover.tex"
+  elif [[ "$rc" == 2 ]]; then
+    # No cover_letter block: an error only when the letter was asked for explicitly.
+    [[ "$mode" == "--cover" ]] && { printf '%s\n' "$cover_out" >&2; exit 2; }
   else
-    rc=$?
-    if [[ "$rc" == 2 ]]; then
-      [[ "$mode" == "--cover" ]] && { cat /tmp/cover_render.err >&2; exit 2; }
-      # Auto mode: silently skip if no cover_letter block
-      :
-    else
-      cat /tmp/cover_render.err >&2
-      exit "$rc"
-    fi
+    printf '%s\n' "$cover_out" >&2
+    exit "$rc"
   fi
 fi

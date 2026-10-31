@@ -293,7 +293,8 @@ cv-pipeline/
     render_cover_letter.py      # spec -> outputs/<slug>/cover.tex
     compile.sh                  # one-shot render + compile via Tectonic
     track.py                    # spec -> Notion-paste-ready row (manual paste)
-  .cursor/skills/               # research-company, tailor-cv, write-cover-letter, add-bullet
+  .claude/skills/               # research-company, tailor-cv, write-cover-letter, add-bullet
+  .cursor/skills -> ../.claude/skills   # symlink; edit only .claude/skills
   .vscode/                      # LaTeX Workshop preconfigured for Tectonic
   PRINCIPLES.md                 # cross-cutting rules every skill inherits
   BOUNDARIES.md                 # confidentiality guardrails
@@ -680,7 +681,7 @@ If you'd rather drive it by hand:
    into it. Paste the raw description into `ad_raw`. Fill in `keywords`.
 2. **Pick bullets.** For each role, list bullet `id`s from the bank.
    Budget for one page: 4 SONIQ + `soniq-stack`, 3 CSIRO + `csiro-stack`,
-   0–1 project with 1–2 bullets. Total `\resumeItem` lines ≤ 13 (see
+   0–1 project with 1–2 bullets. Total `\resumeItem` lines ≤ 14 (see
    `tailor-cv` skill for the empirically-validated budget).
 3. **Render + compile.**
    ```bash

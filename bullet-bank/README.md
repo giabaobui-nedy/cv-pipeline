@@ -9,7 +9,7 @@ Run `python3 tools/lint_bank.py` after every edit.
 | Field | Meaning |
 |---|---|
 | `title`, `employer`, `dates`, `location` | Rendered in the CV heading. A spec can override any of them. |
-| `start`, `end` | `YYYY-MM`. Omit `end` for the current role. tailor-cv sums these to compute YoE. |
+| `start`, `end` | `YYYY-MM` or `YYYY-MM-DD`. Omit `end` for the current role. tailor-cv sums these to compute YoE. The renderer refuses a role whose `start` is after today unless the spec sets `allow_future_roles: true`. |
 
 ## Bullet fields
 

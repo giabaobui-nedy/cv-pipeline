@@ -60,8 +60,9 @@ Implications:
 - The first non-overview bullet of each role **must be the strongest
   `impact-metric` bullet that matches the ad**. Never lead a role with a
   generic responsibility bullet.
-- The Profile paragraph must mirror the ad's *primary* technical signal in
-  its first sentence — recruiters read sentence one and bounce.
+- The Profile paragraph must mirror the ad's *primary* technical signal by
+  its second sentence. Sentence one is the current title, the credential and
+  YoE (tailor-cv H3, H7), which recruiters also scan for.
 - Drop weak bullets aggressively. Recruiters read fewer lines than candidates
   think.
 - Cover letter: first 8 words must be unique to *this* company; the

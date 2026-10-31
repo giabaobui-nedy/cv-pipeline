@@ -34,7 +34,7 @@ BANNED = [
 ]
 LONG_WORDS = 45
 MAX_TAGS = 8
-YM = re.compile(r"^\d{4}-\d{2}$")
+YM = re.compile(r"^\d{4}-\d{2}(-\d{2})?$")
 
 
 def main() -> None:
@@ -59,7 +59,7 @@ def main() -> None:
                     errors.append(f"{path.name}: role block has no '{k}'")
             for k in ("start", "end"):
                 if role.get(k) and not YM.match(str(role[k])):
-                    errors.append(f"{path.name}: role.{k} must be YYYY-MM")
+                    errors.append(f"{path.name}: role.{k} must be YYYY-MM or YYYY-MM-DD")
             bullets += [(path.name, b) for b in data.get("bullets") or []]
         else:
             for proj in data.get("projects", []):

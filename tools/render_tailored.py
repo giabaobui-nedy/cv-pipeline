@@ -11,6 +11,7 @@ fills `cv/tailored.tex.template` and writes a ready-to-compile .tex file.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import re
 import sys
 from collections import Counter
@@ -115,7 +116,7 @@ def render_skills(skills: object) -> str:
             sys.exit("each structured skills entry needs 'category' and list-valued 'items'")
 
         rendered_items = ", ".join(_latex_escape(item) for item in items)
-        lines.append(f"\\textbf{{{_latex_escape(category)}}}{{: {rendered_items};}}")
+        lines.append(f"\\textbf{{{_latex_escape(category)}}}{{: {rendered_items}}}")
 
     return " \\\\\n".join(lines)
 
@@ -220,7 +221,21 @@ def expand_all(pool: dict[str, dict]) -> list[str]:
     return body + stack
 
 
-def selection_warnings(spec: dict, selected: list[dict]) -> list[str]:
+def parse_start(value: object) -> dt.date | None:
+    """role.start is YYYY-MM or YYYY-MM-DD; a bare month means its first day."""
+    parts = str(value or "").split("-")
+    if len(parts) < 2:
+        return None
+    day = int(parts[2]) if len(parts) > 2 else 1
+    return dt.date(int(parts[0]), int(parts[1]), day)
+
+
+def _has_token(token: str, text: str) -> bool:
+    # Whole-token match, so "java" does not match inside "javascript".
+    return re.search(rf"(?<![a-z0-9+#]){re.escape(token)}(?![a-z0-9+#])", text) is not None
+
+
+def selection_warnings(spec: dict, selected: list[dict], extra_evidence: list[str]) -> list[str]:
     """Non-blocking checks on the chosen bullets. See tailor-cv for the rules."""
     warns = []
     stories = Counter(b["story"] for b in selected if b.get("story"))
@@ -234,18 +249,18 @@ def selection_warnings(spec: dict, selected: list[dict]) -> list[str]:
         if "---" in b["text"] or "\u2014" in b["text"]:
             warns.append(f"{b['id']} contains an em dash")
         if b.get("note"):
-            warns.append(f"{b['id']} has a note; confirm the CV respects it: {' '.join(b['note'].split())[:100]}")
+            warns.append(f"{b['id']} has a note; confirm the CV respects it: {' '.join(b['note'].split())}")
 
-    evidence = " ".join(plain_text(b["text"]) for b in selected).lower()
-    for role in spec.get("experience", []):
-        evidence += " " + str(role.get("stack", "")).lower()
+    evidence = " ".join([plain_text(b["text"]) for b in selected] + extra_evidence).lower().replace(".js", "")
     skills = spec.get("skills") if isinstance(spec.get("skills"), list) else []
     for entry in skills:
         for item in entry.get("items", []):
             item_text = str(item).lower().replace(".js", "")
-            tokens = [t for t in re.split(r"[\s(),/&]+", item_text) if len(t) > 1]
-            if tokens and not any(t in evidence for t in tokens):
-                warns.append(f"skills item '{item}' is not backed by any selected bullet or stack line")
+            tokens = [t for t in re.split(r"[\s(),/&]+", item_text) if t]
+            if len(tokens) > 1:
+                tokens = [t for t in tokens if len(t) > 1]
+            if tokens and not any(_has_token(t, evidence) for t in tokens):
+                warns.append(f"skills item '{item}' is not backed by any selected bullet, stack line or project stack")
 
     # Stack lines list tools by design, so only prose counts toward keyword stuffing.
     text = " ".join([plain_text(spec.get("profile", ""))] + [plain_text(b["text"]) for b in body]).lower()
@@ -296,11 +311,21 @@ def main() -> None:
         education_list_block = ""
 
     experience_blocks = []
+    extra_evidence: list[str] = []
+    today = dt.date.today()
     for role in spec.get("experience", []):
         bank = role_banks.get(role["bank"])
         if bank is None:
             sys.exit(f"unknown bank '{role['bank']}' (known: {list(role_banks)})")
         meta = {**role_metas[role["bank"]], **{k: v for k, v in role.items() if k != "bullets"}}
+        start = parse_start(meta.get("start"))
+        if start and start > today and not spec.get("allow_future_roles"):
+            errors.append(
+                f"role {role['bank']} starts on {start:%d %b %Y}, after today; drop it from the spec "
+                "until then (or set allow_future_roles: true for a draft you won't send yet)"
+            )
+            continue
+        extra_evidence.append(str(meta.get("stack", "")))
         missing = [k for k in ("title", "dates", "employer", "location") if not meta.get(k)]
         if missing:
             errors.append(f"role {role['bank']} has no {missing} in the spec or the bank's role block")
@@ -320,6 +345,7 @@ def main() -> None:
             errors.append(f"unknown project {proj_spec['id']}")
             continue
         pool = {b["id"]: b for b in proj.get("bullets", [])}
+        extra_evidence.append(str(proj.get("stack", "")))
         ids = expand_all(pool) if proj_spec.get("bullets") == "all" else proj_spec.get("bullets", [])
         bullets = [b for bid in ids if (b := pick(bid, pool, proj["id"]))]
         bullets = [b for b in bullets if b.get("status") != "outdated"]
@@ -334,7 +360,7 @@ def main() -> None:
         sys.exit("error: " + "\nerror: ".join(errors))
 
     # The master lists everything on purpose, so selection warnings are noise there.
-    for w in ([] if spec.get("page_mode") == "master" else selection_warnings(spec, selected)):
+    for w in ([] if spec.get("page_mode") == "master" else selection_warnings(spec, selected, extra_evidence)):
         print(f"warn: {w}", file=sys.stderr)
 
     sections = {

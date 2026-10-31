@@ -5,6 +5,8 @@
 company: Master
 role: Master CV
 page_mode: master
+# The master is never sent, so it may list a role before its start date.
+allow_future_roles: true
 profile: >-
   Software Engineer and Highest Achieving Graduate in Computer Science with 2+ years of commercial
   experience building production-grade, API-driven systems, from event-driven microservices on AWS

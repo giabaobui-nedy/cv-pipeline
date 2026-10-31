@@ -116,7 +116,7 @@ def main() -> None:
         .replace("{{COMPANY}}", _normalise(cl_company))
         .replace("{{LETTER_DATE}}", _normalise(letter_date))
         .replace("{{RECIPIENT_BLOCK}}", render_recipient(cl_for_recipient))
-        .replace("{{SALUTATION}}", _normalise(cl.get("salutation", "Dear Hiring Team")))
+        .replace("{{SALUTATION}}", _normalise(cl.get("salutation", "Dear Hiring Manager")))
         .replace("{{PARAGRAPH_FORWARD}}\n\n", "{{PARAGRAPH_FORWARD}}\n\n" if paragraphs.get("forward") else "")
         .replace("{{PARAGRAPH_HOOK}}", _body(paragraphs["hook"]))
         .replace("{{PARAGRAPH_TECHNICAL}}", _body(paragraphs["technical_match"]))
@@ -133,6 +133,12 @@ def main() -> None:
 
     # Word count guard: ≤ 350 across paragraphs (one-page hard limit).
     total_words = sum(len(_normalise(paragraphs[k]).split()) for k in used)
+    budgets = {"hook": (40, 80), "technical_match": (50, 85), "values_fit": (50, 85), "forward": (30, 70), "close": (15, 50)}
+    for k in used:
+        n = len(_normalise(paragraphs[k]).split())
+        lo, hi = budgets[k]
+        if not lo <= n <= hi:
+            print(f"warn: {k} is {n} words; aim for {lo} to {hi}", file=sys.stderr)
     if total_words > 350:
         print(f"warn: cover letter is {total_words} words; trim to ≤ 350 for one page", file=sys.stderr)
 

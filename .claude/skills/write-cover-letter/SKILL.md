@@ -56,7 +56,7 @@ default:
 | # | Rule | Common failure mode |
 |---|---|---|
 | C1 | **Required fields:** `recipient_name`, `salutation`, `tone`, `evidence.technical`, `evidence.values`, and the `hook`, `technical_match`, `values_fit` and `close` paragraphs. `forward` (P4) is optional: drop it for a four-paragraph letter. | Models omit `tone` and `evidence`, making the output untraceable and the evidence anchor missing. |
-| C2 | **`tone` must be one of the five named modes** (or `hybrid_warm_professional`). Never leave it blank — it is the traceability marker for future edits. | Left unset when models skip the tone-detection step. |
+| C2 | **`tone` must be one of the modes in the §3 table** (or `hybrid_warm_professional`). Never leave it blank — it is the traceability marker for future edits. | Left unset when models skip the tone-detection step. |
 | C3 | **Hook must not open with any banned phrase.** Run the hook self-check (see §5 P1) before writing. | "I'm excited by…", "I am writing to…", "I would like to apply…" still appear despite the ban list. |
 | C4 | **`evidence.technical` and `evidence.values` must be real bullet IDs from the bank.** The cover letter narrates these bullets — if the IDs are wrong the paragraphs will be incoherent. | Models use plausible-sounding but non-existent IDs. |
 | C5 | **Never copy a CV bullet verbatim into a paragraph.** The cover letter zooms into the story behind the bullet; it does not restate the bullet text. | P2 often just paraphrases the bullet text, adding no new depth. |
@@ -96,7 +96,7 @@ candidate could have written it.
 ### 1. Load repo context
 
 - `BOUNDARIES.md`
-- `bullet-bank/{soniq,csiro,projects}.yml`
+- Every `bullet-bank/*.yml` file (including `canonical.yml`), plus `bullet-bank/README.md` for field meanings
 - `cv/master.yml` (for the master profile paragraph as voice reference)
 - Existing `job-ads/<slug>/spec.yml` if present (so the cover letter mirrors any
   emphasis already chosen for the CV).
@@ -134,7 +134,7 @@ If signals are mixed or the ad is too short to classify, default to **`hybrid_wa
 
 For paragraphs 2 (technical) and 3 (values), pick **one bullet ID each** from `bullet-bank/`:
 
-- **P2 — technical_match**: Must match the ad's #1 must-have. Prefer bullets with `impact-metric` tags. Try to differ from the bullet IDs already chosen for the CV's most prominent role (otherwise the cover letter just restates the CV).
+- **P2 — technical_match**: Must match the ad's #1 must-have. Prefer bullets with `impact-metric` tags. Prefer the CV's strongest matching achievement and narrate it at a deeper zoom (the why, the mechanism, the lesson), as `PRINCIPLES.md` §4 requires. Rule C5 stops the letter restating the bullet text.
 - Read each chosen bullet's `note`, `env` and `ownership` now (rule C6) and carry those limits into the story angle.
 - **P3 — values_fit**: Must reflect the ad's culture/values signal (ownership, collaboration, scientific rigour, customer focus, etc.). Different *theme* from P2. Prefer `meta`-tagged bullets (cross-cutting) or bullets with collaboration / leadership / debugging / ownership tags.
 
@@ -149,7 +149,7 @@ Wait for approval before drafting.
 
 ### 5. Draft all 5 paragraphs
 
-**Word budget**: 250–350 words total. Per paragraph: 50–80 (P5: 30–50). Four paragraphs (no P4) is a valid shape: Robert Half AU recommends four, Hays AU caps at five.
+**Word budget**: 250–350 words total. Per paragraph: P1 40–80, P2 and P3 50–85, P4 30–70, P5 15–50. The renderer warns outside these ranges. Four paragraphs (no P4) is a valid shape: Robert Half AU recommends four, Hays AU caps at five.
 
 **Research facts**: use at most two facts from the research file, and tie each to a matching bullet ID (the research file's synthesis table names one). Prefer a team-owned fact (their product, blog post, repo or stack) over company-wide praise.
 
@@ -245,8 +245,8 @@ Append (or replace) the `cover_letter:` block in `job-ads/<slug>/spec.yml`:
 ```yaml
 cover_letter:
   company: <Company>                 # defaults to top-level `company` if omitted
-  recipient_name: Hiring Team        # or specific person if known
-  salutation: "Dear Hiring Team"
+  recipient_name: Hiring Manager     # or a named person if known (rule C8)
+  salutation: "Dear Hiring Manager"
   date: 2 May 2026                   # optional; defaults to today on render
   recipient_address: |               # optional; omit unless you have a real address
     Street line 1
