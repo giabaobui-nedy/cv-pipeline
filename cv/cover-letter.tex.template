@@ -1,71 +1,41 @@
-% !TEX program = pdflatex
-% Cover letter template — based on Lorenzo Saino's letter.cls scaffold (MIT,
-% https://github.com/lorenzosaino), parameterised by tools/render_cover_letter.py.
-% DO NOT edit the .tex output by hand; edit the spec in job-ads/<slug>/spec.yml
-% or the bullet bank instead.
+% !TEX program = xelatex
+% Cover letter template, parameterised by tools/render_cover_letter.py.
+% The letterhead matches cv/tailored.tex.template so CV and letter read as one set.
+% DO NOT edit the .tex output by hand; edit the spec in job-ads/<slug>/spec.yml.
 
-\documentclass[a4paper, 11pt]{letter}
-
-\newcommand{\covertitle}{Gia Bao~Bui}
-\newcommand{\pdftitle}{Cover~letter~--~{{COMPANY}}}
-\newcommand{\pdfauthor}{\covertitle}
-
-\newcommand{\authoraddress}{Box Hill South, VIC 3128}
-\newcommand{\authoremail}{giabaobui@baobuild.dev}
-\newcommand{\authortel}{0402 595 747}
-\newcommand{\authorlinkedin}{https://www.linkedin.com/in/gia-bao-bui-227476227/}
-\newcommand{\authorgithub}{https://github.com/giabaobui-nedy}
-\newcommand{\authorportfolio}{https://www.baobuild.dev/}
-
-\newcommand{\linkcolor}{blue}
-\newcommand{\marginleft}{2.5cm}
-\newcommand{\marginright}{2.5cm}
-\newcommand{\margintop}{2.0cm}
-\newcommand{\marginbottom}{2.0cm}
-
-\date{{{LETTER_DATE}}}
+\documentclass[a4paper,11pt]{article}
 
 \usepackage{fontspec}
-\setmainfont{Calibri}
-\usepackage[a4paper, bindingoffset=0cm, left=\marginleft, right=\marginright, top=\margintop, bottom=\marginbottom, footskip=.25in]{geometry}
-\usepackage[bottom]{footmisc}
-\usepackage{url}
-\usepackage[bookmarks, colorlinks, breaklinks, pdftitle=\pdftitle, pdfauthor=\pdfauthor]{hyperref}
-\hypersetup{linkcolor=\linkcolor, citecolor=\linkcolor, filecolor=black, urlcolor=\linkcolor}
-\pagenumbering{gobble}
+\setmainfont{STIXTwoText}[Extension=.otf, UprightFont=*-Regular, BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+\usepackage[a4paper, left=2.2cm, right=2.2cm, top=1.8cm, bottom=2cm]{geometry}
+\usepackage[normalem]{ulem}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Cover letter - {{COMPANY}}}, pdfauthor={Gia Bao Bui}}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+\urlstyle{same}
 
 \begin{document}
 
-\signature{Gia Bao Bui}
-\longindentation=0pt
-\let\raggedleft\raggedright
-\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
-
-\newcommand{\makecovertitle}{%
-    \begin{center}
-    {\Large\bf \covertitle}
-    \end{center}
-    \smallskip\hrule height 1pt
-}
-
-\newcommand{\contact}{%
-    \begin{center}
-    \small
-    \authoraddress \\
-    Email: \href{mailto:\authoremail}{\texttt{\authoremail}} $|$ Tel: \authortel \\
-    \href{\authorlinkedin}{LinkedIn} $|$ \href{\authorgithub}{GitHub} $|$ \href{\authorportfolio}{Portfolio Website} \\
+\begin{center}
+    {\Huge \scshape Gia Bao Bui} \\ \vspace{3pt}
+    \small Melbourne, VIC $|$ (+61) 402 595 747 $|$ \href{mailto:giabaobui@baobuild.dev}{\uline{giabaobui@baobuild.dev}} $|$
+    \href{https://www.linkedin.com/in/gia-bao-bui-227476227/}{\uline{LinkedIn}} $|$
+    \href{https://github.com/giabaobui-nedy}{\uline{GitHub}} $|$
+    \href{https://www.baobuild.dev/}{\uline{Portfolio Website}} \\ \vspace{1pt}
     Australian work rights, Subclass 485 (valid to January 2028)
-    \end{center}
-}
+\end{center}
+\vspace{-4pt}
+\hrule height 0.4pt
+\vspace{6pt}
 
-\begin{letter}{%
+{{LETTER_DATE}}
+
 {{RECIPIENT_BLOCK}}
-}
 
-\makecovertitle
-\contact
-
-\opening{{{SALUTATION}},}
+{{SALUTATION}},
 
 {{PARAGRAPH_HOOK}}
 
@@ -77,8 +47,9 @@
 
 {{PARAGRAPH_CLOSE}}
 
-\closing{Kind regards,}
+Kind regards,
 
-\end{letter}
+\vspace{1.2em}
+Gia Bao Bui
 
 \end{document}

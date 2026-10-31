@@ -19,7 +19,7 @@
 \usepackage{ragged2e}
 \usepackage[none]{hyphenat}
 \usepackage{fontspec}
-\setmainfont{Calibri}
+\setmainfont{STIXTwoText}[Extension=.otf, UprightFont=*-Regular, BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
 
 \setlength{\parskip}{0pt}
 \setlength{\parindent}{0pt}

@@ -28,16 +28,20 @@ def _normalise(text: str) -> str:
     return " ".join((text or "").split())
 
 
+def _body(text: str) -> str:
+    """Paragraph text: escape bare %, & and # so "40%" can't comment out the rest of a line."""
+    return re.sub(r"(?<!\\)([%&#])", r"\\\1", _normalise(text))
+
+
 def render_recipient(cl: dict) -> str:
     """Build the LaTeX recipient block. All fields optional; render what we have."""
     lines: list[str] = []
     name = cl.get("recipient_name")
     company = cl.get("company") or cl.get("recipient_company")
-    if name and company:
-        lines.append(f"\\textbf{{{name} --- {company}}}")
-    elif name:
-        lines.append(f"\\textbf{{{name}}}")
-    elif company:
+    # A generic name only repeats the salutation, so only a real person gets a line.
+    if name and name.strip().lower() not in {"hiring manager", "hiring team", "recruitment team"}:
+        lines.append(name)
+    if company:
         lines.append(f"\\textbf{{{company}}}")
     address = cl.get("recipient_address")
     if address:
@@ -104,7 +108,8 @@ def main() -> None:
         sys.exit("pre-send check failed:\n  - " + "\n  - ".join(problems))
     cl_for_recipient = {**cl, "company": cl_company}
 
-    letter_date = cl.get("date") or dt.date.today().strftime("%d %B %Y")
+    today = dt.date.today()
+    letter_date = cl.get("date") or f"{today.day} {today:%B %Y}"
 
     out = (
         template
@@ -112,12 +117,12 @@ def main() -> None:
         .replace("{{LETTER_DATE}}", _normalise(letter_date))
         .replace("{{RECIPIENT_BLOCK}}", render_recipient(cl_for_recipient))
         .replace("{{SALUTATION}}", _normalise(cl.get("salutation", "Dear Hiring Team")))
-        .replace("{{PARAGRAPH_HOOK}}", _normalise(paragraphs["hook"]))
-        .replace("{{PARAGRAPH_TECHNICAL}}", _normalise(paragraphs["technical_match"]))
-        .replace("{{PARAGRAPH_VALUES}}", _normalise(paragraphs["values_fit"]))
-        .replace("{{PARAGRAPH_FORWARD}}\n\n", "")
-        .replace("{{PARAGRAPH_FORWARD}}", _normalise(paragraphs.get("forward", "")))
-        .replace("{{PARAGRAPH_CLOSE}}", _normalise(paragraphs["close"]))
+        .replace("{{PARAGRAPH_FORWARD}}\n\n", "{{PARAGRAPH_FORWARD}}\n\n" if paragraphs.get("forward") else "")
+        .replace("{{PARAGRAPH_HOOK}}", _body(paragraphs["hook"]))
+        .replace("{{PARAGRAPH_TECHNICAL}}", _body(paragraphs["technical_match"]))
+        .replace("{{PARAGRAPH_VALUES}}", _body(paragraphs["values_fit"]))
+        .replace("{{PARAGRAPH_FORWARD}}", _body(paragraphs.get("forward", "")))
+        .replace("{{PARAGRAPH_CLOSE}}", _body(paragraphs["close"]))
     )
 
     slug = args.spec.parent.name
